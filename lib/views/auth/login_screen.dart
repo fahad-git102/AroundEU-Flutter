@@ -24,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen>{
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: 10.0.sp),

@@ -76,18 +76,19 @@ flutter:
     - assets/logos_backgrounds/
     - assets/fonts/
 
+
+  fonts:
+     - family: CeraPro
+       fonts:
+         - asset: assets/fonts/cera_pro_medium.otf
+         - asset: assets/fonts/cera_pro_bold.otf
+           weight: 700
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
-
-fonts:
-  - family: CeraPro
-    fonts:
-      - asset: assets/fonts/cera_pro_medium.otf
-      - asset: assets/fonts/cera_pro_bold.otf
-        weight: 700
 
 flutter_launcher_icons:
   android: "launcher_icon"
