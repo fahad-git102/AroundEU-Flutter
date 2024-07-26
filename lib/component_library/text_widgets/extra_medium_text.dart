@@ -30,7 +30,7 @@ class ExtraMediumText extends StatelessWidget {
         title!,
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
             fontSize: 14.sp - decrease!,
-            fontWeight: fontWeight??FontWeight.w600,
+            fontWeight: fontWeight??FontWeight.w300,
             fontFamily: fontFamily,
             color: textColor ?? Theme.of(context).primaryColor),
         textAlign: textAlign,

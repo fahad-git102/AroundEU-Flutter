@@ -28,7 +28,7 @@ class SmallLightText extends StatelessWidget {
         title!,
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
             fontSize: fontSize??10.5.sp,
-            fontWeight: fontWeight??FontWeight.w500,
+            fontWeight: fontWeight??FontWeight.w300,
             decoration: lineThrough==true?TextDecoration.lineThrough:TextDecoration.none,
             color: textColor ?? AppColors.black),
         textAlign: textAlign,

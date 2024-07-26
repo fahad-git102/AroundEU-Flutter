@@ -1,6 +1,12 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:groupchat/core/size_config.dart';
+import 'package:groupchat/views/auth/forgot_password_screen.dart';
+import 'package:groupchat/views/auth/register_screen.dart';
+import 'package:groupchat/views/home_screens/home_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/buttons/button.dart';
@@ -19,6 +25,13 @@ class _LoginScreenState extends State<LoginScreen>{
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool isLoading = false;
+
+  updateState(){
+    setState(() {
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +54,12 @@ class _LoginScreenState extends State<LoginScreen>{
             ),
             InkWell(
               onTap: () {
-
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          RegisterScreen()),
+                );
               },
               child: Padding(
                 padding:
@@ -102,7 +120,12 @@ class _LoginScreenState extends State<LoginScreen>{
                 Button(
                     text: "Log In".tr(),
                     tapAction: () {
-
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                HomeScreen()),
+                      );
                     }),
                 InkWell(
                   child: Align(
@@ -116,8 +139,59 @@ class _LoginScreenState extends State<LoginScreen>{
                     ),
                   ),
                   onTap: () {
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ForgotPasswordScreen()),
+                    );
                   },
+                ),
+
+                SizedBox(height: 15.0.sp,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Platform.isIOS ? InkWell(
+                      onTap: () async {
+                        signInWithApple();
+                      },
+                      child: SvgPicture.asset(
+                        Images.appleIcon,
+                        colorFilter: ColorFilter.mode(AppColors.mainColorDark, BlendMode.srcIn),
+                        height: 40.0.sp,
+                        width: 40.0.sp,
+                      ),
+                    ): Container(),
+                    Platform.isIOS ? SizedBox(width: 11.0.sp,) : Container(),
+                    InkWell(
+                      onTap: (){
+                        isLoading = true;
+                        updateState();
+                        facebookLogin();
+                      },
+                      child: SvgPicture.asset(
+                        Images.facebookIcon,
+                        colorFilter: ColorFilter.mode(AppColors.mainColorDark, BlendMode.srcIn),
+                        height: 40.0.sp,
+                        width: 40.0.sp,
+                      ),
+                    ),
+                    SizedBox(width: 11.0.sp,),
+                    InkWell(
+                      onTap: (){
+                        isLoading = true;
+                        updateState();
+                        googleSignIn();
+                      },
+                      child: SvgPicture.asset(
+                        Images.googleIcon,
+                        colorFilter: ColorFilter.mode(AppColors.mainColorDark, BlendMode.srcIn),
+                        height: 40.0.sp,
+                        width: 40.0.sp,
+                      ),
+                    ),
+                  ],
                 ),
 
               ],
@@ -128,4 +202,15 @@ class _LoginScreenState extends State<LoginScreen>{
     );
   }
 
+  googleSignIn(){
+
+  }
+
+  facebookLogin(){
+
+  }
+
+  signInWithApple(){
+
+  }
 }
