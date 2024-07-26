@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/views/auth/login_screen.dart';
-import 'package:groupchat/views/auth/splash_screen.dart';
 import 'package:sizer/sizer.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async {
   // WidgetsFlutterBinding.ensureInitialized();
