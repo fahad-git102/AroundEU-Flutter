@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:groupchat/core/size_config.dart';
+import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/views/auth/forgot_password_screen.dart';
 import 'package:groupchat/views/auth/register_screen.dart';
 import 'package:groupchat/views/home_screens/home_screen.dart';
@@ -14,6 +15,8 @@ import '../../component_library/text_fields/custom_text_field.dart';
 import '../../component_library/text_widgets/small_light_text.dart';
 import '../../core/app_colors.dart';
 import '../../core/assets_names.dart';
+import '../../firebase/auth.dart';
+import '../../firebase/auth_exception_handling.dart';
 
 class LoginScreen extends StatefulWidget{
   @override
@@ -120,12 +123,9 @@ class _LoginScreenState extends State<LoginScreen>{
                 Button(
                     text: "Log In".tr(),
                     tapAction: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                HomeScreen()),
-                      );
+                      isLoading = true;
+                      updateState();
+                      signInUserWithEmailAndPassword();
                     }),
                 InkWell(
                   child: Align(
@@ -200,6 +200,21 @@ class _LoginScreenState extends State<LoginScreen>{
         ),
       ),
     );
+  }
+
+  Future<void> signInUserWithEmailAndPassword() async {
+    final status = await Auth().signInWithEmailAndPassword(
+      email: emailController.text,
+      password: passwordController.text,
+    );
+    if (status == AuthStatus.successful) {
+      Utilities().showSnackbar(context, 'Auth successful.. $status');
+    } else {
+      isLoading = false;
+      updateState();
+      final error = AuthExceptionHandler.generateErrorMessage(status);
+      Utilities().showSnackbar(context, error);
+    }
   }
 
   googleSignIn(){
