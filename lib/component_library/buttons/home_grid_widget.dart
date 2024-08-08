@@ -16,22 +16,25 @@ class HomeGridWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(
-            padding: EdgeInsets.all(5.0.sp),
-            child: Image.asset(icon ?? Images.chatIcon)),
-        SizedBox(
-          height: 5.0.sp,
-        ),
-        Center(
-          child: SmallLightText(
-            title: title,
-            textColor: AppColors.lightBlack,
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+              padding: EdgeInsets.all(5.0.sp),
+              child: Image.asset(icon ?? Images.chatIcon)),
+          SizedBox(
+            height: 5.0.sp,
           ),
-        )
-      ],
+          Center(
+            child: SmallLightText(
+              title: title,
+              textColor: AppColors.lightBlack,
+            ),
+          )
+        ],
+      ),
     );
   }
 }

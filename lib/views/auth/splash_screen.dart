@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 import '../../core/assets_names.dart';
 
 class SplashScreen extends StatefulWidget {
+  static const route = 'SplashScreen';
   @override
   State<StatefulWidget> createState() => _SplasScreenState();
 

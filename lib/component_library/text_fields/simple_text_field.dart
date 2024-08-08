@@ -13,6 +13,8 @@ class SimpleTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final int? maxLines, minLines;
   final bool? enabled;
+  final String? hintText;
+  final bool? noBorder;
   final List<TextInputFormatter>? inputFormatters;
   final FocusNode? focusNode;
   final String? Function(String?)? validator;
@@ -24,6 +26,8 @@ class SimpleTextField extends StatelessWidget {
       this.obscureText,
       this.allowNumbersOnly,
       this.suffixIcon,
+        this.hintText,
+        this.noBorder = false,
       this.onTap,
       this.keyboardType,
       this.enabled,
@@ -54,13 +58,14 @@ class SimpleTextField extends StatelessWidget {
                 : FilteringTextInputFormatter.singleLineFormatter
           ],
       decoration: InputDecoration(
+        hintText: hintText??'',
         isDense: true,
-        border: OutlineInputBorder(
+        border: noBorder??false ? InputBorder.none : OutlineInputBorder(
           borderRadius: BorderRadius.circular(13.0.sp),
           borderSide:
               BorderSide(color: AppColors.fadedTextColor2, width: 1.0),
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: noBorder??false ? InputBorder.none : OutlineInputBorder(
           borderRadius: BorderRadius.circular(13.0.sp),
           borderSide:
               BorderSide(color: AppColors.fadedTextColor2, width: 1.0),

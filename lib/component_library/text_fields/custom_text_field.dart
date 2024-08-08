@@ -45,7 +45,7 @@ class CustomTextField extends StatelessWidget{
       ],
       decoration: InputDecoration(
         hintText: hintText??"",
-        labelText: labelText??"Full Name",
+        labelText: labelText??"",
         suffixIcon: suffixIcon,
         fillColor: fillColor,
         labelStyle: TextStyle(color: AppColors.fadedTextColor2),

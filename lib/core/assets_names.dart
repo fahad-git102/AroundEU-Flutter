@@ -26,7 +26,11 @@ class Images{
 
   // constant icons
   static String backIcon = 'assets/constant_icons/back.svg';
+  static String noImagePlaceHolder = 'assets/constant_icons/no_image.jpg';
+  static String successGreenIcon = 'assets/constant_icons/success_green.svg';
+  static String warningRedIcon = 'assets/constant_icons/warning_error_red.svg';
   static String menuIcon = 'assets/constant_icons/menu.png';
+  static String markerIcon = 'assets/constant_icons/marker.png';
   static String privacyPolicyIcon = 'assets/constant_icons/privacy_policy.svg';
   static String signOutIcon = 'assets/constant_icons/sign_out.svg';
   static String officeContactIcon = 'assets/constant_icons/call_icon.svg';

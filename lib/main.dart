@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:groupchat/app/routes.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/views/auth/login_screen.dart';
 import 'package:sizer/sizer.dart';
@@ -15,7 +17,7 @@ Future<void> main() async {
         storageBucket: 'eprojectconsult-9d70e.appspot.com',
       )
   );
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -34,6 +36,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           fontFamily: 'CeraPro',
         ),
+        routes: getRoutes(),
         home: LoginScreen(),
       );
     });

@@ -17,5 +17,6 @@ class AppColors{
   static Color backGroundLightWhite = const Color(0xffF0F3F5);
   static Color hyperLinkColor = const Color(0xff1C46A8);
   static Color mainColor = const Color(0xfffee00c);
+  static Color red = const Color(0xff880f0f);
   static Color mainColorDark = const Color(0xff695d09);
 }

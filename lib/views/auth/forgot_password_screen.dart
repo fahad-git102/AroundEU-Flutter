@@ -1,7 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:groupchat/core/size_config.dart';
 import 'package:groupchat/core/utilities_class.dart';
 import 'package:sizer/sizer.dart';
@@ -16,6 +14,7 @@ import '../../core/app_colors.dart';
 import '../../core/assets_names.dart';
 
 class ForgotPasswordScreen extends StatefulWidget{
+  static const route = 'ForgotPasswordScreen';
   @override
   State<StatefulWidget> createState() => _ForgotPasswordState();
 
