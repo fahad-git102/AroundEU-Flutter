@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:groupchat/core/size_config.dart';
 import 'package:groupchat/core/utilities_class.dart';
+import 'package:groupchat/firebase/auth.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/buttons/back_button.dart';
@@ -12,6 +13,7 @@ import '../../component_library/text_widgets/extra_large_medium_bold_text.dart';
 import '../../component_library/text_widgets/extra_medium_text.dart';
 import '../../core/app_colors.dart';
 import '../../core/assets_names.dart';
+import '../../firebase/auth_exception_handling.dart';
 
 class ForgotPasswordScreen extends StatefulWidget{
   static const route = 'ForgotPasswordScreen';
@@ -88,7 +90,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen>{
                             }else{
                               isLoading = true;
                               updateState();
-                              sendEmail();
+                              sendEmail(emailController.text);
                             }
                           })
                         ],
@@ -116,8 +118,19 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen>{
     );
   }
 
-  sendEmail(){
-
+  sendEmail(String email) async {
+    final status = await Auth().resetPassword(email: email);
+    if (status == AuthStatus.successful) {
+      emailController.clear();
+      isLoading = false;
+      updateState();
+      Utilities().showSuccessDialog(context, message: "${'A password reset mail has been sent to'.tr()} $email${'. You can change your password from there.'.tr()}");
+    }else{
+      isLoading = false;
+      updateState();
+      final error = AuthExceptionHandler.generateErrorMessage(status);
+      Utilities().showErrorMessage(context, message: error);
+    }
   }
 
 }
