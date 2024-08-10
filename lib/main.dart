@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/app/routes.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/views/auth/login_screen.dart';
+import 'package:groupchat/views/auth/splash_screen.dart';
 import 'package:sizer/sizer.dart';
 
 Future<void> main() async {
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
           fontFamily: 'CeraPro',
         ),
         routes: getRoutes(),
-        home: LoginScreen(),
+        home: SplashScreen(),
       );
     });
   }

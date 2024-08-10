@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 
 import '../component_library/dialogs/custom_dialog.dart';
 import '../component_library/dialogs/pick_image_dialog.dart';
@@ -8,6 +12,7 @@ import '../component_library/dialogs/simple_error_dialog.dart';
 import 'app_colors.dart';
 
 class Utilities{
+
   Future<DateTime?> datePicker(BuildContext context, Color? color,
       {lastDate, firstDate, initialDate}) async {
     return showDatePicker(
@@ -138,4 +143,52 @@ class Utilities{
         return val.toString();
     }
   }
+
+  // Future<void> downloadFile(String url, String fileName, BuildContext context) async {
+  //   try {
+  //     Directory? downloadsDirectory = await getExternalStorageDirectory();
+  //     if (downloadsDirectory != null) {
+  //       String appDocPath = "${downloadsDirectory.path}/Download";
+  //       await Directory(appDocPath).create(recursive: true);
+  //       String filePath = "$appDocPath/$fileName";
+  //       Dio dio = Dio();
+  //       await dio.download(url, filePath, onReceiveProgress: (received, total) {
+  //         if (total != -1) {
+  //           print("Download progress: ${(received / total * 100).toStringAsFixed(0)}%");
+  //         }
+  //       });
+  //       showSuccessDialog(context, message: '$fileName downloaded successfully');
+  //     }
+  //   } catch (e) {
+  //     showErrorMessage(context, message: "Error downloading file: $e");
+  //   }
+  // }
+
+  Future<Uint8List> fileToUint8List(File file) async {
+    try {
+      Uint8List fileBytes = await file.readAsBytes();
+      return fileBytes;
+    } catch (e) {
+      print("Error converting file to Uint8List: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> downloadFile(File fileObj, String fileName, context, {String? extension}) async {
+    try {
+      Uint8List bytes = await fileToUint8List(fileObj);
+      final mimeType = lookupMimeType('$fileName$extension');
+      String? path = await FileSaver.instance.saveAs(
+          name: fileName,
+          bytes: Uint8List.fromList(bytes),
+          ext: extension??'pdf',
+          customMimeType: mimeType,
+          mimeType: MimeType.custom);
+      showSuccessDialog(context, message: '$fileName downloaded successfully in $path');
+    } catch (e) {
+      print('exception == $e');
+      showErrorMessage(context, message: 'Download Failed: $e');
+    }
+  }
+
 }

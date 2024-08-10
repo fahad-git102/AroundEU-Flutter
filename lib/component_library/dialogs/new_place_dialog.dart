@@ -3,12 +3,19 @@ import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/buttons/button.dart';
+import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
 import 'package:groupchat/component_library/text_fields/simple_text_field.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/assets_names.dart';
 import 'package:groupchat/core/utilities_class.dart';
+import 'package:groupchat/data/location_model.dart';
+import 'package:groupchat/data/places_model.dart';
+import 'package:groupchat/firebase/auth.dart';
+import 'package:groupchat/firebase/firebase_crud.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
+import 'package:groupchat/repositories/places_repository.dart';
 import 'package:groupchat/views/places/place_search_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +25,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../core/size_config.dart';
 import '../../data/country_model.dart';
+import '../../views/places/location_picker_screen.dart';
 
 class NewPlaceDialog extends StatefulWidget {
   @override
@@ -31,8 +39,9 @@ class _NewPlaceDialogState extends State<NewPlaceDialog> {
     "Sightseeing places".tr(),
     "Experience".tr()
   ];
+  bool? isLoading= false;
 
-  String? location;
+  LocationModel? pickedLocationModel;
 
   String? selectedCategory = "Bars & Restaurants".tr();
   CountryModel? selectedCountry;
@@ -49,6 +58,9 @@ class _NewPlaceDialogState extends State<NewPlaceDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: Consumer(builder: (ctx, ref, child){
         var appUserPro = ref.watch(appUserProvider);
+        if(selectedCountry == null && (appUserPro.countriesList!=null && appUserPro.countriesList!.isNotEmpty)){
+          selectedCountry = appUserPro.countriesList?.first;
+        }
         return Container(
           padding: EdgeInsets.all(13.0.sp),
           child: SingleChildScrollView(
@@ -189,13 +201,13 @@ class _NewPlaceDialogState extends State<NewPlaceDialog> {
                                     builder: (context) =>
                                         PlaceSearchScreen()),
                               );
-                              if(result!=null){
-                                location = result;
+                              if (result != null) {
+                                pickedLocationModel = LocationModel.fromMap(result);
                                 updateState();
                               }
                             },
                             child: SmallLightText(
-                              title: location??'Location'.tr(),
+                              title: pickedLocationModel!=null?pickedLocationModel?.address??'Location'.tr():'Location'.tr(),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               textColor: AppColors.lightBlack,
@@ -216,8 +228,18 @@ class _NewPlaceDialogState extends State<NewPlaceDialog> {
                         text: 'Pick a location'.tr(),
                         btnTxtColor: AppColors.white,
                         btnColor: AppColors.fadedTextColor2,
-                        tapAction: (){
+                        tapAction: () async {
+                          final pickedLocation = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LocationPickerScreen(),
+                            ),
+                          );
 
+                          if (pickedLocation != null) {
+                            pickedLocationModel = LocationModel.fromMap(pickedLocation);
+                            updateState();
+                          }
                         },
                       ),
                     )
@@ -239,10 +261,24 @@ class _NewPlaceDialogState extends State<NewPlaceDialog> {
                   ),
                 ),
                 SizedBox(height: 8.sp,),
-                Button(
+                isLoading == true ? SpinKitPulse(
+                  color: AppColors.mainColorDark,
+                ) : Button(
                   text: 'Save'.tr(),
                   tapAction: (){
-
+                    if(pickedFile==null){
+                      Utilities().showErrorMessage(context, message: 'Please select an image of the place'.tr());
+                      return;
+                    }
+                    if(pickedLocationModel==null){
+                      Utilities().showErrorMessage(context, message: 'Location of the place is required'.tr());
+                      return;
+                    }
+                    if(descriptionController.text.isEmpty){
+                      Utilities().showErrorMessage(context, message: 'Description of the place is required'.tr());
+                      return;
+                    }
+                    addNewPlace();
                   },
                 ),
               ],
@@ -252,4 +288,36 @@ class _NewPlaceDialogState extends State<NewPlaceDialog> {
       },),
     );
   }
+
+  addNewPlace()async{
+    isLoading = true;
+    updateState();
+    String? imageUrl = await FirebaseCrud().uploadImage(context: context, file: File(pickedFile!.path));
+    EUPlace place = EUPlace(
+      description: descriptionController.text,
+      uid: Auth().currentUser?.uid,
+      imageUrl: imageUrl,
+      category: selectedCategory,
+      status: 'pending',
+      country: selectedCountry?.countryName,
+      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      location: pickedLocationModel
+    );
+    PlacesRepository().addPlace(place, context, () {
+      isLoading = false;
+      updateState();
+      Utilities().showSuccessDialog(context, message: 'Place sent for approval successfully!'.tr(), onBtnTap: (){
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      });
+    }, (p0) {
+      isLoading = false;
+      updateState();
+      Utilities().showErrorMessage(context, message: p0.toString(), onBtnTap: (){
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      });
+    });
+  }
+
 }

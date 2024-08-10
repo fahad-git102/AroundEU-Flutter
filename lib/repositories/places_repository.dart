@@ -7,7 +7,7 @@ import '../firebase/firebase_crud.dart';
 
 class PlacesRepository{
   Future<void> addPlace(EUPlace place, BuildContext context, Function() onComplete, Function(dynamic p0) onError) async {
-    String? key = FirebaseDatabase.instance.ref(places).push().key;
+    String? key = place.key ?? FirebaseDatabase.instance.ref(places).push().key;
     FirebaseCrud().setData(
       key: "$places/$key",
       context: context,

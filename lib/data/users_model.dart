@@ -42,6 +42,9 @@ class AppUser {
   }
 
   factory AppUser.fromMap(Map<dynamic, dynamic> map) {
+    int convertedTimeStamp = (map['joinedOn'] is double)
+        ? (map['joinedOn'] as double).round()
+        : map['joinedOn'] as int;
     return AppUser(
       uid: map.containsKey('uid') && map['uid'] != null ? map["uid"] : null,
       firstName: map.containsKey('firstName') && map['firstName'] != null ? map["firstName"] : null,
@@ -54,7 +57,7 @@ class AppUser {
       userType: map.containsKey('userType') && map['userType'] != null ? map["userType"] : null,
       about: map.containsKey('about') && map['about'] != null ? map["about"] : null,
       profileUrl: map.containsKey('profileUrl') && map['profileUrl'] != null ? map["profileUrl"] : null,
-      joinedOn: map.containsKey('joinedOn') && map['joinedOn'] != null ? map["joinedOn"] as int : null,
+      joinedOn: map.containsKey('joinedOn') && map['joinedOn'] != null ? convertedTimeStamp : null,
       joined: map.containsKey('joined') && map['joined'] != null ? map["joined"] as bool : null,
       admin: map.containsKey('admin') && map['admin'] != null ? map["admin"] as bool : null,
       deviceTokens: map.containsKey('deviceTokens') && map['deviceTokens'] != null

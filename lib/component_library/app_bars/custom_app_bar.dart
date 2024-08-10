@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
 import 'package:groupchat/core/size_config.dart';
 import 'package:sizer/sizer.dart';
@@ -11,11 +12,12 @@ import '../buttons/back_button.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
   final String? title;
   final Function()? onTap;
+  final Widget? trailingWidget;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
-  const CustomAppBar({super.key, this.title, this.onTap});
+  const CustomAppBar({super.key, this.title, this.onTap, this.trailingWidget});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,10 +38,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
                   },
                 ),
                 SizedBox(width: 10.0.sp,),
-                ExtraMediumText(
-                  title: title??'Places to Explore'.tr(),
-                  textColor: AppColors.lightBlack,
-                )
+                Expanded(
+                  child: ExtraMediumText(
+                    title: title??'Places to Explore'.tr(),
+                    textColor: AppColors.lightBlack,
+                  ),
+                ),
+                trailingWidget??Container(),
               ],
             ),
           ),

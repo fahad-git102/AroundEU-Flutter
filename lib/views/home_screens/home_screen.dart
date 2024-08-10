@@ -7,7 +7,9 @@ import 'package:groupchat/component_library/buttons/custom_icon_button.dart';
 import 'package:groupchat/component_library/drawers/home_drawer.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
+import 'package:groupchat/core/permissions_manager.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
+import 'package:groupchat/views/categories_screens/categories_screen.dart';
 import 'package:groupchat/views/places/places_screen.dart';
 import 'package:sizer/sizer.dart';
 
@@ -26,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen>{
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+    PermissionsManager().checkPermissions();
     return Consumer(builder: (ctx, ref, child){
       var appUserPro = ref.watch(appUserProvider);
       appUserPro.listenToCountries();
@@ -112,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen>{
                                 icon: Images.categoriesIcon,
                                 title: 'Categories'.tr(),
                                 onTap: (){
-
+                                  Navigator.pushNamed(context, CategoriesScreen.route);
                                 },
                               ),
                             ),

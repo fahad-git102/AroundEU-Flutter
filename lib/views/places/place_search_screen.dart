@@ -1,9 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:groupchat/component_library/app_bars/custom_app_bar.dart';
+import 'package:groupchat/core/locations_manager.dart';
+import 'package:groupchat/data/location_model.dart';
 import 'package:sizer/sizer.dart';
 
 class PlaceSearchScreen extends StatefulWidget {
@@ -37,11 +40,14 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> {
                 // countries: const ["in", "fr"],
                 isLatLngRequired: true,
                 getPlaceDetailWithLatLng: (Prediction prediction) {},
-                itemClick: (Prediction prediction) {
+                itemClick: (Prediction prediction) async {
                   controller.text = prediction.description ?? "";
+                  LatLng? latLng = await LocationsManager().getLatLngFromAddress(prediction.description??'');
                   controller.selection = TextSelection.fromPosition(
                       TextPosition(offset: prediction.description?.length ?? 0));
-                  Navigator.pop(context, prediction.description);
+                  // Navigator.pop(context, prediction.description);
+                  LocationModel loc= LocationModel(latitude: latLng?.latitude, longitude: latLng?.longitude, address: prediction.description??'');
+                  Navigator.pop(context, loc.toMap());
                 },
                 seperatedBuilder: const Divider(),
                 containerHorizontalPadding: 10,
@@ -67,4 +73,6 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> {
       ),
     );
   }
+
+
 }

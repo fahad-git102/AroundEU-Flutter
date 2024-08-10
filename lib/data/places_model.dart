@@ -34,6 +34,9 @@ class EUPlace {
   }
 
   factory EUPlace.fromMap(Map<String, dynamic> map) {
+    int convertedTimeStamp = (map['timeStamp'] is double)
+        ? (map['timeStamp'] as double).round()
+        : map['timeStamp'] as int;
     return EUPlace(
       key: map.containsKey('key')&&map['key']!=null ? map['key'] as String : null,
       description: map.containsKey('description')&&map['description']!=null ? map['description'] as String : null,
@@ -46,22 +49,8 @@ class EUPlace {
       creatorName: map.containsKey('creatorName')&&map['creatorName']!=null ? map['creatorName'] as String : null,
       status: map.containsKey('status')&&map['status']!=null ? map['status'] as String : null,
       country: map.containsKey('country')&&map['country']!=null ? map['country'] as String : null,
-      timeStamp: map.containsKey('timeStamp')&&map['timeStamp']!=null ? map['timeStamp'] as int : null,
+      timeStamp: map.containsKey('timeStamp')&&map['timeStamp']!=null ? convertedTimeStamp : null,
     );
   }
 
-  static toListFromListMap(List m){
-    List<EUPlace> models=[];
-    for(int i=0;i<m.length;i++){
-      models.add(EUPlace.fromMap(m[i]));
-    }
-    return models;
-  }
-  static toListOfMapFromListMap(List<EUPlace> m){
-    List<Map> maps=[];
-    for(int i=0;i<m.length;i++){
-      maps.add(m[i].toMap());
-    }
-    return maps;
-  }
 }

@@ -33,10 +33,20 @@
   "Passwords didn't match": "Passwords didn't match",
   "Search": "Search",
   "All": "All",
+  "Please select an image of the place": "Please select an image of the place",
   "Bars & Restaurants": "Bars & Restaurants",
   "Sightseeing places": "Sightseeing places",
   "Experience": "Experience",
   "Details": "Details",
   "Location": "Location",
-  "Search your location": "Search your location"
+  "Search your location": "Search your location",
+  "Pick a Location": "Pick a Location",
+  "Pick Location": "Pick Location",
+  "Place sent for approval successfully!": "Place sent for approval successfully!",
+  "Location of the place is required": "Location of the place is required",
+  "Please pick a location to continue": "Please pick a location to continue",
+  "General Information": "General Information",
+  "Excursions": "Excursions",
+  "Useful Information": "Useful Information",
+  "Downloading started": "Downloading started"
 }

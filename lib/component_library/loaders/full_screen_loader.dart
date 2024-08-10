@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_colors.dart';
@@ -20,13 +21,13 @@ class _FullScreenLoaderState extends State<FullScreenLoader> {
       height: SizeConfig.screenHeight,
       width: SizeConfig.screenWidth,
       decoration:widget.showShadow==true? BoxDecoration(
-          color: Theme.of(context).shadowColor.withOpacity(0.1)
+          color: Theme.of(context).shadowColor.withOpacity(0.2)
       ):null,
       child: Center(
         child: SizedBox(
           height: 30.sp,
           width: 30.sp,
-          child:  Center(child: CircularProgressIndicator(color: AppColors.mainColor,)),
+          child:  Center(child: SpinKitPulse(color: AppColors.mainColorDark,)),
         ),
       ),
     ):Container();
