@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
-import 'package:groupchat/core/static_keys.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/categories_provider.dart';
 import 'package:groupchat/views/categories_screens/pdf_view_screen.dart';
@@ -115,11 +114,18 @@ class _PdfListScreenState extends State<PdfListScreen> {
                                             Radius.circular(4.sp))),
                                     child: Padding(
                                       padding: EdgeInsets.all(10.0.sp),
-                                      child: ExtraMediumText(
-                                        textColor: AppColors.lightBlack,
-                                        title: categoriesPro
-                                            .filteredCategoriesList?[index]
-                                            .name,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(Images.filePdfIcon, height: 23.sp, width: 23.sp, color: AppColors.lightBlack,),
+                                          SizedBox(width: 6.0.sp,),
+                                          ExtraMediumText(
+                                            textColor: AppColors.lightBlack,
+                                            title: categoriesPro
+                                                .filteredCategoriesList?[index]
+                                                .name,
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),

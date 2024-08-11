@@ -11,6 +11,7 @@ import 'package:groupchat/core/permissions_manager.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/views/categories_screens/categories_screen.dart';
 import 'package:groupchat/views/places/places_screen.dart';
+import 'package:groupchat/views/profile_screens/profile_home_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/buttons/home_grid_widget.dart';
@@ -66,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen>{
                                 icon: Images.profileIcon,
                                 title: 'Profile Details'.tr(),
                                 onTap: (){
-
+                                  Navigator.pushNamed(context, ProfileHomeScreen.route);
                                 },
                               ),
                             ),

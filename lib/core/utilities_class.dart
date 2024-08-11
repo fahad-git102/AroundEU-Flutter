@@ -186,9 +186,14 @@ class Utilities{
           mimeType: MimeType.custom);
       showSuccessDialog(context, message: '$fileName downloaded successfully in $path');
     } catch (e) {
-      print('exception == $e');
       showErrorMessage(context, message: 'Download Failed: $e');
     }
+  }
+
+  String convertTimeStampToString(int millis, {String? format}){
+    var dt = DateTime.fromMillisecondsSinceEpoch(millis);
+    String d12 = DateFormat(format??'dd MMM, yyyy').format(dt);
+    return d12;
   }
 
 }

@@ -98,6 +98,7 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
                           autoSpacing: true,
                           enableSwipe: true,
                           pageSnap: true,
+                          preventLinkNavigation: false,
                           swipeHorizontal: false,
                           nightMode: false,
                           onError: (e) {

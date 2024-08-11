@@ -35,5 +35,6 @@ class Images{
   static String signOutIcon = 'assets/constant_icons/sign_out.svg';
   static String officeContactIcon = 'assets/constant_icons/call_icon.svg';
   static String coordinatorsIcon = 'assets/constant_icons/coordinators.svg';
+  static String filePdfIcon = 'assets/constant_icons/file_pdf.svg';
   static String emergencyContactIcon = 'assets/constant_icons/emergency_call_icon.svg';
 }

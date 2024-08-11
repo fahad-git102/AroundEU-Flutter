@@ -11,6 +11,7 @@ import 'package:groupchat/views/places/places_screen.dart';
 
 import '../views/auth/login_screen.dart';
 import '../views/categories_screens/pdf_list_screen.dart';
+import '../views/profile_screens/profile_home_screen.dart';
 
 getRoutes(){
   return {
@@ -25,6 +26,7 @@ getRoutes(){
     CategoriesScreen.route: (context) => CategoriesScreen(),
     PdfListScreen.route: (context) => PdfListScreen(),
     ForgotPasswordScreen.route: (context) => ForgotPasswordScreen(),
-    PdfViewScreen.route: (context) => PdfViewScreen()
+    PdfViewScreen.route: (context) => const PdfViewScreen(),
+    ProfileHomeScreen.route: (context) => ProfileHomeScreen()
   };
 }
