@@ -54,5 +54,18 @@
   "Personal Information": "Personal Information",
   "My Documents": "My Documents",
   "My Classes": "My Classes",
-  "Settings": "Settings"
+  "Settings": "Settings",
+  "EMAIL": "EMAIL",
+  "NAME": "NAME",
+  "DATE OF BIRTH": "DATE OF BIRTH",
+  "WORKS AT": "WORKS AT",
+  "Not Found": "Not Found",
+  "WORKING DAYS": "WORKING DAYS",
+  "Morning:": "Morning:",
+  "From:": "From:",
+  "To:": "To:",
+  "Afternoon:": "Afternoon:",
+  "ABOUT": "ABOUT",
+  "About": "About",
+  "Your profile is updated successfully": "Your profile is updated successfully"
 }

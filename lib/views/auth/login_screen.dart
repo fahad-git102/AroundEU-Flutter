@@ -267,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen>{
   navigate(String route){
     isLoading = false;
     updateState();
-    Navigator.pushNamed(context, route);
+    Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
   }
 
   googleSignIn(){

@@ -5,3 +5,5 @@ const String teacher = "Teacher";
 const String places = "places";
 const String countries = "countries";
 const String categories = "categories";
+const String companies = "companies";
+const String companyTimeScheduled = "companyTimeScheduled";

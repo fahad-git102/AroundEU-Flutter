@@ -8,6 +8,7 @@ import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
+import 'package:groupchat/views/profile_screens/personal_info_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/text_widgets/extra_medium_text.dart';
@@ -87,25 +88,30 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 13.sp),
                       physics: const BouncingScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                          margin: EdgeInsets.only(bottom: 9.0.sp),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black87
-                                      .withOpacity(0.25),
-                                  blurRadius: 4,
-                                  offset: const Offset(
-                                      1, 1), // Shadow position
-                                ),
-                              ],
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(4.sp))),
-                          child: Padding(padding: EdgeInsets.all(10.sp), child: ExtraMediumText(
-                            textColor: AppColors.lightBlack,
-                            title: dataList?[index],
-                          ),),
+                        return InkWell(
+                          onTap: (){
+                            Navigator.pushNamed(context, PersonalInfoScreen.route);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(bottom: 9.0.sp),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black87
+                                        .withOpacity(0.25),
+                                    blurRadius: 4,
+                                    offset: const Offset(
+                                        1, 1), // Shadow position
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(4.sp))),
+                            child: Padding(padding: EdgeInsets.all(10.sp), child: ExtraMediumText(
+                              textColor: AppColors.lightBlack,
+                              title: dataList?[index],
+                            ),),
+                          ),
                         );
                       }),
                 )

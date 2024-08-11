@@ -8,6 +8,7 @@ import 'package:groupchat/views/home_screens/home_screen.dart';
 import 'package:groupchat/views/home_screens/teachers_home_screen.dart';
 import 'package:groupchat/views/places/places_detail_screen.dart';
 import 'package:groupchat/views/places/places_screen.dart';
+import 'package:groupchat/views/profile_screens/personal_info_screen.dart';
 
 import '../views/auth/login_screen.dart';
 import '../views/categories_screens/pdf_list_screen.dart';
@@ -27,6 +28,7 @@ getRoutes(){
     PdfListScreen.route: (context) => PdfListScreen(),
     ForgotPasswordScreen.route: (context) => ForgotPasswordScreen(),
     PdfViewScreen.route: (context) => const PdfViewScreen(),
-    ProfileHomeScreen.route: (context) => ProfileHomeScreen()
+    ProfileHomeScreen.route: (context) => ProfileHomeScreen(),
+    PersonalInfoScreen.route: (context) => PersonalInfoScreen()
   };
 }

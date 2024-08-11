@@ -119,11 +119,13 @@ class _PdfListScreenState extends State<PdfListScreen> {
                                         children: [
                                           SvgPicture.asset(Images.filePdfIcon, height: 23.sp, width: 23.sp, color: AppColors.lightBlack,),
                                           SizedBox(width: 6.0.sp,),
-                                          ExtraMediumText(
-                                            textColor: AppColors.lightBlack,
-                                            title: categoriesPro
-                                                .filteredCategoriesList?[index]
-                                                .name,
+                                          Expanded(
+                                            child: ExtraMediumText(
+                                              textColor: AppColors.lightBlack,
+                                              title: categoriesPro
+                                                  .filteredCategoriesList?[index]
+                                                  .name,
+                                            ),
                                           ),
                                         ],
                                       ),

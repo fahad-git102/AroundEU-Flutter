@@ -25,11 +25,11 @@ class UsersRepository{
     );
   }
 
-  Future<void> updateUser(AppUser user, BuildContext context, Function() onComplete, Function(dynamic p0) onError) async {
+  Future<void> updateUser(Map<String, dynamic> user, BuildContext context, Function() onComplete, Function(dynamic p0) onError) async {
     FirebaseCrud().updateData(
       key: "$users/${Auth().currentUser!.uid}",
       context: context,
-      data: user.toMap(),
+      data: user,
       onComplete: onComplete,
     );
   }

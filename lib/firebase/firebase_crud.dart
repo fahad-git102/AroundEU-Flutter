@@ -25,12 +25,13 @@ class FirebaseCrud {
   Future<void> updateData({required String key,
     required BuildContext context,
     required Map<String, dynamic> data,
-    required Function() onComplete}) async {
+    required Function() onComplete,
+    Function(dynamic)? onCatchError}) async {
     DatabaseReference ref = FirebaseDatabase.instance.ref(key);
     await ref.update(data).then((_) {
       onComplete();
     }).catchError((error) {
-      Utilities().showSnackbar(context, error.toString());
+      onCatchError!(error) ?? Utilities().showSnackbar(context, error.toString());
     });
   }
 
