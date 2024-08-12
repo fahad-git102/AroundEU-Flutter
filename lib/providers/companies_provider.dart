@@ -6,16 +6,18 @@ import 'package:groupchat/data/company_time_scheduled.dart';
 import 'package:groupchat/repositories/companies_repository.dart';
 
 import '../data/company_model.dart';
+import '../data/country_model.dart';
 
 final companiesProvider = ChangeNotifierProvider((ref) => CompaniesProvider());
 
-class CompaniesProvider extends ChangeNotifier{
+class CompaniesProvider extends ChangeNotifier {
   CompanyTimeScheduled? myCompanyTimeScheduled;
   List<CompanyModel>? allCompaniesList;
   List<CompanyModel>? filteredCompaniesList;
   CompanyModel? myCompany;
+  CountryModel? selectedCountry;
 
-  listenToCompanies({String? selectedCountry}){
+  listenToCompanies({String? selectedCountry}) {
     allCompaniesList?.clear();
     filteredCompaniesList?.clear();
     CompanyRepository().getCompaniesStream().listen((companiesData) {
@@ -37,28 +39,48 @@ class CompaniesProvider extends ChangeNotifier{
             selectedCountry: entry.value.selectedCountry,
             taskOfStudents: entry.value.taskOfStudents,
             telephone: entry.value.telephone,
-            website: entry.value.website
-        );
+            website: entry.value.website);
       }).toList();
-
-      if(selectedCountry!=null){
+      if (selectedCountry != null) {
         allCompaniesList?.forEach((element) {
-          if(element.selectedCountry == selectedCountry){
+          if (element.selectedCountry == selectedCountry) {
             filteredCompaniesList?.add(element);
           }
         });
-      }else{
+      } else {
         filteredCompaniesList?.clear();
       }
-
       notifyListeners();
     });
   }
 
+  void searchCompanies(String query, String selectedCountry) {
+    filteredCompaniesList = allCompaniesList?.where((company) {
+      final lowerCaseQuery = query.toLowerCase();
+      return company.selectedCountry == selectedCountry&&(company.city?.toLowerCase().contains(lowerCaseQuery) == true ||
+          company.fullLegalName?.toLowerCase().contains(lowerCaseQuery) == true ||
+          company.country?.toLowerCase().contains(lowerCaseQuery) == true ||
+          company.legalAddress?.toLowerCase().contains(lowerCaseQuery) == true ||
+          false);
+    }).toList();
+    notifyListeners();
+  }
+
+  filterCompanies(String? selectedCountry) {
+    filteredCompaniesList = [];
+    if (selectedCountry != null) {
+      allCompaniesList?.forEach((element) {
+        if (element.selectedCountry == selectedCountry) {
+          filteredCompaniesList?.add(element);
+        }
+      });
+    } else {
+      filteredCompaniesList?.clear();
+    }
+    notifyListeners();
+  }
+
   listenToMyCompanyTimeScheduled() async {
-    // if(allCompaniesList==null){
-    //   await listenToCompanies();
-    // }
     CompanyRepository().getMyCompanyStream().listen((event) {
       myCompanyTimeScheduled = event.values.first;
       myCompanyTimeScheduled?.id = event.keys.first;
@@ -68,11 +90,10 @@ class CompaniesProvider extends ChangeNotifier{
   }
 
   getMyCompany(String? id) async {
-    if(id!=null){
+    if (id != null) {
       var map = await CompanyRepository().getMyCompany(id);
       myCompany = CompanyModel.fromMap(map);
       notifyListeners();
     }
   }
-
 }

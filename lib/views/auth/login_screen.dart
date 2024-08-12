@@ -134,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen>{
                         labelText: "Password".tr(),
                         obscureText: true,
                         validator: (value) {
-                          return Validation().validateEmptyField(value, message: 'Password Required'.tr());
+                          return Validation().validateEmptyField(value, message: 'Password required'.tr());
                         },
                       ),
                       SizedBox(

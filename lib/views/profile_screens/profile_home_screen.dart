@@ -8,7 +8,9 @@ import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
+import 'package:groupchat/views/profile_screens/my_documents_screen.dart';
 import 'package:groupchat/views/profile_screens/personal_info_screen.dart';
+import 'package:groupchat/views/profile_screens/settings_list_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/text_widgets/extra_medium_text.dart';
@@ -90,7 +92,19 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         return InkWell(
                           onTap: (){
-                            Navigator.pushNamed(context, PersonalInfoScreen.route);
+                            switch (index){
+                              case 0:
+                                Navigator.pushNamed(context, PersonalInfoScreen.route);
+                                break;
+                              case 1:
+                                Navigator.pushNamed(context, MyDocumentsScreen.route);
+                                break;
+                              case 2:
+                                break;
+                              case 3:
+                                Navigator.pushNamed(context, SettingsListScreen.route);
+                                break;
+                            }
                           },
                           child: Container(
                             margin: EdgeInsets.only(bottom: 9.0.sp),

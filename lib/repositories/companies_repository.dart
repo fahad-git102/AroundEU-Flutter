@@ -19,6 +19,20 @@ class CompanyRepository{
       onCatchError: onError,
     );
   }
+
+  Future<void> addMyCompanyTimeScheduled(CompanyTimeScheduled companyTScheduled, BuildContext context,
+      Function() onComplete, Function(dynamic p0) onError) async{
+    String? key = FirebaseDatabase.instance.ref(companyTimeScheduled).push().key;
+    companyTScheduled.id = key;
+    FirebaseCrud().setData(
+      key: "$companyTimeScheduled/$key",
+      context: context,
+      data: companyTScheduled.toMap(),
+      onComplete: onComplete,
+      onCatchError: onError,
+    );
+  }
+
   Stream<Map<String, CompanyModel>> getCompaniesStream() {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
     return dbRef.child(companies)

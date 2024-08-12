@@ -10,6 +10,7 @@ import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/permissions_manager.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/views/categories_screens/categories_screen.dart';
+import 'package:groupchat/views/companies_screens/companies_screen.dart';
 import 'package:groupchat/views/places/places_screen.dart';
 import 'package:groupchat/views/profile_screens/profile_home_screen.dart';
 import 'package:sizer/sizer.dart';
@@ -107,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen>{
                                 icon: Images.myCompanyIcon,
                                 title: 'My Company'.tr(),
                                 onTap: (){
-
+                                  Navigator.pushNamed(context, CompaniesScreen.route);
                                 },
                               ),
                             ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/component_library/app_bars/custom_app_bar.dart';
+import 'package:groupchat/component_library/companies_widgets/time_widget.dart';
 import 'package:groupchat/component_library/dialogs/update_profile_dialog.dart';
 import 'package:groupchat/component_library/text_fields/simple_text_field.dart';
 import 'package:groupchat/component_library/text_widgets/extra_large_medium_bold_text.dart';
@@ -328,14 +329,14 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          timeWidget(
-                                              'From:'.tr(),
-                                              companyPro.myCompanyTimeScheduled
+                                          TimeWidget(
+                                              title: 'From:'.tr(),
+                                              value: companyPro.myCompanyTimeScheduled
                                                       ?.morningFrom ??
                                                   ''),
-                                          timeWidget(
-                                              'To:'.tr(),
-                                              companyPro.myCompanyTimeScheduled
+                                          TimeWidget(
+                                              title: 'To:'.tr(),
+                                              value: companyPro.myCompanyTimeScheduled
                                                       ?.morningTo ??
                                                   ''),
                                         ],
@@ -356,14 +357,14 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          timeWidget(
-                                              'From:'.tr(),
-                                              companyPro.myCompanyTimeScheduled
+                                          TimeWidget(
+                                              title: 'From:'.tr(),
+                                              value: companyPro.myCompanyTimeScheduled
                                                       ?.noonFrom ??
                                                   ''),
-                                          timeWidget(
-                                              'To:'.tr(),
-                                              companyPro.myCompanyTimeScheduled
+                                          TimeWidget(
+                                              title: 'To:'.tr(),
+                                              value: companyPro.myCompanyTimeScheduled
                                                       ?.noonTo ??
                                                   ''),
                                         ],
@@ -412,25 +413,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           );
         },
       )),
-    );
-  }
-
-  Widget timeWidget(String title, String value) {
-    return Row(
-      children: [
-        SmallLightText(
-          title: title,
-          textColor: AppColors.lightBlack,
-        ),
-        SizedBox(
-          width: 10.0.sp,
-        ),
-        SmallLightText(
-          title: value,
-          fontSize: 13.0.sp,
-          textColor: AppColors.hyperLinkColor,
-        ),
-      ],
     );
   }
 }
