@@ -9,6 +9,7 @@ import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/permissions_manager.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
+import 'package:groupchat/providers/companies_provider.dart';
 import 'package:groupchat/views/categories_screens/categories_screen.dart';
 import 'package:groupchat/views/companies_screens/companies_screen.dart';
 import 'package:groupchat/views/places/places_screen.dart';
@@ -18,6 +19,7 @@ import 'package:sizer/sizer.dart';
 import '../../component_library/buttons/home_grid_widget.dart';
 import '../../core/assets_names.dart';
 import '../../core/size_config.dart';
+import '../companies_screens/company_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget{
   static const route = 'HomeScreen';
@@ -104,13 +106,26 @@ class _HomeScreenState extends State<HomeScreen>{
                               ),
                             ),
                             Expanded(
-                              child: HomeGridWidget(
-                                icon: Images.myCompanyIcon,
-                                title: 'My Company'.tr(),
-                                onTap: (){
-                                  Navigator.pushNamed(context, CompaniesScreen.route);
-                                },
-                              ),
+                              child: Consumer(builder: (ctx, ref, child){
+                                var companiesPro = ref.watch(companiesProvider);
+                                if(companiesPro.myCompanyTimeScheduled==null||companiesPro.myCompany==null){
+                                  companiesPro.listenToMyCompanyTimeScheduled();
+                                }
+                                return HomeGridWidget(
+                                  icon: Images.myCompanyIcon,
+                                  title: 'My Company'.tr(),
+                                  onTap: (){
+                                    if(companiesPro.myCompanyTimeScheduled!=null && companiesPro.myCompany!=null){
+                                      Navigator.pushNamed(context, CompanyDetailScreen.route, arguments: {
+                                        'company': companiesPro.myCompany?.toMap(),
+                                        'fromHome': true
+                                      });
+                                    }else{
+                                      Navigator.pushNamed(context, CompaniesScreen.route);
+                                    }
+                                  },
+                                );
+                              },),
                             ),
                             Expanded(
                               child: HomeGridWidget(

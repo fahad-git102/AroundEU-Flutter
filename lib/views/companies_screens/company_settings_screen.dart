@@ -49,6 +49,8 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
   String? noonFrom, noonTo;
   TextEditingController descriptionController = TextEditingController();
   bool? isLoading = false;
+  TimeOfDay? todMorningFrom, todMorningTo, todNoonFrom, todNoonTo;
+  bool? isEdit = true;
 
   updateState(){
     setState(() {
@@ -64,6 +66,14 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
         : null;
     company ??=
         args!['company'] != null ? CompanyModel.fromMap(args['company']) : null;
+    myCompanyTimeScheduled ??=
+      args!['myCompanyTimeScheduled'] != null ? CompanyTimeScheduled.fromMap(args['myCompanyTimeScheduled']) : null;
+    isEdit = args!['edit'] != null ? args['edit'] as bool : false;
+
+    todMorningFrom ??= TimeOfDay.now();
+    todMorningTo ??= TimeOfDay.now();
+    todNoonFrom ??= TimeOfDay.now();
+    todNoonTo ??= TimeOfDay.now();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
@@ -183,10 +193,26 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
                               children: [
                                 TimeWidget(
                                     title: 'From:'.tr(),
-                                    value: morningFrom ?? 'Not selected'.tr()),
+                                    value: morningFrom ?? 'Not selected'.tr(),
+                                  onTap: (){
+                                      Utilities().showTimePicker(context, todMorningFrom??TimeOfDay.now(), (p0) {
+                                        todMorningFrom = TimeOfDay(hour: p0.hour, minute: p0.minute);
+                                        morningFrom = Utilities().formatTimeOfDay(todMorningFrom!);
+                                        updateState();
+                                      });
+                                  },
+                                ),
                                 TimeWidget(
                                     title: 'To:'.tr(),
-                                    value: morningTo ?? 'Not selected'.tr()),
+                                    value: morningTo ?? 'Not selected'.tr(),
+                                  onTap: (){
+                                    Utilities().showTimePicker(context, todMorningTo??TimeOfDay.now(), (p0) {
+                                      todMorningTo = TimeOfDay(hour: p0.hour, minute: p0.minute);
+                                      morningTo = Utilities().formatTimeOfDay(todMorningTo!);
+                                      updateState();
+                                    });
+                                  },
+                                ),
                               ],
                             ),
                           ),
@@ -211,10 +237,26 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
                               children: [
                                 TimeWidget(
                                     title: 'From:'.tr(),
-                                    value: noonFrom ?? 'Not selected'.tr()),
+                                    value: noonFrom ?? 'Not selected'.tr(),
+                                  onTap: (){
+                                    Utilities().showTimePicker(context, todNoonFrom??TimeOfDay.now(), (p0) {
+                                      todNoonFrom = TimeOfDay(hour: p0.hour, minute: p0.minute);
+                                      noonFrom = Utilities().formatTimeOfDay(todNoonFrom!);
+                                      updateState();
+                                    });
+                                  },
+                                ),
                                 TimeWidget(
                                     title: 'To:'.tr(),
-                                    value: noonTo ?? 'Not selected'.tr()),
+                                    value: noonTo ?? 'Not selected'.tr(),
+                                    onTap: (){
+                                      Utilities().showTimePicker(context, todNoonTo??TimeOfDay.now(), (p0) {
+                                        todNoonTo = TimeOfDay(hour: p0.hour, minute: p0.minute);
+                                        noonTo = Utilities().formatTimeOfDay(todNoonTo!);
+                                        updateState();
+                                      });
+                                    },
+                                ),
                               ],
                             ),
                           ),
@@ -254,22 +296,24 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 13.0.sp),
-                            child: Button(
-                              text: 'Save'.tr(),
-                              tapAction: (){
-                                if(_formKey.currentState!.validate()){
-                                  if(selectedDays.isEmpty){
-                                    Utilities().showErrorMessage(context, message: 'Please select working days'.tr());
-                                    return;
+                            child: Consumer(builder: (ctx, ref, child){
+                              return Button(
+                                text: 'Save'.tr(),
+                                tapAction: (){
+                                  if(_formKey.currentState!.validate()){
+                                    if(selectedDays.isEmpty){
+                                      Utilities().showErrorMessage(context, message: 'Please select working days'.tr());
+                                      return;
+                                    }
+                                    if(morningTo==null||morningFrom==null||noonFrom==null||noonFrom==null){
+                                      Utilities().showErrorMessage(context, message: 'Please fill your complete timings'.tr());
+                                      return;
+                                    }
+                                    saveMyCompanyTimeSchedule(ref);
                                   }
-                                  if(morningTo==null||morningFrom==null||noonFrom==null||noonFrom==null){
-                                    Utilities().showErrorMessage(context, message: 'Please fill your complete timings'.tr());
-                                    return;
-                                  }
-
-                                }
-                              },
-                            ),
+                                },
+                              );
+                            },),
                           ),
                           SizedBox(height: 280.0.sp,)
                         ],
@@ -290,13 +334,15 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
     if(selectedDays.isNotEmpty){
       replaceFullWords();
     }
-    myCompanyTimeScheduled?.noonFrom = noonFrom;
-    myCompanyTimeScheduled?.noonTo = noonTo;
-    myCompanyTimeScheduled?.morningFrom = morningFrom;
-    myCompanyTimeScheduled?.morningTo = morningTo;
-    myCompanyTimeScheduled?.selectedDays = selectedDays;
-    myCompanyTimeScheduled?.uid = Auth().currentUser?.uid;
-    myCompanyTimeScheduled?.companyId = company?.id;
+    myCompanyTimeScheduled = CompanyTimeScheduled(
+      noonFrom: noonFrom,
+      noonTo: noonTo,
+      morningFrom: morningFrom,
+      morningTo: morningTo,
+      selectedDays: selectedDays,
+      uid: Auth().currentUser?.uid,
+      companyId: company?.id
+    );
     isLoading = true;
     updateState();
     CompanyRepository().addMyCompanyTimeScheduled(myCompanyTimeScheduled!, context, () async {

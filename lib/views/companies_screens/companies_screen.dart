@@ -158,7 +158,7 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
                         child: CompaniesListWidget(
                           title: companiesPro.filteredCompaniesList?[index].fullLegalName
                               ??companiesPro.filteredCompaniesList?[index].legalRepresentative??'',
-                          companySize: companiesPro.filteredCompaniesList?[index].selectedCountry??'',
+                          companySize: companiesPro.filteredCompaniesList?[index].size??'',
                           address: '${companiesPro.filteredCompaniesList?[index].city}, ${companiesPro.filteredCompaniesList?[index].country}',
                         ),
                       );
