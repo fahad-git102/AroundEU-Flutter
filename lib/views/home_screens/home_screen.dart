@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/component_library/buttons/custom_icon_button.dart';
@@ -12,14 +13,19 @@ import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/companies_provider.dart';
 import 'package:groupchat/views/categories_screens/categories_screen.dart';
 import 'package:groupchat/views/companies_screens/companies_screen.dart';
-import 'package:groupchat/views/places/places_screen.dart';
+import 'package:groupchat/views/news_screens/news_screen.dart';
 import 'package:groupchat/views/profile_screens/profile_home_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/buttons/home_grid_widget.dart';
+import '../../component_library/dialogs/select_country_dialog.dart';
 import '../../core/assets_names.dart';
 import '../../core/size_config.dart';
+import '../../core/utilities_class.dart';
+import '../../firebase/auth.dart';
+import '../auth/login_screen.dart';
 import '../companies_screens/company_detail_screen.dart';
+import '../places_screens/places_screen.dart';
 
 class HomeScreen extends StatefulWidget{
   static const route = 'HomeScreen';
@@ -28,6 +34,7 @@ class HomeScreen extends StatefulWidget{
 }
 
 class _HomeScreenState extends State<HomeScreen>{
+  bool? dialogShown = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
@@ -35,6 +42,23 @@ class _HomeScreenState extends State<HomeScreen>{
     PermissionsManager().checkPermissions();
     return Consumer(builder: (ctx, ref, child){
       var appUserPro = ref.watch(appUserProvider);
+      if(context.mounted){
+        if(appUserPro.currentUser?.selectedCountry==null||appUserPro.currentUser?.selectedCountry?.isEmpty==true){
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            if(dialogShown == false){
+              dialogShown = true;
+              showDialog(context: context, barrierDismissible: false, builder: (ctx) => SelectCountryDialog(
+                title: 'Select Country'.tr(),
+                showCancel: false,
+                onItemSelect: (countryModel){
+                  Navigator.pop(context);
+                  updateUserCountry(appUserPro, countryModel?.countryName);
+                },
+              ));
+            }
+          });
+        }
+      }
       appUserPro.listenToCountries();
       return Scaffold(
         key: _scaffoldKey,
@@ -79,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen>{
                                 icon: Images.chatIcon,
                                 title: 'Chat'.tr(),
                                 onTap: (){
-
+                              print(appUserPro.currentUser?.uid);
                                 },
                               ),
                             ),
@@ -88,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen>{
                                 icon: Images.newsIcon,
                                 title: 'News'.tr(),
                                 onTap: (){
-
+                                  Navigator.pushNamed(context, NewsScreen.route);
                                 },
                               ),
                             ),
@@ -169,6 +193,20 @@ class _HomeScreenState extends State<HomeScreen>{
           ),
         ),
       );
+    });
+  }
+
+  updateUserCountry(AppUserProvider userPro, String? selectedCountry){
+    userPro.updateSelectedCountry(context, userPro, selectedCountry, () {
+      userPro.getCurrentUser();
+    }, (p0) {
+      userPro.clearPro();
+      Auth().signOut();
+      Utilities().showErrorMessage(context,
+          barrierDismissible: false,
+          message: 'Error: ${p0.toString()}'.tr(), onBtnTap: () {
+            Navigator.pushNamedAndRemoveUntil(context, LoginScreen.route, (route) => false);
+          });
     });
   }
 

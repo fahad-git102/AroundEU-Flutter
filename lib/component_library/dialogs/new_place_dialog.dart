@@ -16,7 +16,6 @@ import 'package:groupchat/firebase/auth.dart';
 import 'package:groupchat/firebase/firebase_crud.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/repositories/places_repository.dart';
-import 'package:groupchat/views/places/place_search_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:groupchat/component_library/text_widgets/extra_large_medium_bold_text.dart';
@@ -25,7 +24,8 @@ import 'package:sizer/sizer.dart';
 
 import '../../core/size_config.dart';
 import '../../data/country_model.dart';
-import '../../views/places/location_picker_screen.dart';
+import '../../views/places_screens/location_picker_screen.dart';
+import '../../views/places_screens/place_search_screen.dart';
 
 class NewPlaceDialog extends StatefulWidget {
   @override

@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:groupchat/component_library/dialogs/select_country_dialog.dart';
 import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
 import 'package:groupchat/core/size_config.dart';
 import 'package:groupchat/core/static_keys.dart';
@@ -24,6 +25,7 @@ import '../../core/assets_names.dart';
 import '../../core/validation.dart';
 import '../../firebase/auth.dart';
 import '../../firebase/auth_exception_handling.dart';
+import '../../repositories/users_repository.dart';
 import '../home_screens/teachers_home_screen.dart';
 
 class LoginScreen extends StatefulWidget{

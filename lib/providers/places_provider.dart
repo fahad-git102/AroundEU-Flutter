@@ -40,7 +40,6 @@ class PlacesProvider extends ChangeNotifier{
           creatorName: entry.value.creatorName,
           timeStamp: entry.value.timeStamp,
           location: entry.value.location
-          // other properties...
         );
       }).toList();
       placesList?.removeWhere((element) => element.status == null || element.status != 'approved');

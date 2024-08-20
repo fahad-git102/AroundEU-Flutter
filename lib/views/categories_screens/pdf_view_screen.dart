@@ -6,9 +6,10 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/app_bars/custom_app_bar.dart';
 import 'package:groupchat/core/utilities_class.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_pdfview/flutter_pdfview.dart';
+// import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../core/app_colors.dart';
 import '../../core/size_config.dart';
@@ -31,7 +32,7 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
   int _totalPages = 0;
   int _currentPage = 0;
   bool pdfReady = false;
-  PDFViewController? _pdfViewController;
+  // PDFViewController? _pdfViewController;
   bool loaded = false;
 
   Future<File> getFileFromUrl(String url, {String? name}) async {
@@ -93,38 +94,39 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
                 ),
                 loaded && exists
                     ? Expanded(
-                        child: PDFView(
-                          filePath: urlPDFPath,
-                          autoSpacing: true,
-                          enableSwipe: true,
-                          pageSnap: true,
-                          preventLinkNavigation: false,
-                          swipeHorizontal: false,
-                          nightMode: false,
-                          onError: (e) {
-                            print("PDF View Error: $e");
-                            // Show some error message or UI
-                          },
-                          onRender: (pages) {
-                            setState(() {
-                              _totalPages = pages!;
-                              pdfReady = true;
-                            });
-                          },
-                          onViewCreated: (PDFViewController vc) {
-                            setState(() {
-                              _pdfViewController = vc;
-                            });
-                          },
-                          onPageChanged: (page, total) {
-                            setState(() {
-                              _currentPage = page!;
-                            });
-                          },
-                          onPageError: (page, e) {
-                            print("Page Error: $e");
-                          },
-                        ),
+                        // child: PDFView(
+                        //   filePath: urlPDFPath,
+                        //   autoSpacing: true,
+                        //   enableSwipe: true,
+                        //   pageSnap: true,
+                        //   preventLinkNavigation: false,
+                        //   swipeHorizontal: false,
+                        //   nightMode: false,
+                        //   onError: (e) {
+                        //     print("PDF View Error: $e");
+                        //     // Show some error message or UI
+                        //   },
+                        //   onRender: (pages) {
+                        //     setState(() {
+                        //       _totalPages = pages!;
+                        //       pdfReady = true;
+                        //     });
+                        //   },
+                        //   onViewCreated: (PDFViewController vc) {
+                        //     setState(() {
+                        //       _pdfViewController = vc;
+                        //     });
+                        //   },
+                        //   onPageChanged: (page, total) {
+                        //     setState(() {
+                        //       _currentPage = page!;
+                        //     });
+                        //   },
+                        //   onPageError: (page, e) {
+                        //     print("Page Error: $e");
+                        //   },
+                        // ),
+                  child: SfPdfViewer.network(widget.url??''),
                       )
                     : Expanded(
                         child: SizedBox(

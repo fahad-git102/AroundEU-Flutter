@@ -32,4 +32,15 @@ class AppUserProvider extends ChangeNotifier{
       notifyListeners();
     });
   }
+
+  clearPro(){
+    currentUser = null;
+  }
+
+  updateSelectedCountry(BuildContext context, AppUserProvider userPro, String? selectedCountry, Function()? onComplete, Function(dynamic p0)? onError) async {
+    Map<String, dynamic> map =  {
+      'selectedCountry': selectedCountry,
+    };
+    UsersRepository().updateUser(map, context, onComplete!, onError!);
+  }
 }

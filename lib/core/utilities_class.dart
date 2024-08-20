@@ -65,9 +65,10 @@ class Utilities {
   }
 
   void showErrorMessage(BuildContext context,
-      {String? message, Function()? onBtnTap}) {
+      {String? message, Function()? onBtnTap, bool? barrierDismissible}) {
     showDialog(
       context: context,
+      barrierDismissible: barrierDismissible??true,
       builder: (context) {
         return SimpleErrorDialog(
           title: message ?? 'Some error occurred'.tr(),

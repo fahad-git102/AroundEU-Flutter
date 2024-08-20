@@ -9,7 +9,7 @@ import 'package:groupchat/component_library/places_widgets/places_item.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/places_provider.dart';
-import 'package:groupchat/views/places/places_detail_screen.dart';
+import 'package:groupchat/views/places_screens/places_detail_screen.dart';
 import 'package:sizer/sizer.dart';
 import '../../core/assets_names.dart';
 import '../../core/size_config.dart';
