@@ -9,6 +9,7 @@ import 'package:groupchat/core/size_config.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../component_library/dialogs/custom_dialog.dart';
 import '../component_library/dialogs/pick_image_dialog.dart';
@@ -80,6 +81,22 @@ class Utilities {
         );
       },
     );
+  }
+
+  void launchDialer(String phoneNumber) async {
+    String sanitizedPhoneNumber = phoneNumber.replaceAll(' ', '');
+    try {
+      final Uri phoneUri = Uri(
+        scheme: 'tel',
+        path: sanitizedPhoneNumber,
+      );
+
+      if (await canLaunchUrl(phoneUri)) {
+        await launchUrl(phoneUri);
+      }
+    } catch (e) {
+      print('Error launching dialer: $e');
+    }
   }
 
   showSuccessDialog(BuildContext context,

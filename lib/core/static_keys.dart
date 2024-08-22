@@ -8,3 +8,6 @@ const String countries = "countries";
 const String categories = "categories";
 const String companies = "companies";
 const String companyTimeScheduled = "companyTimeScheduled";
+const String coordinators = "coordinators";
+const String emergency = "emergencyContacts";
+const String office = "office";

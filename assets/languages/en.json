@@ -109,5 +109,20 @@
   "Description required": "Description required",
   "Working details uploaded successfully": "Working details uploaded successfully",
   "Select Country": "Select Country",
-  "Latest News": "Latest News"
+  "Latest News": "Latest News",
+  "No internet connection was found. Please connect your internet or try again.": "No internet connection was found. Please connect your internet or try again.",
+  "Your email address appears to be malformed.": "Your email address appears to be malformed.",
+  "Your password should be at least 6 characters.": "Your password should be at least 6 characters.",
+  "Your email or password is wrong.": "Your email or password is wrong.",
+  "The email address is already in use by another account.": "The email address is already in use by another account.",
+  "This email address is not registered.": "This email address is not registered.",
+  "An error occured. Please try again later": "An error occured. Please try again later",
+  "Coordinators": "Coordinators",
+  "Emergency Contacts": "Emergency Contacts",
+  "Office Contacts": "Office Contacts",
+  "Address:": "Address:",
+  "Via T.C.P Arcodaci 48- Barcellona Pozzo di Gotto (ME)- 98051 Italy\\n\\nVia Naumachia 6-8 - Catania- 95121 Italy": "Via T.C.P Arcodaci 48- Barcellona Pozzo di Gotto (ME)- 98051 Italy\\n\\nVia Naumachia 6-8 - Catania- 95121 Italy",
+  "Tel:": "Tel:",
+  "WhatsApp no:": "WhatsApp no:",
+  "Timings:": "Timings:"
 }

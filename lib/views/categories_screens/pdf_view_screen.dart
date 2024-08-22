@@ -1,15 +1,13 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/app_bars/custom_app_bar.dart';
 import 'package:groupchat/core/utilities_class.dart';
 import 'package:http/http.dart' as http;
-// import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sizer/sizer.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../core/app_colors.dart';
 import '../../core/size_config.dart';
@@ -32,7 +30,7 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
   int _totalPages = 0;
   int _currentPage = 0;
   bool pdfReady = false;
-  // PDFViewController? _pdfViewController;
+  PDFViewController? _pdfViewController;
   bool loaded = false;
 
   Future<File> getFileFromUrl(String url, {String? name}) async {
@@ -56,7 +54,7 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
         urlPDFPath = file.path;
         loaded = true;
         exists = true;
-            });
+      });
     }).catchError((error) {
       print("Error downloading file: $error");
       setState(() {
@@ -84,61 +82,60 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
                           widget.title??'', extension: '.pdf', context);
                     },
                     child: Padding(
-                      padding: EdgeInsets.all(5.0.sp),
+                        padding: EdgeInsets.all(5.0.sp),
                         child: Icon(
-                      Icons.save_alt_rounded,
-                      color: AppColors.lightBlack,
-                      size: 20.0.sp,
-                    )),
+                          Icons.save_alt_rounded,
+                          color: AppColors.lightBlack,
+                          size: 20.0.sp,
+                        )),
                   ),
                 ),
                 loaded && exists
                     ? Expanded(
-                        // child: PDFView(
-                        //   filePath: urlPDFPath,
-                        //   autoSpacing: true,
-                        //   enableSwipe: true,
-                        //   pageSnap: true,
-                        //   preventLinkNavigation: false,
-                        //   swipeHorizontal: false,
-                        //   nightMode: false,
-                        //   onError: (e) {
-                        //     print("PDF View Error: $e");
-                        //     // Show some error message or UI
-                        //   },
-                        //   onRender: (pages) {
-                        //     setState(() {
-                        //       _totalPages = pages!;
-                        //       pdfReady = true;
-                        //     });
-                        //   },
-                        //   onViewCreated: (PDFViewController vc) {
-                        //     setState(() {
-                        //       _pdfViewController = vc;
-                        //     });
-                        //   },
-                        //   onPageChanged: (page, total) {
-                        //     setState(() {
-                        //       _currentPage = page!;
-                        //     });
-                        //   },
-                        //   onPageError: (page, e) {
-                        //     print("Page Error: $e");
-                        //   },
-                        // ),
-                  child: SfPdfViewer.network(widget.url??''),
-                      )
+                  child: PDFView(
+                    filePath: urlPDFPath,
+                    autoSpacing: true,
+                    enableSwipe: true,
+                    pageSnap: true,
+                    preventLinkNavigation: false,
+                    swipeHorizontal: false,
+                    nightMode: false,
+                    onError: (e) {
+                      print("PDF View Error: $e");
+                      // Show some error message or UI
+                    },
+                    onRender: (pages) {
+                      setState(() {
+                        _totalPages = pages!;
+                        pdfReady = true;
+                      });
+                    },
+                    onViewCreated: (PDFViewController vc) {
+                      setState(() {
+                        _pdfViewController = vc;
+                      });
+                    },
+                    onPageChanged: (page, total) {
+                      setState(() {
+                        _currentPage = page!;
+                      });
+                    },
+                    onPageError: (page, e) {
+                      print("Page Error: $e");
+                    },
+                  ),
+                )
                     : Expanded(
-                        child: SizedBox(
-                          height: SizeConfig.screenHeight,
-                          width: SizeConfig.screenWidth,
-                          child: Center(
-                            child: SpinKitPulse(
-                              color: AppColors.mainColorDark,
-                            ),
-                          ),
-                        ),
+                  child: SizedBox(
+                    height: SizeConfig.screenHeight,
+                    width: SizeConfig.screenWidth,
+                    child: Center(
+                      child: SpinKitPulse(
+                        color: AppColors.mainColorDark,
                       ),
+                    ),
+                  ),
+                ),
               ],
             )),
       ),
