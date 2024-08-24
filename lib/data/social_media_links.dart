@@ -1,11 +1,15 @@
 class SocialMediaLink {
+  final int? index;
   final String name;
-  final String appUrl;
-  final String webUrl;
+  final String? appUrl;
+  final String? webUrl;
+  final String? icon;
 
   SocialMediaLink({
     required this.name,
-    required this.appUrl,
-    required this.webUrl,
+    this.index,
+    this.appUrl,
+    this.webUrl,
+    this.icon
   });
 }

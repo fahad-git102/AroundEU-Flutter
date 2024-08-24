@@ -24,6 +24,17 @@ class Images{
   static String instagramMiniIcon = 'assets/social_media_icons/instagram_mini.svg';
   static String linkedinMiniIcon = 'assets/social_media_icons/linkedin_mini.svg';
 
+  //drawer icons
+  static String businessListIcon = 'assets/drawer_icons/briefcase.svg';
+  static String newCompanyIcon = 'assets/drawer_icons/company_new.svg';
+  static String emergencyContactIcon = 'assets/drawer_icons/emergency.svg';
+  static String managePlacesIcon = 'assets/drawer_icons/manage_places.svg';
+  static String newCategoriesIcon = 'assets/drawer_icons/new_categories.svg';
+  static String coordinatorsIcon = 'assets/drawer_icons/new_coordinator.svg';
+  static String newCountryIcon = 'assets/drawer_icons/new_country.svg';
+  static String newGroupIcon = 'assets/drawer_icons/new_group.svg';
+  static String newNewsIcon = 'assets/drawer_icons/new_news.svg';
+
   // constant icons
   static String backIcon = 'assets/constant_icons/back.svg';
   static String noImagePlaceHolder = 'assets/constant_icons/no_image.jpg';
@@ -34,9 +45,9 @@ class Images{
   static String privacyPolicyIcon = 'assets/constant_icons/privacy_policy.svg';
   static String signOutIcon = 'assets/constant_icons/sign_out.svg';
   static String officeContactIcon = 'assets/constant_icons/call_icon.svg';
-  static String coordinatorsIcon = 'assets/constant_icons/coordinators.svg';
+  // static String coordinatorsIcon = 'assets/constant_icons/coordinators.svg';
   static String filePdfIcon = 'assets/constant_icons/file_pdf.svg';
   static String logoutIcon = 'assets/constant_icons/logout.svg';
   static String profileImageIcon = 'assets/constant_icons/profile_picture.png';
-  static String emergencyContactIcon = 'assets/constant_icons/emergency_call_icon.svg';
+  // static String emergencyContactIcon = 'assets/constant_icons/emergency_call_icon.svg';
 }

@@ -7,6 +7,7 @@ import 'package:groupchat/views/categories_screens/pdf_view_screen.dart';
 import 'package:groupchat/views/companies_screens/companies_screen.dart';
 import 'package:groupchat/views/companies_screens/company_detail_screen.dart';
 import 'package:groupchat/views/companies_screens/company_settings_screen.dart';
+import 'package:groupchat/views/drawer_screens/add_new_company_screen.dart';
 import 'package:groupchat/views/home_screens/admin_home_screen.dart';
 import 'package:groupchat/views/home_screens/contacts_info_screen.dart';
 import 'package:groupchat/views/home_screens/home_screen.dart';
@@ -48,6 +49,7 @@ getRoutes(){
     NewsScreen.route: (context) => NewsScreen(),
     NewsDetailsScreen.route: (context) => NewsDetailsScreen(),
     PrivacyPolicyScreen.route: (context) => PrivacyPolicyScreen(),
-    ContactsInfoScreen.route: (context) => ContactsInfoScreen()
+    ContactsInfoScreen.route: (context) => ContactsInfoScreen(),
+    AddNewCompanyScreen.route: (context) => AddNewCompanyScreen()
   };
 }

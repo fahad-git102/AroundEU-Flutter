@@ -95,6 +95,7 @@ flutter:
     - assets/social_media_icons/
     - assets/fonts/
     - assets/pdfs/
+    - assets/drawer_icons/
 
 
   fonts:

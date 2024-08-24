@@ -206,8 +206,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
     );
   }
   void _openSocialMediaLink(SocialMediaLink link) async {
-    Uri appUri = Uri.parse(link.appUrl);
-    Uri webUri = Uri.parse(link.webUrl);
+    Uri appUri = Uri.parse(link.appUrl??'');
+    Uri webUri = Uri.parse(link.webUrl??'');
 
     if (await canLaunchUrl(appUri)) {
       await launchUrl(appUri);

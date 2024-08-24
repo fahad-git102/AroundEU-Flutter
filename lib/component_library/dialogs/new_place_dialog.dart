@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/buttons/button.dart';
+import 'package:groupchat/component_library/drop_downs/countries_dropdown.dart';
 import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
 import 'package:groupchat/component_library/text_fields/simple_text_field.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
@@ -152,34 +153,13 @@ class _NewPlaceDialogState extends State<NewPlaceDialog> {
                       ),
                     )),
                 SizedBox(height: 6.sp,),
-                Container(
-                    padding: EdgeInsets.symmetric(vertical: 4.0.sp),
-                    width: SizeConfig.screenWidth,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: AppColors.lightFadedTextColor, width: 0.4.sp),
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(4.sp))),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton2<CountryModel>(
-                        value: selectedCountry?? appUserPro.countriesList?[0],
-                        style: TextStyle(color: AppColors.lightBlack),
-                        items: appUserPro.countriesList!.map((CountryModel country) {
-                          return DropdownMenuItem<CountryModel>(
-                            value: country,
-                            child: Text(country.countryName??''),
-                          );
-                        }).toList(),
-                        buttonStyleData: ButtonStyleData(
-                          padding: EdgeInsets.symmetric(horizontal: 5.0.sp),
-                          height: 43,
-                        ),
-                        onChanged: (newValue) {
-                          selectedCountry = newValue!;
-                          updateState();
-                        },
-                      ),
-                    )),
+                CountriesDropDown(
+                  selectedCountry: selectedCountry,
+                  onChanged: (newValue){
+                    selectedCountry = newValue;
+                    updateState();
+                  },
+                ),
                 SizedBox(height: 8.sp,),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
