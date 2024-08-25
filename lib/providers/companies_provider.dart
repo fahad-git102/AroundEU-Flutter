@@ -54,6 +54,11 @@ class CompaniesProvider extends ChangeNotifier {
     });
   }
 
+  resetSelectedCountry(CountryModel country){
+    selectedCountry = country;
+    notifyListeners();
+  }
+
   void searchCompanies(String query, String selectedCountry) {
     filteredCompaniesList = allCompaniesList?.where((company) {
       final lowerCaseQuery = query.toLowerCase();

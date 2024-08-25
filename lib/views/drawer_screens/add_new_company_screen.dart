@@ -347,7 +347,7 @@ class _AddNewCompanyScreenState extends State<AddNewCompanyScreen> {
                                       appUserPro.countriesList?[0];
                                   if (_formKey.currentState!.validate()) {
                                     isEdit == true
-                                        ? editCompany()
+                                        ? editCompany(ref)
                                         : saveNewCompany();
                                   }
                                 });
@@ -371,7 +371,9 @@ class _AddNewCompanyScreenState extends State<AddNewCompanyScreen> {
     );
   }
 
-  editCompany() {
+  editCompany(WidgetRef ref) {
+    var companiesPro = ref.watch(companiesProvider);
+    var appUserPro = ref.watch(appUserProvider);
     isLoading = true;
     updateState();
     companyToEdit?.city = cityController?.text;
@@ -394,6 +396,7 @@ class _AddNewCompanyScreenState extends State<AddNewCompanyScreen> {
       Utilities().showSuccessDialog(context,
           message: "Company data updated successfully".tr(),
           barrierDismissle: false, onBtnTap: () {
+        companiesPro.resetSelectedCountry(appUserPro.countriesList![0]);
         Navigator.pop(context);
         Navigator.pop(context);
         clearControllers();

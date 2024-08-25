@@ -56,6 +56,11 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
             companiesPro.listenToCompanies(
                 selectedCountry: appUserPro.countriesList?.first.countryName);
           }
+          if(companiesPro.filteredCompaniesList==null&&companiesPro.allCompaniesList!=null){
+            selectedCountry??= appUserPro.countriesList?[0];
+            companiesPro.filterCompanies(companiesPro.selectedCountry?.countryName??
+                selectedCountry?.countryName??appUserPro.countriesList?[0].countryName);
+          }
           return Container(
             height: SizeConfig.screenHeight,
             width: SizeConfig.screenWidth,
@@ -70,6 +75,10 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
               children: [
                 CustomAppBar(
                   title: 'Companies'.tr(),
+                  onTap: (){
+                    companiesPro.filteredCompaniesList=null;
+                    Navigator.pop(context);
+                  },
                 ),
                 SizedBox(
                   height: 10.0.sp,
