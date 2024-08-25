@@ -63,14 +63,6 @@ class CompaniesListWidget extends StatelessWidget {
               ),
               isAdmin == true
                   ? PopupMenuButton<int>(
-                      // onSelected: (int value) {
-                      //   if (value == 0) {
-                      //     print("Edit tapped");
-                      //   } else if (value == 1) {
-                      //     // Handle delete action
-                      //     print("Delete tapped");
-                      //   }
-                      // },
                       onSelected: onOptionSelected,
                       itemBuilder: (BuildContext context) =>
                           <PopupMenuEntry<int>>[

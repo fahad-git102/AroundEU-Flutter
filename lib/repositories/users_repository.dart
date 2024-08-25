@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:country_picker/country_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +11,7 @@ import 'package:groupchat/data/users_model.dart';
 import 'package:mime/mime.dart';
 
 import '../core/static_keys.dart';
+import '../core/utilities_class.dart';
 import '../firebase/auth.dart';
 import '../firebase/firebase_crud.dart';
 
@@ -20,6 +22,17 @@ class UsersRepository{
       key: "$users/${Auth().currentUser!.uid}",
       context: context,
       data: user.toMap(),
+      onComplete: onComplete,
+      onCatchError: onError,
+    );
+  }
+
+  Future<void> addCountry(CountryModel country, BuildContext context, Function() onComplete, Function(dynamic p0) onError) async {
+    String? key = FirebaseDatabase.instance.ref(countries).push().key;
+    FirebaseCrud().setData(
+      key: "$countries/$key",
+      context: context,
+      data: country.toMap(),
       onComplete: onComplete,
       onCatchError: onError,
     );
@@ -87,6 +100,17 @@ class UsersRepository{
       final data = Map<String, dynamic>.from(event.snapshot.value as Map);
       return data.map((key, value) => MapEntry(key, CountryModel.fromMap(Map<String, dynamic>.from(value))));
     });
+  }
+
+  deleteCountry(BuildContext ctx, String countryId) {
+    FirebaseDatabase.instance
+        .ref(countries)
+        .child(countryId)
+        .remove()
+        .then((value) =>
+        Utilities().showSnackbar(ctx, 'Country deleted successfully'.tr()))
+        .onError((error, stackTrace) =>
+        Utilities().showSnackbar(ctx, error.toString()));
   }
 
 }

@@ -28,13 +28,28 @@ class AppUserProvider extends ChangeNotifier{
     }
     countriesList??=[];
     UsersRepository().getCountriesStream().listen((countriesData) {
-      countriesList = countriesData.values.toList();
+      countriesList = countriesData.entries.map((entry){
+        return CountryModel(
+          id: entry.key,
+          countryName: entry.value.countryName,
+          pincode: entry.value.pincode
+        );
+      }).toList();
       notifyListeners();
     });
   }
 
   clearPro(){
     currentUser = null;
+  }
+
+  CountryModel? getCountryById(String id){
+    for(CountryModel country in countriesList??[]){
+      if(country.id == id){
+        return country;
+      }
+    }
+    return null;
   }
 
   updateSelectedCountry(BuildContext context, AppUserProvider userPro, String? selectedCountry, Function()? onComplete, Function(dynamic p0)? onError) async {

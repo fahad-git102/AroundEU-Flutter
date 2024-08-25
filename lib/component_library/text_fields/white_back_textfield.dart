@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:groupchat/component_library/text_fields/simple_text_field.dart';
 import 'package:sizer/sizer.dart';
 
@@ -10,9 +11,11 @@ class WhiteBackTextField extends StatelessWidget{
   final String? hintText;
   final TextEditingController? controller;
   final int? maxLines;
+  final bool? allowNumersOnly;
+  final List<TextInputFormatter>? inputFormatters;
   final String? Function(String?)? validator;
 
-  const WhiteBackTextField({super.key, this.hintText, this.controller, this.maxLines, this.validator});
+  const WhiteBackTextField({super.key, this.hintText, this.controller, this.maxLines, this.validator, this.allowNumersOnly, this.inputFormatters});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +31,8 @@ class WhiteBackTextField extends StatelessWidget{
         minLines: maxLines,
         noBorder: true,
         validator: validator,
+        inputFormatters: inputFormatters,
+        allowNumbersOnly: allowNumersOnly,
         hintText: hintText,
       ),
     );

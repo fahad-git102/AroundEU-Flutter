@@ -15,7 +15,7 @@ import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/companies_provider.dart';
 import 'package:groupchat/repositories/companies_repository.dart';
 import 'package:groupchat/views/companies_screens/company_detail_screen.dart';
-import 'package:groupchat/views/drawer_screens/add_new_company_screen.dart';
+import 'package:groupchat/views/admin_screens/add_new_company_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/app_bars/custom_app_bar.dart';
@@ -233,6 +233,8 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
       btn2Text: 'Cancel'.tr(),
       btn1Outlined: true,
       btn1Color: AppColors.red,
+      icon: Images.deleteIcon,
+      iconColor: AppColors.red,
       onBtn2Tap: (){
         Navigator.pop(context);
       },

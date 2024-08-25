@@ -37,6 +37,7 @@ class Images{
 
   // constant icons
   static String backIcon = 'assets/constant_icons/back.svg';
+  static String deleteIcon = 'assets/constant_icons/delete_icon.svg';
   static String noImagePlaceHolder = 'assets/constant_icons/no_image.jpg';
   static String successGreenIcon = 'assets/constant_icons/success_green.svg';
   static String warningRedIcon = 'assets/constant_icons/warning_error_red.svg';
@@ -45,9 +46,7 @@ class Images{
   static String privacyPolicyIcon = 'assets/constant_icons/privacy_policy.svg';
   static String signOutIcon = 'assets/constant_icons/sign_out.svg';
   static String officeContactIcon = 'assets/constant_icons/call_icon.svg';
-  // static String coordinatorsIcon = 'assets/constant_icons/coordinators.svg';
   static String filePdfIcon = 'assets/constant_icons/file_pdf.svg';
   static String logoutIcon = 'assets/constant_icons/logout.svg';
   static String profileImageIcon = 'assets/constant_icons/profile_picture.png';
-  // static String emergencyContactIcon = 'assets/constant_icons/emergency_call_icon.svg';
 }

@@ -13,7 +13,7 @@ import 'package:groupchat/data/users_model.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/views/auth/forgot_password_screen.dart';
 import 'package:groupchat/views/auth/register_screen.dart';
-import 'package:groupchat/views/home_screens/admin_home_screen.dart';
+import 'package:groupchat/views/admin_screens/admin_home_screen.dart';
 import 'package:groupchat/views/home_screens/home_screen.dart';
 import 'package:sizer/sizer.dart';
 

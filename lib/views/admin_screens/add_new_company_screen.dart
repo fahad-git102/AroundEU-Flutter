@@ -9,6 +9,7 @@ import 'package:groupchat/component_library/drop_downs/countries_dropdown.dart';
 import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
 import 'package:groupchat/component_library/text_fields/white_back_textfield.dart';
 import 'package:groupchat/component_library/text_widgets/extra_large_medium_bold_text.dart';
+import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/utilities_class.dart';
@@ -33,7 +34,6 @@ class AddNewCompanyScreen extends StatefulWidget {
 }
 
 class _AddNewCompanyScreenState extends State<AddNewCompanyScreen> {
-  final GlobalKey<ScaffoldState> _companyKey = GlobalKey<ScaffoldState>();
   CountryModel? selectedCountry;
 
   TextEditingController? fullNameController = TextEditingController();
@@ -89,9 +89,7 @@ class _AddNewCompanyScreenState extends State<AddNewCompanyScreen> {
     }
 
     return Scaffold(
-      key: _companyKey,
       resizeToAvoidBottomInset: false,
-      drawer: AdminHomeDrawer(),
       body: SafeArea(child: Consumer(builder: (ctx, ref, child) {
         var appUserPro = ref.watch(appUserProvider);
         appUserPro.listenToCountries();
@@ -121,26 +119,19 @@ class _AddNewCompanyScreenState extends State<AddNewCompanyScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  SizedBox(height: 7.sp,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      isEdit == false
-                          ? CustomIconPngButton(
-                              icon: Images.menuIcon,
-                              size: 36.0.sp,
-                              onTap: () {
-                                _companyKey.currentState!.openDrawer();
-                              },
-                            )
-                          : InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: SvgPicture.asset(
-                                Images.backIcon,
-                                height: 30.sp,
-                                width: 30.sp,
-                              )),
+                      InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: SvgPicture.asset(
+                            Images.backIcon,
+                            height: 30.sp,
+                            width: 30.sp,
+                          )),
                       isEdit == false
                           ? InkWell(
                               onTap: () {
@@ -149,7 +140,7 @@ class _AddNewCompanyScreenState extends State<AddNewCompanyScreen> {
                               },
                               child: Padding(
                                 padding: EdgeInsets.all(3.0.sp),
-                                child: SmallLightText(
+                                child: ExtraMediumText(
                                   title: 'All Companies'.tr(),
                                   textColor: AppColors.lightBlack,
                                 ),

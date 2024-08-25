@@ -17,6 +17,7 @@ class CustomDialog extends StatelessWidget {
   final String? icon;
   final Color? btn1Color;
   final Color? btn2Color;
+  final Color? iconColor;
   final bool? btn1Outlined;
   final bool? btn2Outlined;
   final double? iconSize;
@@ -38,6 +39,7 @@ class CustomDialog extends StatelessWidget {
               icon ?? Images.successGreenIcon,
               height: iconSize??80.0.sp,
               width: iconSize??80.0.sp,
+              color: iconColor,
             ),
             SizedBox(
               height: 10.0.sp,
@@ -93,6 +95,7 @@ class CustomDialog extends StatelessWidget {
     this.title1,
     this.title2,
     this.icon,
+    this.iconColor,
     this.onBtn1Tap,
     this.onBtn2Tap,
     this.showBtn2,
