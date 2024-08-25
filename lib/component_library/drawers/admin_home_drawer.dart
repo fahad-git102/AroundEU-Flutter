@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:groupchat/core/assets_names.dart';
 import 'package:groupchat/data/social_media_links.dart';
 import 'package:groupchat/views/drawer_screens/add_new_company_screen.dart';
+import 'package:groupchat/views/home_screens/admin_home_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_colors.dart';
@@ -68,6 +69,7 @@ class _AdminHomeDrawer extends State<AdminHomeDrawer> {
                 onTap: () async {
                   switch (list[index].index) {
                     case 1:
+                      Navigator.pushNamed(context, AdminHomeScreen.route);
                       break;
                     case 2:
                       break;

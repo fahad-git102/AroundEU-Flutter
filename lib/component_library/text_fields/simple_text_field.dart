@@ -59,6 +59,7 @@ class SimpleTextField extends StatelessWidget {
           ],
       decoration: InputDecoration(
         hintText: hintText??'',
+        hintStyle: TextStyle(color: AppColors.extraLightGrey),
         isDense: true,
         border: noBorder??false ? InputBorder.none : OutlineInputBorder(
           borderRadius: BorderRadius.circular(13.0.sp),

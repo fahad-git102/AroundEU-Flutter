@@ -1,14 +1,17 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:groupchat/core/static_keys.dart';
+import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/data/company_model.dart';
 import 'package:groupchat/data/company_time_scheduled.dart';
 import 'package:groupchat/firebase/auth.dart';
 
 import '../firebase/firebase_crud.dart';
 
-class CompanyRepository{
-  Future<void> addCompany(CompanyModel companyModel, BuildContext context, Function() onComplete, Function(dynamic p0) onError) async {
+class CompanyRepository {
+  Future<void> addCompany(CompanyModel companyModel, BuildContext context,
+      Function() onComplete, Function(dynamic p0) onError) async {
     String? key = FirebaseDatabase.instance.ref(companies).push().key;
     companyModel.id = key;
     FirebaseCrud().setData(
@@ -20,9 +23,34 @@ class CompanyRepository{
     );
   }
 
-  Future<void> addMyCompanyTimeScheduled(CompanyTimeScheduled companyTScheduled, BuildContext context,
-      Function() onComplete, Function(dynamic p0) onError) async{
-    String? key = FirebaseDatabase.instance.ref(companyTimeScheduled).push().key;
+  Future<void> updateCompany(CompanyModel company, BuildContext context,
+      Function() onComplete, Function(dynamic p0) onError) async {
+    FirebaseCrud().updateData(
+        key: "$companies/${company.id}",
+        context: context,
+        data: company.toMap(),
+        onComplete: onComplete,
+        onCatchError: onError);
+  }
+
+  deleteCompany(BuildContext ctx, String companyId) {
+    FirebaseDatabase.instance
+        .ref(companies)
+        .child(companyId)
+        .remove()
+        .then((value) =>
+            Utilities().showSnackbar(ctx, 'Company deleted successfully'.tr()))
+        .onError((error, stackTrace) =>
+            Utilities().showSnackbar(ctx, error.toString()));
+  }
+
+  Future<void> addMyCompanyTimeScheduled(
+      CompanyTimeScheduled companyTScheduled,
+      BuildContext context,
+      Function() onComplete,
+      Function(dynamic p0) onError) async {
+    String? key =
+        FirebaseDatabase.instance.ref(companyTimeScheduled).push().key;
     companyTScheduled.id = key;
     FirebaseCrud().setData(
       key: "$companyTimeScheduled/$key",
@@ -35,28 +63,30 @@ class CompanyRepository{
 
   Stream<Map<String, CompanyModel>> getCompaniesStream() {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
-    return dbRef.child(companies)
-        .onValue
-        .map((event) {
+    return dbRef.child(companies).onValue.map((event) {
       final data = Map<String, dynamic>.from(event.snapshot.value as Map);
-      return data.map((key, value) => MapEntry(key, CompanyModel.fromMap(Map<String, dynamic>.from(value))));
+      return data.map((key, value) => MapEntry(
+          key, CompanyModel.fromMap(Map<String, dynamic>.from(value))));
     });
   }
 
   Stream<Map<String, CompanyTimeScheduled>> getMyCompanyStream() {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
-    return dbRef.child(companyTimeScheduled)
+    return dbRef
+        .child(companyTimeScheduled)
         .orderByChild('uid')
         .equalTo(Auth().currentUser?.uid)
         .onValue
         .map((event) {
       final data = Map<String, dynamic>.from(event.snapshot.value as Map);
-      return data.map((key, value) => MapEntry(key, CompanyTimeScheduled.fromMap(Map<String, dynamic>.from(value))));
+      return data.map((key, value) => MapEntry(
+          key, CompanyTimeScheduled.fromMap(Map<String, dynamic>.from(value))));
     });
   }
+
   Future<Map<dynamic, dynamic>> getMyCompany(String id) async {
     var obj = await FirebaseCrud().getDateOnce(key: '$companies/$id')
-    as Map<dynamic, dynamic>;
+        as Map<dynamic, dynamic>;
     return obj;
   }
 }
