@@ -166,8 +166,14 @@
   "Country deleted successfully": "Country deleted successfully",
   "Are you sure you want to delete this country ?": "Are you sure you want to delete this country ?",
   "New Country": "New Country",
+  "Are you sure you want to delete this place ?": "Are you sure you want to delete this place ?",
   "Country name": "Country name",
   "Pincode": "Pincode",
   "Pincode required": "Pincode required",
-  "Country saved": "Country saved"
+  "Country saved": "Country saved",
+  "Pending Place": "Pending Place",
+  "All Places": "All Places",
+  "Approved": "Approved",
+  "Disapproved": "Disapproved",
+  "Place deleted successfully": "Place deleted successfully"
 }

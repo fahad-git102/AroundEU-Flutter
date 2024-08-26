@@ -6,12 +6,15 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/component_library/app_bars/custom_app_bar.dart';
+import 'package:groupchat/component_library/dialogs/custom_dialog.dart';
 import 'package:groupchat/component_library/text_widgets/extra_large_medium_bold_text.dart';
 import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
+import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/data/places_model.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
+import 'package:groupchat/repositories/places_repository.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -29,6 +32,12 @@ class PlacesDetailScreen extends StatefulWidget {
 
 class _PlacesDetailScreenState extends State<PlacesDetailScreen> {
   EUPlace? place;
+
+  updateState(){
+    setState(() {
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,25 +190,31 @@ class _PlacesDetailScreenState extends State<PlacesDetailScreen> {
                           SizedBox(
                             height: 20.0.sp,
                           ),
-                          appUserPro.currentUser?.admin==true?Padding(
+                          appUserPro.currentUser?.admin==true &&
+                              place?.status=='pending'?Padding(
                             padding: EdgeInsets.symmetric(horizontal: 13.0.sp),
                             child: Button(
                               text: 'Approve'.tr(),
                               btnColor: AppColors.mainColor,
                               btnTxtColor: AppColors.lightBlack,
-                              tapAction: () {},
+                              tapAction: () {
+                                approvePlace();
+                              },
                             ),
                           ):Container(),
                           SizedBox(
                             height: 10.0.sp,
                           ),
-                          appUserPro.currentUser?.admin==true?Padding(
+                          appUserPro.currentUser?.admin==true &&
+                              place?.status=='pending'?Padding(
                             padding: EdgeInsets.symmetric(horizontal: 13.0.sp),
                             child: Button(
                               text: 'Disapprove'.tr(),
                               btnColor: AppColors.red,
                               btnTxtColor: AppColors.white,
-                              tapAction: () {},
+                              tapAction: () {
+                                disapprovePlace();
+                              },
                             ),
                           ): Container(),
                           SizedBox(
@@ -211,7 +226,7 @@ class _PlacesDetailScreenState extends State<PlacesDetailScreen> {
                               text: 'Delete'.tr(),
                               btnColor: AppColors.red,
                               btnTxtColor: AppColors.white,
-                              tapAction: () {},
+                              tapAction: () {deletePlace();},
                             ),
                           ): Container(),
                           SizedBox(
@@ -227,4 +242,55 @@ class _PlacesDetailScreenState extends State<PlacesDetailScreen> {
           },)),
     );
   }
+
+  approvePlace(){
+    Map<String, dynamic> map = {
+      "status": "approved"
+    };
+    PlacesRepository().updatePlace(map, place?.key??'', context, (){
+      Utilities().showSnackbar(context, "Approved".tr());
+      place?.status = 'approved';
+      updateState();
+    }, (p0){
+      Utilities().showSnackbar(context, "Error: ${p0.toString()}".tr());
+    });
+  }
+
+  disapprovePlace(){
+    Map<String, dynamic> map = {
+      "status": "disapproved"
+    };
+    PlacesRepository().updatePlace(map, place?.key??'', context, (){
+      Utilities().showSnackbar(context, "Disapproved".tr());
+      place?.status = 'disapproved';
+      updateState();
+    }, (p0){
+      Utilities().showSnackbar(context, "Error: ${p0.toString()}".tr());
+    });
+  }
+
+  deletePlace(){
+    showDialog(context: context, builder: (ctx)=> CustomDialog(
+      title2: "Are you sure you want to delete this place ?",
+      btn1Text: "Delete".tr(),
+      btn2Text: "Cancel".tr(),
+      iconColor: AppColors.red,
+      icon: Images.deleteIcon,
+      btn1Color: AppColors.red,
+      btn1Outlined: true,
+      onBtn2Tap: (){
+        Navigator.pop(context);
+      },
+      onBtn1Tap: (){
+        PlacesRepository().deletePlace(context, place!.key??'', (){
+          Utilities().showSnackbar(context, 'Deleted'.tr());
+          Navigator.pop(context);
+          Navigator.pop(context);
+        }, (p0){
+          Utilities().showSnackbar(context, 'Error: ${p0.toString()}'.tr());
+        });
+      },
+    ));
+  }
+
 }

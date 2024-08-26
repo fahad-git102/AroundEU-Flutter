@@ -1,6 +1,7 @@
 
 import 'package:groupchat/views/admin_screens/add_new_country_screen.dart';
 import 'package:groupchat/views/admin_screens/manage_business_list_screen.dart';
+import 'package:groupchat/views/admin_screens/manage_places_screen.dart';
 import 'package:groupchat/views/auth/forgot_password_screen.dart';
 import 'package:groupchat/views/auth/register_screen.dart';
 import 'package:groupchat/views/auth/splash_screen.dart';
@@ -54,6 +55,7 @@ getRoutes(){
     ContactsInfoScreen.route: (context) => ContactsInfoScreen(),
     AddNewCompanyScreen.route: (context) => AddNewCompanyScreen(),
     ManageBusinessListScreen.route: (context) => ManageBusinessListScreen(),
-    AddNewCountryScreen.route: (context) => AddNewCountryScreen()
+    AddNewCountryScreen.route: (context) => AddNewCountryScreen(),
+    ManagePlacesScreen.route: (context) => ManagePlacesScreen()
   };
 }

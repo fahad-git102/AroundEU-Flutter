@@ -10,6 +10,7 @@ final placesProvider = ChangeNotifierProvider((ref) => PlacesProvider());
 class PlacesProvider extends ChangeNotifier{
 
   List<EUPlace>? placesList;
+  List<EUPlace>? pendingPlacesList;
   List<EUPlace>? filteredPlacesList;
   String? selectedCategory = "All".tr();
 
@@ -47,6 +48,32 @@ class PlacesProvider extends ChangeNotifier{
       filteredPlacesList?.addAll(placesList!);
       _fetchUser(filteredPlacesList!);
       _fetchUser(placesList!);
+      notifyListeners();
+    });
+  }
+
+  listenToPendingPlaces(){
+    if(pendingPlacesList!=null){
+      return;
+    }
+    PlacesRepository().getPendingPlacesStream().listen((placesData) {
+      pendingPlacesList ??= [];
+      pendingPlacesList = placesData.entries.map((entry) {
+        return EUPlace(
+            key: entry.key,
+            description: entry.value.description,
+            uid: entry.value.uid,
+            imageUrl: entry.value.imageUrl,
+            category: entry.value.category,
+            status: entry.value.status,
+            country: entry.value.country,
+            creatorName: entry.value.creatorName,
+            timeStamp: entry.value.timeStamp,
+            location: entry.value.location
+        );
+      }).toList();
+      pendingPlacesList?.sort((a, b) => b.timeStamp!.compareTo(a.timeStamp!));
+      _fetchUser(pendingPlacesList??[]);
       notifyListeners();
     });
   }

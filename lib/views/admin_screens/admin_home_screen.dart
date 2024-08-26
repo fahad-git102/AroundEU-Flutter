@@ -7,6 +7,7 @@ import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/views/admin_screens/add_new_country_screen.dart';
 import 'package:groupchat/views/admin_screens/manage_business_list_screen.dart';
+import 'package:groupchat/views/admin_screens/manage_places_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/buttons/custom_icon_button.dart';
@@ -114,7 +115,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             isSvg: true,
                             icon: Images.managePlacesIcon,
                             title: 'Manage Places'.tr(),
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.pushNamed(context, ManagePlacesScreen.route);
+                            },
                           ),
                         ),
                         Expanded(

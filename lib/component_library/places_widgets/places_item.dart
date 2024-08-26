@@ -1,11 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../core/assets_names.dart';
 
 class PlacesWidget extends StatelessWidget {
@@ -13,13 +10,14 @@ class PlacesWidget extends StatelessWidget {
   final String? createdBy;
   final String? category;
   final String? description;
+  final String? country;
 
   const PlacesWidget(
       {super.key,
       this.imageUrl,
       this.createdBy,
       this.category,
-      this.description});
+      this.description, this.country});
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +86,19 @@ class PlacesWidget extends StatelessWidget {
                           textColor: AppColors.fadedTextColor2,
                         ),
                       ),
-                      SmallLightText(
-                        title: category ?? '',
-                        textColor: AppColors.fadedTextColor2,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          country!=null?SmallLightText(
+                            title: country ?? '',
+                            textColor: AppColors.hyperLinkColor,
+                            fontSize: 8.4.sp,
+                          ):Container(),
+                          SmallLightText(
+                            title: category ?? '',
+                            textColor: AppColors.fadedTextColor2,
+                          ),
+                        ],
                       ),
                     ],
                   ),
