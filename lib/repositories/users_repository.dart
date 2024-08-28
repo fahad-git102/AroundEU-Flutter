@@ -89,7 +89,9 @@ class UsersRepository{
   Stream<AppUser> getUserStream(String uid) {
     var dfRef = FirebaseDatabase.instance.ref();
     return dfRef.child(users).child(uid).onValue.map((event) {
-      final data = Map<String, dynamic>.from(event.snapshot.value as Map);
+      final data = event.snapshot.value != null
+          ? Map<String, dynamic>.from(event.snapshot.value as Map)
+          : {};
       return AppUser.fromMap(data);
     });
   }
@@ -97,7 +99,9 @@ class UsersRepository{
   Stream<Map<String, CountryModel>> getCountriesStream() {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
     return dbRef.child(countries).onValue.map((event) {
-      final data = Map<String, dynamic>.from(event.snapshot.value as Map);
+      final data = event.snapshot.value != null
+          ? Map<String, dynamic>.from(event.snapshot.value as Map)
+          : {};
       return data.map((key, value) => MapEntry(key, CountryModel.fromMap(Map<String, dynamic>.from(value))));
     });
   }

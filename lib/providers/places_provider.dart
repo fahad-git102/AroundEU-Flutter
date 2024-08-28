@@ -11,6 +11,7 @@ class PlacesProvider extends ChangeNotifier{
 
   List<EUPlace>? placesList;
   List<EUPlace>? pendingPlacesList;
+  List<EUPlace>? allPlacesForAdminList;
   List<EUPlace>? filteredPlacesList;
   String? selectedCategory = "All".tr();
 
@@ -74,6 +75,33 @@ class PlacesProvider extends ChangeNotifier{
       }).toList();
       pendingPlacesList?.sort((a, b) => b.timeStamp!.compareTo(a.timeStamp!));
       _fetchUser(pendingPlacesList??[]);
+      notifyListeners();
+    });
+  }
+
+  void listenToAllPlacesForAdmin() {
+    if(allPlacesForAdminList!=null){
+      return;
+    }
+    allPlacesForAdminList?.clear();
+    PlacesRepository().getAllPlacesStream().listen((placesData) {
+      allPlacesForAdminList??=[];
+      allPlacesForAdminList = placesData.entries.map((entry) {
+        return EUPlace(
+            key: entry.key,
+            description: entry.value.description,
+            uid: entry.value.uid,
+            imageUrl: entry.value.imageUrl,
+            category: entry.value.category,
+            status: entry.value.status,
+            country: entry.value.country,
+            creatorName: entry.value.creatorName,
+            timeStamp: entry.value.timeStamp,
+            location: entry.value.location
+        );
+      }).toList();
+      allPlacesForAdminList?.sort((a, b) => b.timeStamp!.compareTo(a.timeStamp!));
+      _fetchUser(allPlacesForAdminList!);
       notifyListeners();
     });
   }

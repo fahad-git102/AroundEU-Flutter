@@ -64,7 +64,9 @@ class CompanyRepository {
   Stream<Map<String, CompanyModel>> getCompaniesStream() {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
     return dbRef.child(companies).onValue.map((event) {
-      final data = Map<String, dynamic>.from(event.snapshot.value as Map);
+      final data = event.snapshot.value != null
+          ? Map<String, dynamic>.from(event.snapshot.value as Map)
+          : {};
       return data.map((key, value) => MapEntry(
           key, CompanyModel.fromMap(Map<String, dynamic>.from(value))));
     });
@@ -78,7 +80,9 @@ class CompanyRepository {
         .equalTo(Auth().currentUser?.uid)
         .onValue
         .map((event) {
-      final data = Map<String, dynamic>.from(event.snapshot.value as Map);
+      final data = event.snapshot.value != null
+          ? Map<String, dynamic>.from(event.snapshot.value as Map)
+          : {};
       return data.map((key, value) => MapEntry(
           key, CompanyTimeScheduled.fromMap(Map<String, dynamic>.from(value))));
     });

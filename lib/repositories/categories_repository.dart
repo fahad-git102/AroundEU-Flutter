@@ -24,7 +24,9 @@ class CategoriesRepository{
         .equalTo(myCountry)
         .onValue
         .map((event) {
-      final data = Map<String, dynamic>.from(event.snapshot.value as Map);
+      final data = event.snapshot.value != null
+          ? Map<String, dynamic>.from(event.snapshot.value as Map)
+          : {};
       return data.map((key, value) => MapEntry(key, CategoryModel.fromMap(Map<String, dynamic>.from(value))));
     });
   }

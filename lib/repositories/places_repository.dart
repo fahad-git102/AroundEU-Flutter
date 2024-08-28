@@ -1,10 +1,6 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-
 import '../core/static_keys.dart';
-import '../core/utilities_class.dart';
 import '../data/places_model.dart';
 import '../firebase/firebase_crud.dart';
 
@@ -60,7 +56,20 @@ class PlacesRepository{
         .equalTo(myCountry)
         .onValue
         .map((event) {
-      final data = Map<String, dynamic>.from(event.snapshot.value as Map);
+      final data = event.snapshot.value != null
+          ? Map<String, dynamic>.from(event.snapshot.value as Map)
+          : {};
+      return data.map((key, value) => MapEntry(key, EUPlace.fromMap(Map<String, dynamic>.from(value))));
+    });
+  }
+  Stream<Map<String, EUPlace>> getAllPlacesStream() {
+    final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+    return dbRef.child(places)
+        .onValue
+        .map((event) {
+      final data = event.snapshot.value != null
+          ? Map<String, dynamic>.from(event.snapshot.value as Map)
+          : {};
       return data.map((key, value) => MapEntry(key, EUPlace.fromMap(Map<String, dynamic>.from(value))));
     });
   }
@@ -72,7 +81,9 @@ class PlacesRepository{
         .equalTo('pending')
         .onValue
         .map((event) {
-      final data = Map<String, dynamic>.from(event.snapshot.value as Map);
+      final data = event.snapshot.value != null
+          ? Map<String, dynamic>.from(event.snapshot.value as Map)
+          : {};
       return data.map((key, value) => MapEntry(key, EUPlace.fromMap(Map<String, dynamic>.from(value))));
     });
   }

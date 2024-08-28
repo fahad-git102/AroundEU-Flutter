@@ -37,6 +37,7 @@ class Images{
 
   // constant icons
   static String backIcon = 'assets/constant_icons/back.svg';
+  static String noDataIcon = 'assets/constant_icons/no_data.svg';
   static String deleteIcon = 'assets/constant_icons/delete_icon.svg';
   static String noImagePlaceHolder = 'assets/constant_icons/no_image.jpg';
   static String successGreenIcon = 'assets/constant_icons/success_green.svg';

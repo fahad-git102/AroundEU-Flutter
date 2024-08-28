@@ -11,13 +11,14 @@ class PlacesWidget extends StatelessWidget {
   final String? category;
   final String? description;
   final String? country;
+  final String? status;
 
   const PlacesWidget(
       {super.key,
       this.imageUrl,
       this.createdBy,
       this.category,
-      this.description, this.country});
+      this.description, this.country, this.status});
 
   @override
   Widget build(BuildContext context) {
@@ -81,24 +82,25 @@ class PlacesWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: SmallLightText(
-                          title: createdBy ?? '',
-                          textColor: AppColors.fadedTextColor2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SmallLightText(
+                              title: createdBy ?? '',
+                              fontSize: 11.sp,
+                              textColor: AppColors.fadedTextColor2,
+                            ),
+                            country!=null?SmallLightText(
+                              title: country ?? '',
+                              textColor: AppColors.hyperLinkColor,
+                              fontSize: 8.0.sp,
+                            ):Container(),
+                          ],
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          country!=null?SmallLightText(
-                            title: country ?? '',
-                            textColor: AppColors.hyperLinkColor,
-                            fontSize: 8.4.sp,
-                          ):Container(),
-                          SmallLightText(
-                            title: category ?? '',
-                            textColor: AppColors.fadedTextColor2,
-                          ),
-                        ],
+                      SmallLightText(
+                        title: category ?? '',
+                        textColor: AppColors.fadedTextColor2,
                       ),
                     ],
                   ),
@@ -111,7 +113,18 @@ class PlacesWidget extends StatelessWidget {
                     fontSize: 12.0.sp,
                     overflow: TextOverflow.ellipsis,
                     textColor: AppColors.lightBlack,
-                  )
+                  ),
+                  SizedBox(
+                    height: 3.0.sp,
+                  ),
+                  status!=null?SmallLightText(
+                    title: status ?? '',
+                    maxLines: 2,
+                    fontSize: 8.0.sp,
+                    overflow: TextOverflow.ellipsis,
+                    textColor: status=='approved'? AppColors.green
+                        : status=='disapproved' ? AppColors.red : AppColors.hyperLinkColor,
+                  ):Container(),
                 ],
               ),
             ),
