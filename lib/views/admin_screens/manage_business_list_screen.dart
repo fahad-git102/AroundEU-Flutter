@@ -98,7 +98,7 @@ class _ManageBLState extends State<ManageBusinessListScreen> {
       onBtn1Tap: (){
         BusinessListRepository().deleteBusinessList(ctx,
             businessList.key??'', (){
-          Utilities().showSnackbar(context, 'Deleted');
+          Utilities().showSnackbar(context, 'Deleted'.tr());
               Navigator.pop(context);
             }, (p0){
               Utilities().showSnackbar(context, 'Error: ${p0.toString()}');

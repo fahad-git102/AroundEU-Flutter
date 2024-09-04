@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
@@ -11,10 +12,13 @@ import '../../core/assets_names.dart';
 class NewsListItem extends StatelessWidget {
   final String? imageUrl;
   final String? title;
+  final String? countryName;
   final String? description;
   final String? dateTime;
+  final Function(int val)? onOptionSelected;
+  final bool? showMenu;
 
-  const NewsListItem({super.key, this.imageUrl, this.title, this.description, this.dateTime});
+  const NewsListItem({super.key, this.imageUrl, this.countryName, this.title, this.description, this.dateTime, this.onOptionSelected, this.showMenu=false});
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +76,18 @@ class NewsListItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    countryName!=null?Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 3.sp),
+                        child: SmallLightText(
+                          title: countryName,
+                          textColor: AppColors.fadedTextColor,
+                          fontWeight: FontWeight.w200,
+                          fontSize: 10.sp,
+                        ),
+                      ),
+                    ):Container(),
                     ExtraMediumText(
                       title: title,
                       textColor: AppColors.lightBlack,
@@ -85,9 +101,37 @@ class NewsListItem extends StatelessWidget {
                       decrease: 2,
                     ),
                     SizedBox(height: 3.0.sp,),
-                    SmallLightText(
-                      title: dateTime,
-                      textColor: AppColors.fadedTextColor,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SmallLightText(
+                            title: dateTime,
+                            textColor: AppColors.fadedTextColor,
+                          ),
+                        ),
+                        SizedBox(width: 5.sp,),
+                        showMenu==true?PopupMenuButton<int>(
+                          onSelected: onOptionSelected,
+                          itemBuilder: (BuildContext context) =>
+                          <PopupMenuEntry<int>>[
+                            PopupMenuItem<int>(
+                              value: 0,
+                              child: ListTile(
+                                leading: const Icon(Icons.edit),
+                                title: SmallLightText(title: 'Edit'.tr()),
+                              ),
+                            ),
+                            PopupMenuItem<int>(
+                              value: 1,
+                              child: ListTile(
+                                leading: const Icon(Icons.delete),
+                                title: SmallLightText(title: 'Delete'.tr()),
+                              ),
+                            ),
+                          ],
+                          icon: const Icon(Icons.more_vert),
+                        ):Container()
+                      ],
                     )
                   ],
                 ),

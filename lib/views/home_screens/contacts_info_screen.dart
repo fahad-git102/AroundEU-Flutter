@@ -2,15 +2,19 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/core/utilities_class.dart';
+import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/contacts_provider.dart';
+import 'package:groupchat/repositories/contacts_repository.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/app_bars/custom_app_bar.dart';
+import '../../component_library/dialogs/custom_dialog.dart';
 import '../../core/assets_names.dart';
 import '../../core/size_config.dart';
 
@@ -26,13 +30,20 @@ class _ContactsInfoScreenState extends State<ContactsInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments != null
-        ? ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>
+    final args = ModalRoute
+        .of(context)!
+        .settings
+        .arguments != null
+        ? ModalRoute
+        .of(context)!
+        .settings
+        .arguments as Map<String, dynamic>
         : null;
     contactsType = args!['type'] != null ? args['type'] as String : '';
     return Scaffold(
       body: SafeArea(child: Consumer(builder: (ctx, ref, child) {
         var contactsPro = ref.watch(contactsProvider);
+        var appUserPro = ref.watch(appUserProvider);
         getData(contactsPro);
         return Container(
           height: SizeConfig.screenHeight,
@@ -50,10 +61,10 @@ class _ContactsInfoScreenState extends State<ContactsInfoScreen> {
                 title: contactsType == coordinators
                     ? 'Coordinators'.tr()
                     : contactsType == emergency
-                        ? 'Emergency Contacts'.tr()
-                        : contactsType == office
-                            ? 'Office Contacts'.tr()
-                            : '',
+                    ? 'Emergency Contacts'.tr()
+                    : contactsType == office
+                    ? 'Office Contacts'.tr()
+                    : '',
               ),
               Expanded(
                 child: Container(
@@ -75,10 +86,10 @@ class _ContactsInfoScreenState extends State<ContactsInfoScreen> {
                   child: contactsType == coordinators
                       ? coordinatorsList(contactsPro)
                       : contactsType == emergency
-                          ? emergencyContactsList(contactsPro)
-                          : contactsType == office
-                              ? officeWidget()
-                              : Container(),
+                      ? emergencyContactsList(contactsPro, appUserPro)
+                      : contactsType == office
+                      ? officeWidget()
+                      : Container(),
                 ),
               )
             ],
@@ -144,7 +155,8 @@ class _ContactsInfoScreenState extends State<ContactsInfoScreen> {
     }
   }
 
-  Widget? emergencyContactsList(ContactsProvider contactsPro) {
+  Widget? emergencyContactsList(ContactsProvider contactsPro,
+      AppUserProvider appUserPro) {
     return ListView.builder(
         itemCount: contactsPro.emergencyContactsList?.length ?? 0,
         shrinkWrap: true,
@@ -172,6 +184,17 @@ class _ContactsInfoScreenState extends State<ContactsInfoScreen> {
                       color: AppColors.hyperLinkColor),
                 ),
               ),
+              appUserPro.currentUser?.admin == true ? Expanded(
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: InkWell(onTap: () {
+                    showDeleteEmergencyContactDialog(contactsPro.emergencyContactsList![index].key??'');
+                  },
+                      child: Padding(padding: EdgeInsets.only(left: 4.sp, top: 4.sp, bottom: 4.sp),
+                          child: SvgPicture.asset(
+                            Images.deleteIcon, height: 21.sp, width: 21.sp,))),
+                ),
+              ):Container()
             ],
           );
         });
@@ -191,7 +214,8 @@ class _ContactsInfoScreenState extends State<ContactsInfoScreen> {
           SizedBox(height: 5.sp,),
           SmallLightText(
             fontSize: 12.sp,
-            title: 'Via T.C.P Arcodaci 48- Barcellona Pozzo di Gotto (ME)- 98051 Italy\n\nVia Naumachia 6-8 - Catania- 95121 Italy'.tr(),
+            title: 'Via T.C.P Arcodaci 48- Barcellona Pozzo di Gotto (ME)- 98051 Italy\n\nVia Naumachia 6-8 - Catania- 95121 Italy'
+                .tr(),
             textColor: AppColors.hyperLinkColor,
           ),
           SizedBox(height: 13.sp),
@@ -253,5 +277,29 @@ class _ContactsInfoScreenState extends State<ContactsInfoScreen> {
         ],
       ),
     );
+  }
+  showDeleteEmergencyContactDialog(String contactId){
+    showDialog(context: context, builder: (ctx)=> CustomDialog(
+      title2: "Are you sure you want to delete this contact ?".tr(),
+      btn1Text:'Delete'.tr(),
+      btn2Text: 'Cancel'.tr(),
+      btn1Outlined: true,
+      icon: Images.deleteIcon,
+      iconColor: AppColors.red,
+      btn1Color: AppColors.red,
+      onBtn2Tap: (){
+        Navigator.pop(context);
+      },
+      onBtn1Tap: (){
+        ContactsRepository().deleteEmergencyContact(ctx,
+            contactId, onComplete: (){
+              Utilities().showSnackbar(context, 'Deleted'.tr());
+              Navigator.pop(context);
+            }, onError: (p0){
+              Utilities().showSnackbar(context, 'Error: ${p0.toString()}');
+              Navigator.pop(context);
+            });
+      },
+    ));
   }
 }
