@@ -9,6 +9,7 @@ import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
+import 'package:groupchat/providers/categories_provider.dart';
 import 'package:groupchat/views/auth/login_screen.dart';
 import 'package:groupchat/views/home_screens/contacts_info_screen.dart';
 import 'package:groupchat/views/home_screens/privacy_policy_screen.dart';
@@ -180,6 +181,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           Consumer(builder: (ctx, ref, child) {
             var appUserPro = ref.watch(appUserProvider);
+            var categoriesPro = ref.watch(categoriesProvider);
             return TileItem(
               icon: Images.signOutIcon,
               title: 'Sign out'.tr(),
@@ -190,6 +192,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     builder: (ctx) => SignOutDialog(
                           onLogout: () {
                             appUserPro.clearPro();
+                            categoriesPro.clearPro();
                             Auth().signOut();
                             Navigator.pushNamedAndRemoveUntil(
                                 context, LoginScreen.route, (route) => false);

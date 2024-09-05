@@ -1,11 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:groupchat/component_library/buttons/button.dart';
 import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
 import 'package:groupchat/component_library/text_fields/custom_text_field.dart';
-import 'package:groupchat/component_library/text_fields/white_back_textfield.dart';
 import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/data/emergency_contact_model.dart';

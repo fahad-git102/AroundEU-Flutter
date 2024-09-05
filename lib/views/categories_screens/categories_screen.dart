@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/component_library/app_bars/custom_app_bar.dart';
 import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
 import 'package:groupchat/core/app_colors.dart';
+import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/categories_provider.dart';
 import 'package:groupchat/views/categories_screens/pdf_list_screen.dart';
 import 'package:sizer/sizer.dart';
@@ -22,7 +23,9 @@ class CategoriesScreen extends StatelessWidget {
         child: Consumer(
           builder: (ctx, ref, child) {
             var categoriesPro = ref.watch(categoriesProvider);
+            var appUserPro = ref.watch(appUserProvider);
             categoriesPro.getCategoriesList();
+
             return Container(
               height: SizeConfig.screenHeight,
               width: SizeConfig.screenWidth,

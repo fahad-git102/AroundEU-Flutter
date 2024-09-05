@@ -5,11 +5,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:groupchat/component_library/drawers/admin_home_drawer.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
+import 'package:groupchat/providers/categories_provider.dart';
 import 'package:groupchat/views/admin_screens/add_emergency_number_screen.dart';
 import 'package:groupchat/views/admin_screens/add_new_country_screen.dart';
 import 'package:groupchat/views/admin_screens/add_news_screen.dart';
 import 'package:groupchat/views/admin_screens/manage_business_list_screen.dart';
 import 'package:groupchat/views/admin_screens/manage_places_screen.dart';
+import 'package:groupchat/views/categories_screens/categories_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/buttons/custom_icon_button.dart';
@@ -39,6 +41,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       drawer: AdminHomeDrawer(),
       body: SafeArea(child: Consumer(builder: (ctx, ref, child) {
         var appUserPro = ref.watch(appUserProvider);
+        var categoriesPro = ref.watch(categoriesProvider);
         appUserPro.listenToCountries();
         return Container(
           height: SizeConfig.screenHeight,
@@ -71,6 +74,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           builder: (ctx) => SignOutDialog(
                             onLogout: () {
                               appUserPro.clearPro();
+                              categoriesPro.clearPro();
                               Auth().signOut();
                               Navigator.pushNamedAndRemoveUntil(
                                   context, LoginScreen.route, (route) => false);
@@ -179,7 +183,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             icon: Images.newCategoriesIcon,
                             isSvg: true,
                             title: 'Add Categories'.tr(),
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.pushNamed(context, CategoriesScreen.route);
+                            },
                           ),
                         ),
                         Expanded(

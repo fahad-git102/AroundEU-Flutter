@@ -22,6 +22,18 @@ class CategoriesProvider extends ChangeNotifier{
     categoriesTitles?.add('Useful Information'.tr());
   }
 
+  void listenToAllCategoriesForAdmin(String type){
+    filteredCategoriesList = null;
+    categoriesList = null;
+    CategoriesRepository().getAllCategoriesStreamForAdmin(type).listen((categoriesData) {
+      categoriesList = categoriesData.values.toList();
+      categoriesList?.sort((a, b) => b.timeStamp!.compareTo(a.timeStamp!));
+      filteredCategoriesList = categoriesData.values.toList();
+      filteredCategoriesList?.sort((a, b) => b.timeStamp!.compareTo(a.timeStamp!));
+      notifyListeners();
+    });
+  }
+
   void listenToCategories(String type, String myCountry) {
     if(categoriesList!=null){
       filteredCategoriesList = [];
@@ -45,5 +57,12 @@ class CategoriesProvider extends ChangeNotifier{
       });
       notifyListeners();
     });
+  }
+
+  clearPro(){
+    filteredCategoriesList = null;
+    categoriesList = null;
+    categoriesTitles = null;
+    notifyListeners();
   }
 }
