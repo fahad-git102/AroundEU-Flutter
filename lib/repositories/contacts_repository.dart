@@ -20,6 +20,17 @@ class ContactsRepository{
     );
   }
 
+  Future<void> addCoordinatorsContact(CoordinatorsContact contact, BuildContext context, Function() onComplete, Function(dynamic p0) onError) async {
+    String? key = FirebaseDatabase.instance.ref(emergency).push().key;
+    FirebaseCrud().setData(
+      key: "$coordinators/$key",
+      context: context,
+      data: contact.toMap(),
+      onComplete: onComplete,
+      onCatchError: onError,
+    );
+  }
+
   Stream<Map<String, CoordinatorsContact>> getCoordinatorsContactsStream() {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
     return dbRef.child(coordinators)

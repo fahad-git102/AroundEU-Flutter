@@ -1,4 +1,5 @@
 
+import 'package:groupchat/views/admin_screens/add_coordinator_screen.dart';
 import 'package:groupchat/views/admin_screens/add_emergency_number_screen.dart';
 import 'package:groupchat/views/admin_screens/add_new_country_screen.dart';
 import 'package:groupchat/views/admin_screens/add_news_screen.dart';
@@ -64,6 +65,7 @@ getRoutes(){
     AllPlacesScreen.route: (context) => AllPlacesScreen(),
     AddNewsScreen.route: (context) => AddNewsScreen(),
     AllNewsScreen.route: (context) => AllNewsScreen(),
-    AddEmergencyNumbersScreen.route: (context) => AddEmergencyNumbersScreen()
+    AddEmergencyNumbersScreen.route: (context) => AddEmergencyNumbersScreen(),
+    AddCoordinatorsScreen.route: (context) => AddCoordinatorsScreen()
   };
 }

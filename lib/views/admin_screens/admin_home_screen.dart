@@ -6,6 +6,7 @@ import 'package:groupchat/component_library/drawers/admin_home_drawer.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/categories_provider.dart';
+import 'package:groupchat/views/admin_screens/add_coordinator_screen.dart';
 import 'package:groupchat/views/admin_screens/add_emergency_number_screen.dart';
 import 'package:groupchat/views/admin_screens/add_new_country_screen.dart';
 import 'package:groupchat/views/admin_screens/add_news_screen.dart';
@@ -193,7 +194,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             isSvg: true,
                             icon: Images.coordinatorsIcon,
                             title: 'Add Coordinators'.tr(),
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.pushNamed(context, AddCoordinatorsScreen.route);
+                            },
                           ),
                         ),
                         Expanded(
