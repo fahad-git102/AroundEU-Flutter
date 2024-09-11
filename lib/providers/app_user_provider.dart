@@ -42,12 +42,14 @@ class AppUserProvider extends ChangeNotifier{
 
   void listenToTeachers() {
     if(allTeachersList!=null){
+      filterTeachers('');
       return;
     }
     UsersRepository().getAllTeachersStream().listen((usersData) {
       if(usersData.isNotEmpty){
         allTeachersList = usersData.values.toList();
         allTeachersList?.sort((a, b) => a.firstName!.compareTo(b.firstName??''));
+        filterTeachers('');
         notifyListeners();
       }else{
         allTeachersList = [];

@@ -30,6 +30,7 @@ class AllTeachersScreen extends StatefulWidget {
 class _AllTeachersScreen extends State<AllTeachersScreen> {
   TextEditingController searchController = TextEditingController();
   bool? isLoading = false;
+  bool? pageStarted = true;
   updateState(){
     setState(() {
 
@@ -39,112 +40,117 @@ class _AllTeachersScreen extends State<AllTeachersScreen> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(child: Consumer(builder: (ctx, ref, child) {
-        var appUserPro = ref.watch(appUserProvider);
-        appUserPro.listenToTeachers();
-        appUserPro.filterTeachers('');
-        return Container(
-          height: SizeConfig.screenHeight,
-          width: SizeConfig.screenWidth,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(Images.mainBackground),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Column(
-            children: [
-              CustomAppBar(
-                title: 'Make Coordinator'.tr(),
+    return PopScope(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(child: Consumer(builder: (ctx, ref, child) {
+          var appUserPro = ref.watch(appUserProvider);
+          if(pageStarted == true){
+            appUserPro.filteredTeachersList = null;
+            appUserPro.listenToTeachers();
+            pageStarted = false;
+          }
+          return Container(
+            height: SizeConfig.screenHeight,
+            width: SizeConfig.screenWidth,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(Images.mainBackground),
+                fit: BoxFit.cover,
               ),
-              Expanded(
-                  child: Column(
-                children: [
-                  SizedBox(
-                    height: 7.sp,
-                  ),
-                  Center(
-                    child: SmallLightText(
-                      title: 'Select any teacher to make coordinator'.tr(),
-                      textColor: AppColors.lightFadedTextColor,
+            ),
+            child: Column(
+              children: [
+                CustomAppBar(
+                  title: 'Make Coordinator'.tr(),
+                ),
+                Expanded(
+                    child: Column(
+                  children: [
+                    SizedBox(
+                      height: 7.sp,
                     ),
-                  ),
-                  SizedBox(
-                    height: 10.sp,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 13.sp),
-                    child: WhiteBackTextField(
-                      hintText: 'Search teachers here...'.tr(),
-                      controller: searchController,
-                      onChanged: (val){
-                        appUserPro.filterTeachers(val.toString());
-                      },
+                    Center(
+                      child: SmallLightText(
+                        title: 'Select any teacher to make coordinator'.tr(),
+                        textColor: AppColors.lightFadedTextColor,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 10.sp,
-                  ),
-                  appUserPro.filteredTeachersList == null
-                      ? Center(
-                          child: SpinKitPulse(
-                            color: AppColors.mainColorDark,
-                          ),
-                        )
-                      : appUserPro.filteredTeachersList?.isEmpty == true
-                          ? Center(
-                              child: Padding(
-                                  padding: EdgeInsets.only(top: 50.sp),
-                                  child: NoDataWidget()),
-                            )
-                          : Expanded(
-                              child: ListView.separated(
-                                  itemCount:
-                                      appUserPro.filteredTeachersList?.length ?? 0,
-                                  shrinkWrap: true,
-                                  physics: const BouncingScrollPhysics(),
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 13.sp),
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return ListTile(
-                                      contentPadding: EdgeInsets.symmetric(
-                                          vertical: 10.sp, horizontal: 10.sp),
-                                      leading: CircleImageAvatar(
-                                        imagePath: appUserPro
-                                            .filteredTeachersList?[index].profileUrl,
-                                        size: 40.sp,
-                                        borderColor: AppColors.mainColorDark,
-                                        borderWidth: 1.sp,
-                                      ),
-                                      title: ExtraMediumText(
-                                        title:
-                                            '${appUserPro.filteredTeachersList?[index].firstName}'
-                                            ' ${appUserPro.filteredTeachersList?[index].surName}',
-                                        textColor: AppColors.lightBlack,
-                                      ),
-                                      onTap: () {
-                                        makeCoordinatorDialog(appUserPro.filteredTeachersList?[index].uid??'',
-                                            '${appUserPro.filteredTeachersList?[index].firstName} ${appUserPro.filteredTeachersList?[index].surName}');
-                                      },
-                                    );
-                                  },
-                                  separatorBuilder:
-                                      (BuildContext context, int index) {
-                                    return Divider(
-                                      height: 0.5.sp,
-                                      color: AppColors.lightFadedTextColor,
-                                    );
-                                  }),
-                            )
-                ],
-              ))
-            ],
-          ),
-        );
-      })),
+                    SizedBox(
+                      height: 10.sp,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 13.sp),
+                      child: WhiteBackTextField(
+                        hintText: 'Search teachers here...'.tr(),
+                        controller: searchController,
+                        onChanged: (val){
+                          appUserPro.filterTeachers(val.toString());
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10.sp,
+                    ),
+                    appUserPro.filteredTeachersList == null
+                        ? Center(
+                            child: SpinKitPulse(
+                              color: AppColors.mainColorDark,
+                            ),
+                          )
+                        : appUserPro.filteredTeachersList?.isEmpty == true
+                            ? Center(
+                                child: Padding(
+                                    padding: EdgeInsets.only(top: 50.sp),
+                                    child: NoDataWidget()),
+                              )
+                            : Expanded(
+                                child: ListView.separated(
+                                    itemCount:
+                                        appUserPro.filteredTeachersList?.length ?? 0,
+                                    shrinkWrap: true,
+                                    physics: const BouncingScrollPhysics(),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 13.sp),
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return ListTile(
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical: 10.sp, horizontal: 10.sp),
+                                        leading: CircleImageAvatar(
+                                          imagePath: appUserPro
+                                              .filteredTeachersList?[index].profileUrl,
+                                          size: 40.sp,
+                                          borderColor: AppColors.mainColorDark,
+                                          borderWidth: 1.sp,
+                                        ),
+                                        title: ExtraMediumText(
+                                          title:
+                                              '${appUserPro.filteredTeachersList?[index].firstName}'
+                                              ' ${appUserPro.filteredTeachersList?[index].surName}',
+                                          textColor: AppColors.lightBlack,
+                                        ),
+                                        onTap: () {
+                                          makeCoordinatorDialog(appUserPro.filteredTeachersList?[index].uid??'',
+                                              '${appUserPro.filteredTeachersList?[index].firstName} ${appUserPro.filteredTeachersList?[index].surName}');
+                                        },
+                                      );
+                                    },
+                                    separatorBuilder:
+                                        (BuildContext context, int index) {
+                                      return Divider(
+                                        height: 0.5.sp,
+                                        color: AppColors.lightFadedTextColor,
+                                      );
+                                    }),
+                              )
+                  ],
+                ))
+              ],
+            ),
+          );
+        })),
+      ),
     );
   }
 
@@ -175,6 +181,8 @@ class _AllTeachersScreen extends State<AllTeachersScreen> {
     };
     UsersRepository().updateUser(user, userId, context, (){
       isLoading = false;
+      searchController.clear();
+      FocusScope.of(context).requestFocus(FocusNode());
       updateState();
       Utilities().showCustomToast(message: '$name is a coordinator now'.tr(args: [name]), isError: false);
     }, (p0){
