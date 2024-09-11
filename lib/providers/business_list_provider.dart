@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:groupchat/data/BusinessListModel.dart';
+import 'package:groupchat/data/business_list_model.dart';
 import 'package:groupchat/repositories/business_list_repository.dart';
 
 final businessListProvider = ChangeNotifierProvider((ref) => BusinessListProvider());

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/component_library/business_list_widgets/business_list_item.dart';
 import 'package:groupchat/component_library/dialogs/new_business_list_dialog.dart';
 import 'package:groupchat/core/utilities_class.dart';
-import 'package:groupchat/data/BusinessListModel.dart';
+import 'package:groupchat/data/business_list_model.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/business_list_provider.dart';
 import 'package:groupchat/repositories/business_list_repository.dart';

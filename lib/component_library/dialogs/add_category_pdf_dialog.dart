@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -15,7 +14,6 @@ import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/data/category_model.dart';
 import 'package:groupchat/data/country_model.dart';
-import 'package:groupchat/providers/categories_provider.dart';
 import 'package:groupchat/repositories/categories_repository.dart';
 import 'package:sizer/sizer.dart';
 

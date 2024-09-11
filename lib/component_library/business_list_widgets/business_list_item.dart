@@ -9,6 +9,7 @@ import 'package:sizer/sizer.dart';
 class BusinessListItem extends StatelessWidget{
   String? title, country;
   Function(int val)? onOptionSelected;
+  bool? showMenuButton;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class BusinessListItem extends StatelessWidget{
           ],
           borderRadius: BorderRadius.all(Radius.circular(4.sp))),
       child: Padding(
-        padding: EdgeInsets.only(top: 7.sp, bottom: 7.0.sp, left: 10.sp),
+        padding: EdgeInsets.only(top: showMenuButton==false?12.sp:7.sp, bottom: showMenuButton==false?12.sp:7.0.sp, left: 10.sp),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -40,7 +41,7 @@ class BusinessListItem extends StatelessWidget{
               fontSize: 9.sp,
               textColor: AppColors.hyperLinkColor,
             ),
-            PopupMenuButton<int>(
+            showMenuButton==true?PopupMenuButton<int>(
               onSelected: onOptionSelected,
               itemBuilder: (BuildContext context) =>
               <PopupMenuEntry<int>>[
@@ -60,7 +61,7 @@ class BusinessListItem extends StatelessWidget{
                 ),
               ],
               icon: const Icon(Icons.more_vert),
-            )
+            ):Container(width: 13.sp,)
           ],
         ),
       ),
@@ -70,7 +71,8 @@ class BusinessListItem extends StatelessWidget{
   BusinessListItem({
     this.title,
     this.country,
-    this.onOptionSelected
+    this.onOptionSelected,
+    this.showMenuButton = true
   });
 
 }

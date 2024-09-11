@@ -9,7 +9,7 @@ import 'package:groupchat/component_library/text_fields/white_back_textfield.dar
 import 'package:groupchat/component_library/text_widgets/extra_large_medium_bold_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/utilities_class.dart';
-import 'package:groupchat/data/BusinessListModel.dart';
+import 'package:groupchat/data/business_list_model.dart';
 import 'package:groupchat/data/country_model.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/repositories/business_list_repository.dart';

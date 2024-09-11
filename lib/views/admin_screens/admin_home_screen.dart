@@ -9,6 +9,7 @@ import 'package:groupchat/providers/categories_provider.dart';
 import 'package:groupchat/views/admin_screens/add_coordinator_screen.dart';
 import 'package:groupchat/views/admin_screens/add_emergency_number_screen.dart';
 import 'package:groupchat/views/admin_screens/add_new_country_screen.dart';
+import 'package:groupchat/views/admin_screens/add_new_group_screen.dart';
 import 'package:groupchat/views/admin_screens/add_news_screen.dart';
 import 'package:groupchat/views/admin_screens/manage_business_list_screen.dart';
 import 'package:groupchat/views/admin_screens/manage_places_screen.dart';
@@ -159,7 +160,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             isSvg: true,
                             icon: Images.newGroupIcon,
                             title: 'Add Groups'.tr(),
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.pushNamed(context, AddNewGroupScreen.route);
+                            },
                           ),
                         ),
                         Expanded(

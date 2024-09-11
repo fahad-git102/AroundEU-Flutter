@@ -1,6 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:groupchat/data/BusinessListModel.dart';
+import 'package:groupchat/data/business_list_model.dart';
 
 import '../core/static_keys.dart';
 import '../firebase/firebase_crud.dart';

@@ -43,6 +43,7 @@ class Images{
   static String successGreenIcon = 'assets/constant_icons/success_green.svg';
   static String warningRedIcon = 'assets/constant_icons/warning_error_red.svg';
   static String menuIcon = 'assets/constant_icons/menu.png';
+  static String pickFileIcon = 'assets/constant_icons/pick_file.svg';
   static String markerIcon = 'assets/constant_icons/marker.png';
   static String privacyPolicyIcon = 'assets/constant_icons/privacy_policy.svg';
   static String signOutIcon = 'assets/constant_icons/sign_out.svg';
