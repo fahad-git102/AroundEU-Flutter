@@ -18,7 +18,7 @@ class FirebaseCrud {
     await ref.set(data).then((_) {
       onComplete!();
     }).catchError((error) {
-      onCatchError!(error) ?? Utilities().showSnackbar(context, error.toString());
+      onCatchError!(error) ?? Utilities().showCustomToast(message: error.toString(), isError: true);
     });
   }
 
@@ -31,7 +31,7 @@ class FirebaseCrud {
     await ref.update(data).then((_) {
       onComplete();
     }).catchError((error) {
-      onCatchError!(error) ?? Utilities().showSnackbar(context, error.toString());
+      onCatchError!(error) ?? Utilities().showCustomToast(message: error.toString(), isError: true);
     });
   }
 

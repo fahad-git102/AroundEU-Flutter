@@ -31,6 +31,16 @@ class ContactsRepository{
     );
   }
 
+  Future<void> updateCoordinatorsContact(CoordinatorsContact contact, BuildContext context,
+      Function() onComplete, Function(dynamic p0) onError) async {
+    FirebaseCrud().updateData(
+        key: "$coordinators/${contact.id}",
+        context: context,
+        data: contact.toMap(),
+        onComplete: onComplete,
+        onCatchError: onError);
+  }
+
   Stream<Map<String, CoordinatorsContact>> getCoordinatorsContactsStream() {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
     return dbRef.child(coordinators)
@@ -44,6 +54,18 @@ class ContactsRepository{
   deleteEmergencyContact(BuildContext ctx, String contactId,{Function()? onComplete, Function(dynamic p0)? onError}) {
     FirebaseDatabase.instance
         .ref(emergency)
+        .child(contactId)
+        .remove()
+        .then((value) {
+      onComplete!();
+    }).onError((error, stackTrace){
+      onError!(error);
+    });
+  }
+
+  deleteCoordinatorsContact(BuildContext ctx, String contactId,{Function()? onComplete, Function(dynamic p0)? onError}) {
+    FirebaseDatabase.instance
+        .ref(coordinators)
         .child(contactId)
         .remove()
         .then((value) {

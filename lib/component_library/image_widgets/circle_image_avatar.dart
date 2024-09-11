@@ -32,7 +32,7 @@ class CircleImageAvatar extends StatelessWidget {
             padding: EdgeInsets.all(borderWidth), // Border width
             color: AppColors.fadedTextColor2, // Inner background color
             child: ClipOval(
-              child: imagePath != null
+              child: imagePath != null && imagePath?.isNotEmpty==true
                   ? CachedNetworkImage(
                 height: size,
                 width: size,

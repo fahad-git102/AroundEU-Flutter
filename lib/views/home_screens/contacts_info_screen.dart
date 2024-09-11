@@ -11,6 +11,7 @@ import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/contacts_provider.dart';
 import 'package:groupchat/repositories/contacts_repository.dart';
+import 'package:groupchat/views/admin_screens/add_coordinator_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/app_bars/custom_app_bar.dart';
@@ -100,51 +101,92 @@ class _ContactsInfoScreenState extends State<ContactsInfoScreen> {
   }
 
   Widget? coordinatorsList(ContactsProvider contactsPro) {
-    return ListView.separated(
-      itemCount: contactsPro.coordinatorsContactsList?.length ?? 0,
-      shrinkWrap: true,
-      physics: const BouncingScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 13.0.sp, vertical: 10.0.sp),
-      itemBuilder: (BuildContext context, int index) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 10.0.sp,
-            ),
-            ExtraMediumText(
-              title: contactsPro.coordinatorsContactsList?[index].text,
-              textColor: AppColors.lightBlack,
-            ),
-            SizedBox(
-              height: 4.0.sp,
-            ),
-            GestureDetector(
-              onTap: () {
-                Utilities().launchDialer(
-                    contactsPro.coordinatorsContactsList?[index].phone ?? '');
-              },
-              child: Text(
-                contactsPro.coordinatorsContactsList?[index].phone ?? '',
-                style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    fontSize: 11.0.sp,
-                    color: AppColors.fadedTextColor),
+    return Consumer(builder: (ctx, ref, child){
+      var appUserPro = ref.watch(appUserProvider);
+      return ListView.separated(
+        itemCount: contactsPro.coordinatorsContactsList?.length ?? 0,
+        shrinkWrap: true,
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: 13.0.sp, vertical: 10.0.sp),
+        itemBuilder: (BuildContext context, int index) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 10.0.sp,
               ),
-            ),
-            SizedBox(
-              height: 10.0.sp,
-            ),
-          ],
-        );
-      },
-      separatorBuilder: (BuildContext context, int index) {
-        return Divider(
-          height: 0.5.sp,
-          color: AppColors.fadedTextColor2,
-        );
-      },
-    );
+              ExtraMediumText(
+                title: contactsPro.coordinatorsContactsList?[index].text,
+                textColor: AppColors.lightBlack,
+              ),
+              SizedBox(
+                height: 4.0.sp,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Utilities().launchDialer(
+                            contactsPro.coordinatorsContactsList?[index].phone ?? '');
+                      },
+                      child: Text(
+                        contactsPro.coordinatorsContactsList?[index].phone ?? '',
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            fontSize: 11.0.sp,
+                            color: AppColors.fadedTextColor),
+                      ),
+                    ),
+                  ),
+                  appUserPro.currentUser?.admin == true?PopupMenuButton<int>(
+                    onSelected: (value) {
+                      if (value == 0) {
+                        Navigator.pushNamed(context, AddCoordinatorsScreen.route, arguments: {
+                          'isEdit': true,
+                          'contact': contactsPro.coordinatorsContactsList?[index].toMap()
+                        });
+                      } else if (value == 1) {
+                        deleteCoordinatorsDialog(contactsPro.coordinatorsContactsList?[index].id??'');
+                      }
+                    },
+                    itemBuilder: (BuildContext context) =>
+                    <PopupMenuEntry<int>>[
+                      PopupMenuItem<int>(
+                        value: 0,
+                        child: ListTile(
+                          leading: const Icon(Icons.edit),
+                          title: SmallLightText(title: 'Edit'.tr()),
+                        ),
+                      ),
+                      PopupMenuItem<int>(
+                        value: 1,
+                        child: ListTile(
+                          leading: const Icon(Icons.delete),
+                          title: SmallLightText(title: 'Delete'.tr()),
+                        ),
+                      ),
+                    ],
+                    icon: const Icon(Icons.more_vert),
+                  ):Container()
+                ],
+              ),
+              SizedBox(
+                height: 10.0.sp,
+              ),
+            ],
+          );
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return Divider(
+            height: 0.5.sp,
+            color: AppColors.fadedTextColor2,
+          );
+        },
+      );
+    });
   }
 
   getData(ContactsProvider contactsPro) {
@@ -293,12 +335,36 @@ class _ContactsInfoScreenState extends State<ContactsInfoScreen> {
       onBtn1Tap: (){
         ContactsRepository().deleteEmergencyContact(ctx,
             contactId, onComplete: (){
-              Utilities().showSnackbar(context, 'Deleted'.tr());
+              Utilities().showCustomToast(isError: false, message: 'Deleted'.tr());
               Navigator.pop(context);
-            }, onError: (p0){
-              Utilities().showSnackbar(context, 'Error: ${p0.toString()}');
-              Navigator.pop(context);
+            },
+            onError: (p0){
+              Utilities().showCustomToast(isError: true, message: p0.toString());
             });
+
+      },
+    ));
+  }
+
+  deleteCoordinatorsDialog(String contactId){
+    showDialog(context: context, builder: (context) => CustomDialog(
+      title2: "Are you sure you want to delete this news ?".tr(),
+      btn1Text:'Delete'.tr(),
+      btn2Text: 'Cancel'.tr(),
+      btn1Outlined: true,
+      icon: Images.deleteIcon,
+      iconColor: AppColors.red,
+      btn1Color: AppColors.red,
+      onBtn2Tap: (){
+        Navigator.pop(context);
+      },
+      onBtn1Tap: (){
+        ContactsRepository().deleteCoordinatorsContact(context, contactId, onComplete: (){
+          Utilities().showCustomToast(message: 'Coordinators contact deleted'.tr(), isError: false);
+          Navigator.pop(context);
+        }, onError: (p0){
+          Utilities().showCustomToast(message: p0.toString(), isError: true);
+        });
       },
     ));
   }

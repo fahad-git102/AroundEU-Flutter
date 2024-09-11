@@ -84,10 +84,10 @@ class _NewCountryDialogState extends State<NewCountryDialog>{
       pincode: pinController.text
     );
     UsersRepository().addCountry(country, context, (){
-      Utilities().showSnackbar(context, 'Country saved');
+      Utilities().showCustomToast(message: 'Country saved'.tr(), isError: false);
       Navigator.pop(context);
     }, (p0){
-      Utilities().showSnackbar(context, 'Error: ${p0.toString()}');
+      Utilities().showCustomToast(message: 'Error: ${p0.toString()}', isError: true);
     });
   }
 

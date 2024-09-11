@@ -248,11 +248,11 @@ class _PlacesDetailScreenState extends State<PlacesDetailScreen> {
       "status": "approved"
     };
     PlacesRepository().updatePlace(map, place?.key??'', context, (){
-      Utilities().showSnackbar(context, "Approved".tr());
+      Utilities().showCustomToast(isError: false, title: "Approved".tr(), message: '');
       place?.status = 'approved';
       updateState();
     }, (p0){
-      Utilities().showSnackbar(context, "Error: ${p0.toString()}".tr());
+      Utilities().showCustomToast(isError: true, message: p0.toString());
     });
   }
 
@@ -261,11 +261,11 @@ class _PlacesDetailScreenState extends State<PlacesDetailScreen> {
       "status": "disapproved"
     };
     PlacesRepository().updatePlace(map, place?.key??'', context, (){
-      Utilities().showSnackbar(context, "Disapproved".tr());
+      Utilities().showCustomToast(isError: false, title: "Disapproved".tr(), message: '');
       place?.status = 'disapproved';
       updateState();
     }, (p0){
-      Utilities().showSnackbar(context, "Error: ${p0.toString()}".tr());
+      Utilities().showCustomToast(isError: true, message: p0.toString());
     });
   }
 
@@ -283,11 +283,11 @@ class _PlacesDetailScreenState extends State<PlacesDetailScreen> {
       },
       onBtn1Tap: (){
         PlacesRepository().deletePlace(context, place!.key??'', (){
-          Utilities().showSnackbar(context, 'Deleted'.tr());
+          Utilities().showCustomToast(isError: false, title: "Deleted".tr(), message: '');
           Navigator.pop(context);
           Navigator.pop(context);
         }, (p0){
-          Utilities().showSnackbar(context, 'Error: ${p0.toString()}'.tr());
+          Utilities().showCustomToast(isError: true, message: p0.toString());
         });
       },
     ));

@@ -39,9 +39,9 @@ class CompanyRepository {
         .child(companyId)
         .remove()
         .then((value) =>
-            Utilities().showSnackbar(ctx, 'Company deleted successfully'.tr()))
+            Utilities().showCustomToast(isError: false, message: 'Company deleted successfully'.tr()))
         .onError((error, stackTrace) =>
-            Utilities().showSnackbar(ctx, error.toString()));
+            Utilities().showCustomToast(isError: true, message: error.toString()));
   }
 
   Future<void> addMyCompanyTimeScheduled(

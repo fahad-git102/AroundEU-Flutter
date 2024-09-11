@@ -38,12 +38,23 @@ class UsersRepository{
     );
   }
 
-  Future<void> updateUser(Map<String, dynamic> user, BuildContext context, Function() onComplete, Function(dynamic p0) onError) async {
+  Future<void> updateCurrentUser(Map<String, dynamic> user, BuildContext context, Function() onComplete, Function(dynamic p0) onError) async {
     FirebaseCrud().updateData(
       key: "$users/${Auth().currentUser!.uid}",
       context: context,
       data: user,
       onComplete: onComplete,
+      onCatchError: onError
+    );
+  }
+
+  Future<void> updateUser(Map<String, dynamic> user, String uid, BuildContext context, Function() onComplete, Function(dynamic p0) onError) async {
+    FirebaseCrud().updateData(
+      key: "$users/$uid",
+      context: context,
+      data: user,
+      onComplete: onComplete,
+      onCatchError: onError
     );
   }
 
@@ -106,15 +117,27 @@ class UsersRepository{
     });
   }
 
+  Stream<Map<String, AppUser>> getAllTeachersStream() {
+    final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+    return dbRef.child(users)
+    .orderByChild('userType').equalTo(teacher)
+        .onValue.map((event) {
+      final data = event.snapshot.value != null
+          ? Map<String, dynamic>.from(event.snapshot.value as Map)
+          : {};
+      return data.map((key, value) => MapEntry(key, AppUser.fromMap(Map<String, dynamic>.from(value))));
+    });
+  }
+
   deleteCountry(BuildContext ctx, String countryId) {
     FirebaseDatabase.instance
         .ref(countries)
         .child(countryId)
         .remove()
         .then((value) =>
-        Utilities().showSnackbar(ctx, 'Country deleted successfully'.tr()))
+        Utilities().showCustomToast(isError: false, message: 'Country deleted successfully'.tr()))
         .onError((error, stackTrace) =>
-        Utilities().showSnackbar(ctx, error.toString()));
+        Utilities().showCustomToast(isError: true, message: error.toString()));
   }
 
 }

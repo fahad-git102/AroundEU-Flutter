@@ -4,11 +4,11 @@ import 'package:file_saver/file_saver.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:groupchat/core/size_config.dart';
+import 'package:flutter/material.dart' as text_direction;
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:sizer/sizer.dart';
+import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../component_library/dialogs/custom_dialog.dart';
@@ -61,10 +61,6 @@ class Utilities {
     });
   }
 
-  void showSnackbar(BuildContext context, String text) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
-  }
-
   void showErrorMessage(BuildContext context,
       {String? message, Function()? onBtnTap, bool? barrierDismissible}) {
     showDialog(
@@ -80,6 +76,48 @@ class Utilities {
               },
         );
       },
+    );
+  }
+
+  void showCustomToast({String? title, required String? message, required bool? isError}){
+    toastification.show(
+      type: isError==true?ToastificationType.error:ToastificationType.success,
+      style: ToastificationStyle.fillColored,
+      autoCloseDuration: const Duration(seconds: 5),
+      title: Text(title ?? (isError==true?'Oops':'Success'.tr())),
+      description: RichText(
+          text: TextSpan(
+              text:
+              message??'')),
+      alignment: Alignment.bottomCenter,
+      direction: text_direction.TextDirection.ltr,
+      animationDuration: const Duration(milliseconds: 300),
+      animationBuilder: (context, animation, alignment, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      },
+      icon: isError==true ? Icon(Icons.error_outline) : Icon(Icons.check),
+      showIcon: true,
+      primaryColor: isError==true? Colors.red:Colors.green,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.white,
+      padding: EdgeInsets.symmetric(
+          horizontal: 12.sp, vertical: 16.sp),
+      margin:  EdgeInsets.symmetric(
+          horizontal: 12.sp, vertical: 20.sp),
+      borderRadius: BorderRadius.circular(12.sp),
+      closeButtonShowType:
+      CloseButtonShowType.always,
+      showProgressBar: false,
+      closeOnClick: true,
+      dragToClose: true,
+      callbacks: ToastificationCallbacks(
+        onCloseButtonTap: (toastItem) {
+          Toastification().dismiss(toastItem);
+        },
+      ),
     );
   }
 

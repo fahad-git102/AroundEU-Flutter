@@ -15,6 +15,7 @@ class AppUserProvider extends ChangeNotifier{
 
   AppUser? currentUser;
   List<CountryModel>? countriesList;
+  List<AppUser>? allTeachersList, filteredTeachersList;
 
   getCurrentUser() async {
     var map = await UsersRepository().getCurrentUser();
@@ -39,6 +40,39 @@ class AppUserProvider extends ChangeNotifier{
     });
   }
 
+  void listenToTeachers() {
+    if(allTeachersList!=null){
+      return;
+    }
+    UsersRepository().getAllTeachersStream().listen((usersData) {
+      if(usersData.isNotEmpty){
+        allTeachersList = usersData.values.toList();
+        allTeachersList?.sort((a, b) => a.firstName!.compareTo(b.firstName??''));
+        notifyListeners();
+      }else{
+        allTeachersList = [];
+        notifyListeners();
+      }
+    });
+  }
+
+  void filterTeachers(String query) {
+    filteredTeachersList = null;
+    if(allTeachersList!=null){
+      if (query.isEmpty) {
+        filteredTeachersList = List.from(allTeachersList!); // Reset to full list if query is empty
+      } else {
+        filteredTeachersList = allTeachersList!.where((teacher) {
+          String fullName = "${teacher.firstName} ${teacher.surName}".toLowerCase();
+          return fullName.contains(query.toLowerCase());
+        }).toList();
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        notifyListeners();
+      });
+    }
+  }
+
   clearPro(){
     currentUser = null;
   }
@@ -56,6 +90,6 @@ class AppUserProvider extends ChangeNotifier{
     Map<String, dynamic> map =  {
       'selectedCountry': selectedCountry,
     };
-    UsersRepository().updateUser(map, context, onComplete!, onError!);
+    UsersRepository().updateCurrentUser(map, context, onComplete!, onError!);
   }
 }

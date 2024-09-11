@@ -173,14 +173,16 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                                 if (_formKey.currentState!.validate()) {
                                   if (selectedCountry != null) {
                                     if (isEdit==false&&pickedFile == null) {
-                                      Utilities().showSnackbar(context,
-                                          'Please pick an image first'.tr());
+                                      Utilities().showCustomToast(isError: true,
+                                          title: 'Error'.tr(),
+                                          message: 'Please pick an image first'.tr());
                                     } else {
                                       isEdit == true ? updateNews():saveNews();
                                     }
                                   } else {
-                                    Utilities().showSnackbar(context,
-                                        'Please select country first'.tr());
+                                    Utilities().showCustomToast(isError: true,
+                                        title: 'Error'.tr(),
+                                        message: 'Please select country first'.tr());
                                   }
                                 }
                               }),

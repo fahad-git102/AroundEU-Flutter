@@ -86,7 +86,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen>{
                           SizedBox(height: 20.0.sp),
                           Button(text: "Send Email".tr(), btnColor: AppColors.mainColor, tapAction: () async {
                             if(emailController.text.isEmpty){
-                              Utilities().showSnackbar(context, "Please provide a valid email".tr());
+                              Utilities().showCustomToast(isError: true, title: 'Error'.tr(), message: "Please provide a valid email".tr());
                             }else{
                               isLoading = true;
                               updateState();

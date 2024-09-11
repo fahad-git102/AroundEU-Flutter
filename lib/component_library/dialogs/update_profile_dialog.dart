@@ -304,7 +304,7 @@ class _UpdateProfileDialogState extends State<UpdateProfileDialog> {
       'surName': surnameController.text,
       'about': aboutController.text,
     };
-    UsersRepository().updateUser(map, context, () {
+    UsersRepository().updateCurrentUser(map, context, () {
       isLoading = false;
       updateState();
       userPro.getCurrentUser();

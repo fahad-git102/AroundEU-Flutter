@@ -6,6 +6,7 @@ import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/views/auth/login_screen.dart';
 import 'package:groupchat/views/auth/splash_screen.dart';
 import 'package:sizer/sizer.dart';
+import 'package:toastification/toastification.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,17 +29,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Sizer(builder: (context, orientation, deviceType){
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: createMaterialColor(AppColors.mainColor),
-          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.mainColor),
-          useMaterial3: true,
-          fontFamily: 'CeraPro',
+      return ToastificationWrapper(
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            primarySwatch: createMaterialColor(AppColors.mainColor),
+            colorScheme: ColorScheme.fromSeed(seedColor: AppColors.mainColor),
+            useMaterial3: true,
+            fontFamily: 'CeraPro',
+          ),
+          routes: getRoutes(),
+          home: SplashScreen(),
         ),
-        routes: getRoutes(),
-        home: SplashScreen(),
       );
     });
   }

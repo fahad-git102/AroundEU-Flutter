@@ -58,24 +58,30 @@ class PlacesProvider extends ChangeNotifier{
       return;
     }
     PlacesRepository().getPendingPlacesStream().listen((placesData) {
-      pendingPlacesList ??= [];
-      pendingPlacesList = placesData.entries.map((entry) {
-        return EUPlace(
-            key: entry.key,
-            description: entry.value.description,
-            uid: entry.value.uid,
-            imageUrl: entry.value.imageUrl,
-            category: entry.value.category,
-            status: entry.value.status,
-            country: entry.value.country,
-            creatorName: entry.value.creatorName,
-            timeStamp: entry.value.timeStamp,
-            location: entry.value.location
-        );
-      }).toList();
-      pendingPlacesList?.sort((a, b) => b.timeStamp!.compareTo(a.timeStamp!));
-      _fetchUser(pendingPlacesList??[]);
-      notifyListeners();
+      if(placesData.isNotEmpty){
+        pendingPlacesList ??= [];
+        pendingPlacesList = placesData.entries.map((entry) {
+          return EUPlace(
+              key: entry.key,
+              description: entry.value.description,
+              uid: entry.value.uid,
+              imageUrl: entry.value.imageUrl,
+              category: entry.value.category,
+              status: entry.value.status,
+              country: entry.value.country,
+              creatorName: entry.value.creatorName,
+              timeStamp: entry.value.timeStamp,
+              location: entry.value.location
+          );
+        }).toList();
+        pendingPlacesList?.sort((a, b) => b.timeStamp!.compareTo(a.timeStamp!));
+        _fetchUser(pendingPlacesList??[]);
+        notifyListeners();
+      }else{
+        pendingPlacesList = [];
+        notifyListeners();
+      }
+
     });
   }
 

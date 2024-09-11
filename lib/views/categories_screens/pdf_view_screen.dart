@@ -77,7 +77,7 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
                   title: widget.title ?? '',
                   trailingWidget: InkWell(
                     onTap: () async {
-                      Utilities().showSnackbar(context, 'Downloading started'.tr());
+                      Utilities().showCustomToast(isError: false, message: '...', title: 'Downloading started'.tr());
                       await Utilities().downloadFile(await getFileFromUrl(widget.url??'', name: widget.title??''),
                           widget.title??'', extension: '.pdf', context);
                     },

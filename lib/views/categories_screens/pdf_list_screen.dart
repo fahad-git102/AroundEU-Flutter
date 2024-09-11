@@ -229,11 +229,11 @@ class _PdfListScreenState extends State<PdfListScreen> {
       onBtn1Tap: (){
         CategoriesRepository().deleteCategories(context, id??'',
             onComplete: (){
-              Utilities().showSnackbar(context, 'Deleted'.tr());
+              Utilities().showCustomToast(isError: false, message: 'Deleted'.tr());
               Navigator.pop(context);
             },
             onError: (p0){
-              Utilities().showSnackbar(context, 'Error: ${p0.toString()}');
+              Utilities().showCustomToast(isError: true, message: p0.toString());
             });
       },
     ));

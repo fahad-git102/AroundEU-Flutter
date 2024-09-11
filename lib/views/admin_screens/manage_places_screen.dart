@@ -1,9 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/buttons/button.dart';
 import 'package:groupchat/component_library/image_widgets/no_data_widget.dart';
+import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/size_config.dart';
+import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/places_provider.dart';
 import 'package:groupchat/views/admin_screens/all_places_screen.dart';
@@ -50,7 +53,11 @@ class _ManagePlacesScreenState extends State<ManagePlacesScreen> {
                 height: 10.sp,
               ),
               Expanded(
-                  child: placesPro.pendingPlacesList?.isEmpty == true
+                  child: placesPro.pendingPlacesList==null ? Center(
+                    child: SpinKitPulse(
+                      color: AppColors.mainColorDark,
+                    ),
+                  ) : placesPro.pendingPlacesList?.isEmpty == true
                       ? Center(
                         child: Padding(
                           padding: EdgeInsets.only(top: 50.sp),
