@@ -7,6 +7,7 @@ import 'package:groupchat/views/admin_screens/add_news_screen.dart';
 import 'package:groupchat/views/admin_screens/all_news_screen.dart';
 import 'package:groupchat/views/admin_screens/all_places_screen.dart';
 import 'package:groupchat/views/admin_screens/all_teachers_screen.dart';
+import 'package:groupchat/views/admin_screens/groups_screen.dart';
 import 'package:groupchat/views/admin_screens/manage_business_list_screen.dart';
 import 'package:groupchat/views/admin_screens/manage_places_screen.dart';
 import 'package:groupchat/views/auth/forgot_password_screen.dart';
@@ -70,6 +71,7 @@ getRoutes(){
     AddEmergencyNumbersScreen.route: (context) => AddEmergencyNumbersScreen(),
     AddCoordinatorsScreen.route: (context) => AddCoordinatorsScreen(),
     AllTeachersScreen.route: (context) => AllTeachersScreen(),
-    AddNewGroupScreen.route: (context) => AddNewGroupScreen()
+    AddNewGroupScreen.route: (context) => AddNewGroupScreen(),
+    GroupsScreen.route: (context) => GroupsScreen()
   };
 }

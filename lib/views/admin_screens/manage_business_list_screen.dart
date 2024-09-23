@@ -9,6 +9,7 @@ import 'package:groupchat/data/business_list_model.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/business_list_provider.dart';
 import 'package:groupchat/repositories/business_list_repository.dart';
+import 'package:groupchat/views/admin_screens/groups_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/app_bars/custom_app_bar.dart';
@@ -62,17 +63,24 @@ class _ManageBLState extends State<ManageBusinessListScreen> {
                     padding: EdgeInsets.only(left: 13.sp, right: 13.sp, bottom: 50.sp),
                     physics: const BouncingScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
-                      return BusinessListItem(
-                        title: businessPro.businessLists?[index].name,
-                        country: appUserPro.getCountryById(businessPro
-                            .businessLists?[index].countryId??'')?.countryName??'',
-                        onOptionSelected: (value){
-                          if (value == 0) {
-                            showEditBusinessListDialog(businessPro.businessLists![index]);
-                          } else if (value == 1) {
-                            showDeleteBusinessListDialog(businessPro.businessLists![index]);
-                          }
+                      return InkWell(
+                        onTap: (){
+                          Navigator.pushNamed(context, GroupsScreen.route, arguments: {
+                            'businessList': businessPro.businessLists?[index].toMap()
+                          });
                         },
+                        child: BusinessListItem(
+                          title: businessPro.businessLists?[index].name,
+                          country: appUserPro.getCountryById(businessPro
+                              .businessLists?[index].countryId??'')?.countryName??'',
+                          onOptionSelected: (value){
+                            if (value == 0) {
+                              showEditBusinessListDialog(businessPro.businessLists![index]);
+                            } else if (value == 1) {
+                              showDeleteBusinessListDialog(businessPro.businessLists![index]);
+                            }
+                          },
+                        ),
                       );
                     }),
               )

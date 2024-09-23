@@ -12,4 +12,5 @@ const String companyTimeScheduled = "companyTimeScheduled";
 const String coordinators = "coordinators";
 const String emergency = "emergencyContacts";
 const String office = "office";
+const String groups = "groups";
 const String businessLists = "businessList";

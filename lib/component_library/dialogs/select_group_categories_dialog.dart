@@ -9,17 +9,19 @@ import 'package:sizer/sizer.dart';
 
 class SelectGroupCategoriesDialog extends StatefulWidget {
   final List<String>? categories;
-  final List<String>? selectedCategories;
   final List<bool>? isSelected;
 
   @override
   State<StatefulWidget> createState() => _SelectGroupCategoriesDialogState();
 
-  const SelectGroupCategoriesDialog({this.categories, this.isSelected, this.selectedCategories});
+  const SelectGroupCategoriesDialog({this.categories, this.isSelected});
 }
 
 class _SelectGroupCategoriesDialogState
     extends State<SelectGroupCategoriesDialog> {
+
+  List<String>? selectedCategories=[];
+
   void toggleSelection(int index) {
     setState(() {
       widget.isSelected?[index] = !widget.isSelected![index];
@@ -49,7 +51,7 @@ class _SelectGroupCategoriesDialogState
                 const Spacer(),
                 InkWell(
                   onTap: (){
-
+                    Navigator.pop(context);
                   },
                   child: Padding(
                     padding: EdgeInsets.only(left: 5.sp, top: 5.sp, bottom: 5.sp),
@@ -93,11 +95,11 @@ class _SelectGroupCategoriesDialogState
               if(widget.isSelected!=null){
                 for(int i = 0; i<widget.isSelected!.length; i++){
                   if(widget.isSelected?[i]==true){
-                    widget.selectedCategories?.add(widget.categories![i]);
+                    selectedCategories?.add(widget.categories![i]);
                   }
                 }
               }
-              Navigator.pop(context);
+              Navigator.pop(context, selectedCategories);
             })
           ],
         ),

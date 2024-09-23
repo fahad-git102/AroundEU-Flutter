@@ -67,7 +67,7 @@ class _AddNewGroupScreen extends State<AddNewGroupScreen>{
                         itemBuilder: (BuildContext context, int index){
                           return InkWell(
                             onTap: (){
-                              showNewGroupDialog();
+                              showNewGroupDialog(businessListPro.businessLists?[index].key??'');
                             },
                             child: BusinessListItem(
                               title: businessListPro.businessLists?[index].name,
@@ -87,8 +87,10 @@ class _AddNewGroupScreen extends State<AddNewGroupScreen>{
     );
   }
 
-  showNewGroupDialog(){
-    showDialog(context: context, builder: (context) => AddNewGroupDialog());
+  showNewGroupDialog(String businessKey){
+    showDialog(context: context, builder: (context) => AddNewGroupDialog(
+      businessKey: businessKey,
+    ));
   }
   
 }

@@ -5,6 +5,7 @@ import 'package:groupchat/app/routes.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/views/auth/login_screen.dart';
 import 'package:groupchat/views/auth/splash_screen.dart';
+import 'package:groupchat/views/chat_screens/chat_screen.dart';
 import 'package:sizer/sizer.dart';
 import 'package:toastification/toastification.dart';
 
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
             fontFamily: 'CeraPro',
           ),
           routes: getRoutes(),
-          home: SplashScreen(),
+          home: ChatScreen(),
         ),
       );
     });

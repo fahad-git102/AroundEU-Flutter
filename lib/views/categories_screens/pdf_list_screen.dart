@@ -109,7 +109,6 @@ class _PdfListScreenState extends State<PdfListScreen> {
                           EdgeInsets.only(left: 13.0.sp, right: 13.0.sp, bottom: 50.sp),
                           physics: const BouncingScrollPhysics(),
                           itemBuilder: (BuildContext context, int index) {
-                            // categoriesPro.filterCategories(type??'');
                             return InkWell(
                               onTap: () {
                                 Navigator.push(
