@@ -7,6 +7,7 @@ import 'package:groupchat/core/assets_names.dart';
 import 'package:sizer/sizer.dart';
 
 class NoDataWidget extends StatelessWidget{
+  String? text;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -14,11 +15,14 @@ class NoDataWidget extends StatelessWidget{
       children: [
         SvgPicture.asset(Images.noDataIcon, height: 55.sp, width: 55.sp, color: AppColors.fadedTextColor,),
         SmallLightText(
-          title: "No data found".tr(),
+          title: text??"No data found".tr(),
           textColor: AppColors.fadedTextColor,
         )
       ],
     );
   }
 
+  NoDataWidget({super.key,
+    this.text,
+  });
 }

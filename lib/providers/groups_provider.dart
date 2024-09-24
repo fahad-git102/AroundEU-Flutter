@@ -1,19 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:groupchat/data/group_model.dart';
-import 'package:groupchat/repositories/groups_repository.dart';
+
+import '../data/group_model.dart';
+import '../repositories/groups_repository.dart';
 
 final groupsProvider = ChangeNotifierProvider((ref) => GroupsProvider());
 
-class GroupsProvider extends ChangeNotifier{
+class GroupsProvider extends ChangeNotifier {
   List<GroupModel>? currentBLGroupsList;
 
   void listenToCurrentBLGroups(String businessKey) {
-    if(currentBLGroupsList!=null){
-      return;
-    }
     GroupsRepository().getGroupsStream(businessKey: businessKey).listen((groupsData) {
-      currentBLGroupsList ??= [];
       currentBLGroupsList = groupsData.entries.map((entry) {
         return GroupModel(
           key: entry.key,
@@ -36,5 +33,4 @@ class GroupsProvider extends ChangeNotifier{
       notifyListeners();
     });
   }
-
 }

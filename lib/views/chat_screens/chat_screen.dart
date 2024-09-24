@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:groupchat/component_library/chat_widgets/bottom_textfield_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/receiver_message_widget.dart';
@@ -11,13 +10,14 @@ import '../../core/assets_names.dart';
 import '../../core/size_config.dart';
 
 class ChatScreen extends StatefulWidget {
+  static const route = 'ChatScreen';
   @override
   State<StatefulWidget> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
 
-  final list = [
+  var list = [
     {'text': 'Hello there, this is a message 1', 'sender': true},
     {'text': 'Hello there, this is a message 2', 'sender': false},
     {'text': 'Hello there, this is a message 3', 'sender': false},
@@ -48,11 +48,9 @@ class _ChatScreenState extends State<ChatScreen> {
     {'text': 'Hello there, this is a message 28', 'sender': true},
   ];
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Ensure that the widget resizes when the keyboard appears
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(

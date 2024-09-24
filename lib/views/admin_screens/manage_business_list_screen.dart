@@ -8,6 +8,7 @@ import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/data/business_list_model.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/business_list_provider.dart';
+import 'package:groupchat/providers/groups_provider.dart';
 import 'package:groupchat/repositories/business_list_repository.dart';
 import 'package:groupchat/views/admin_screens/groups_screen.dart';
 import 'package:sizer/sizer.dart';
@@ -65,6 +66,8 @@ class _ManageBLState extends State<ManageBusinessListScreen> {
                     itemBuilder: (BuildContext context, int index) {
                       return InkWell(
                         onTap: (){
+                          ref.watch(groupsProvider).currentBLGroupsList = null;
+
                           Navigator.pushNamed(context, GroupsScreen.route, arguments: {
                             'businessList': businessPro.businessLists?[index].toMap()
                           });

@@ -31,7 +31,7 @@ class MessageModel{
     };
   }
 
-  factory MessageModel.fromMap(Map<String, dynamic> map) {
+  factory MessageModel.fromMap(Map<dynamic, dynamic> map) {
     return MessageModel(
       message: map.containsKey('message')&&map['message']!=null ? map['message'] as String : null,
       uid: map.containsKey('uid')&&map['uid']!=null ? map['uid'] as String : null,

@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
             fontFamily: 'CeraPro',
           ),
           routes: getRoutes(),
-          home: ChatScreen(),
+          home: SplashScreen(),
         ),
       );
     });

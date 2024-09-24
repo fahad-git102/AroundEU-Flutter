@@ -32,42 +32,53 @@ class GroupItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          imageUrl!=null||imageUrl?.isEmpty==true?CircleImageAvatar(
-            imagePath: imageUrl,
-            size: 40.0.sp,
-          ):CircleLetterWidget(letter: title![0].toUpperCase()),
-          SizedBox(width: 10.sp,),
+          imageUrl != null || imageUrl?.isEmpty == true
+              ? CircleImageAvatar(
+                  imagePath: imageUrl,
+                  size: 40.0.sp,
+                )
+              : CircleLetterWidget(letter: title![0].toUpperCase()),
+          SizedBox(
+            width: 10.sp,
+          ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ExtraMediumText(
-                  title: title??'',
+                  title: title ?? '',
                   textColor: AppColors.lightBlack,
                 ),
-                SizedBox(height: 3.sp,),
-                SmallLightText(
-                  title: subTile??'',
-                  textColor: AppColors.fadedTextColor,
-                )
+                subTile != null && subTile?.isNotEmpty == true
+                    ? SizedBox(
+                        height: 3.sp,
+                      )
+                    : Container(),
+                subTile != null && subTile?.isNotEmpty == true
+                    ? SmallLightText(
+                        title: subTile ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textColor: AppColors.fadedTextColor,
+                      )
+                    : Container()
               ],
             ),
           ),
-          Container(
+          SizedBox(width: 8.sp,),
+          messagesCount>0?Container(
             height: 17.sp,
             width: 17.sp,
             decoration: BoxDecoration(
-              color: AppColors.mainColor,
-              shape: BoxShape.circle
-            ),
+                color: AppColors.mainColor, shape: BoxShape.circle),
             child: Center(
               child: SmallLightText(
-                title: messagesCount>99 ? '99+' : messagesCount.toString(),
+                title: messagesCount > 99 ? '99+' : messagesCount.toString(),
                 textColor: AppColors.lightBlack,
                 fontSize: 10.sp,
               ),
             ),
-          )
+          ):Container()
         ],
       ),
     );
@@ -75,7 +86,7 @@ class GroupItem extends StatelessWidget {
 
   GroupItem({
     this.imageUrl,
-    this.messagesCount=0,
+    this.messagesCount = 0,
     this.title,
     this.subTile,
   });
