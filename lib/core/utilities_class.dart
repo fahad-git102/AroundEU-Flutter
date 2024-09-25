@@ -137,6 +137,22 @@ class Utilities {
     }
   }
 
+  String formatTimestamp(int timestamp) {
+    DateTime now = DateTime.now();
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime yesterday = DateTime(now.year, now.month, now.day - 1);
+
+    if (date.isAfter(today)) {
+      return DateFormat('HH:mm').format(date);
+    } else if (date.isAfter(yesterday)) {
+      return 'Yesterday';
+    } else {
+      return DateFormat('MMM d').format(date);
+    }
+  }
+
   showSuccessDialog(BuildContext context,
       {String? message, Function()? onBtnTap, bool? barrierDismissle}) {
     showDialog(

@@ -10,13 +10,13 @@ class WhiteBackTextField extends StatelessWidget{
 
   final String? hintText;
   final TextEditingController? controller;
-  final int? maxLines;
+  final int? maxLines, maxLength;
   final Function(String?)? onChanged;
   final bool? allowNumersOnly;
   final List<TextInputFormatter>? inputFormatters;
   final String? Function(String?)? validator;
 
-  WhiteBackTextField({super.key, this.hintText, this.controller, this.maxLines, this.allowNumersOnly, this.inputFormatters, this.validator, this.onChanged});
+  WhiteBackTextField({super.key, this.hintText, this.maxLength, this.controller, this.maxLines, this.allowNumersOnly, this.inputFormatters, this.validator, this.onChanged});
 
 
   @override
@@ -31,6 +31,7 @@ class WhiteBackTextField extends StatelessWidget{
       child: SimpleTextField(
         controller: controller,
         minLines: maxLines,
+        maxLength: maxLength,
         noBorder: true,
         onChanged: onChanged,
         validator: validator,

@@ -6,9 +6,12 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/chat_widgets/group_item_widget.dart';
 import 'package:groupchat/component_library/image_widgets/no_data_widget.dart';
 import 'package:groupchat/core/app_colors.dart';
+import 'package:groupchat/core/static_keys.dart';
+import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/data/business_list_model.dart';
 import 'package:groupchat/data/group_model.dart';
 import 'package:groupchat/data/message_model.dart';
+import 'package:groupchat/firebase/auth.dart';
 import 'package:groupchat/providers/groups_provider.dart';
 import 'package:groupchat/views/chat_screens/chat_screen.dart';
 import 'package:sizer/sizer.dart';
@@ -90,21 +93,36 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                             padding: EdgeInsets.symmetric(horizontal: 13.sp),
                             itemBuilder: (BuildContext context, int index) {
                               return InkWell(
-                                onTap: (){
-                                  Navigator.pushNamed(context, ChatScreen.route);
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, ChatScreen.route);
                                 },
                                 child: GroupItem(
-                                  title:
-                                      groupsPro.currentBLGroupsList?[index].name,
+                                  title: groupsPro
+                                      .currentBLGroupsList?[index].name,
                                   subTile: fetchLastMessage(
                                       groupsPro.currentBLGroupsList?[index]),
                                   imageUrl: groupsPro
                                       .currentBLGroupsList?[index].groupImage,
-                                  messagesCount: groupsPro
-                                          .currentBLGroupsList?[index]
-                                          .unReadCounts
-                                          ?.length ??
-                                      0,
+                                  messagesCount: fetchUnreadCount(groupsPro.currentBLGroupsList?[index].unReadCounts??{}),
+                                  lastMsgTime: groupsPro
+                                                  .currentBLGroupsList?[index]
+                                                  .messages !=
+                                              null &&
+                                          groupsPro.currentBLGroupsList?[index]
+                                                  .messages?.isNotEmpty ==
+                                              true
+                                      ? MessageModel.fromMap(
+                                                  groupsPro
+                                                          .currentBLGroupsList?[
+                                                              index]
+                                                          .messages
+                                                          ?.values
+                                                          .last
+                                                      as Map<dynamic, dynamic>)
+                                              .timeStamp ??
+                                          0
+                                      : 0,
                                 ),
                               );
                             }))
@@ -112,6 +130,15 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
         ),
       )),
     );
+  }
+
+  int fetchUnreadCount(Map<dynamic, dynamic> map){
+    for (var item in map.entries){
+      if(item.key == Auth().currentUser?.uid){
+        return item.value;
+      }
+    }
+    return 0;
   }
 
   String fetchLastMessage(GroupModel? group) {

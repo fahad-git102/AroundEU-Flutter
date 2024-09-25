@@ -5,6 +5,7 @@ import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart'
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/size_config.dart';
+import 'package:groupchat/core/utilities_class.dart';
 import 'package:sizer/sizer.dart';
 
 import '../image_widgets/circle_image_avatar.dart';
@@ -12,6 +13,7 @@ import '../image_widgets/circle_image_avatar.dart';
 class GroupItem extends StatelessWidget {
   String? imageUrl, title, subTile;
   int messagesCount;
+  int? lastMsgTime;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,8 @@ class GroupItem extends StatelessWidget {
           imageUrl != null || imageUrl?.isEmpty == true
               ? CircleImageAvatar(
                   imagePath: imageUrl,
-                  size: 40.0.sp,
+                  borderWidth: 0.5.sp,
+                  size: 35.0.sp,
                 )
               : CircleLetterWidget(letter: title![0].toUpperCase()),
           SizedBox(
@@ -65,20 +68,44 @@ class GroupItem extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(width: 8.sp,),
-          messagesCount>0?Container(
-            height: 17.sp,
-            width: 17.sp,
-            decoration: BoxDecoration(
-                color: AppColors.mainColor, shape: BoxShape.circle),
-            child: Center(
-              child: SmallLightText(
-                title: messagesCount > 99 ? '99+' : messagesCount.toString(),
-                textColor: AppColors.lightBlack,
-                fontSize: 10.sp,
-              ),
-            ),
-          ):Container()
+          SizedBox(
+            width: 8.sp,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              messagesCount > 0
+                  ? Container(
+                      height: 17.sp,
+                      width: 17.sp,
+                      decoration: BoxDecoration(
+                          color: AppColors.mainColor, shape: BoxShape.circle),
+                      child: Center(
+                        child: SmallLightText(
+                          title: messagesCount > 99
+                              ? '99+'
+                              : messagesCount.toString(),
+                          textColor: AppColors.lightBlack,
+                          fontSize: 8.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    )
+                  : Container(),
+              lastMsgTime != null && lastMsgTime! > 0
+                  ? SizedBox(
+                      height: 5.sp,
+                    )
+                  : Container(),
+              lastMsgTime != null && lastMsgTime! > 0
+                  ? SmallLightText(
+                      title: Utilities().formatTimestamp(lastMsgTime ?? 0),
+                      fontSize: 9.sp,
+                      textColor: AppColors.fadedTextColor,
+                    )
+                  : Container()
+            ],
+          )
         ],
       ),
     );
@@ -88,6 +115,7 @@ class GroupItem extends StatelessWidget {
     this.imageUrl,
     this.messagesCount = 0,
     this.title,
+    this.lastMsgTime,
     this.subTile,
   });
 }

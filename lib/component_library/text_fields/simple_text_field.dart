@@ -11,7 +11,7 @@ class SimpleTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final Function()? onTap;
   final TextInputType? keyboardType;
-  final int? maxLines, minLines;
+  final int? maxLines, minLines, maxLength;
   final bool? enabled;
   final String? hintText;
   final bool? noBorder;
@@ -24,6 +24,7 @@ class SimpleTextField extends StatelessWidget {
   const SimpleTextField(
       {super.key,
       this.obscureText,
+        this.maxLength,
       this.allowNumbersOnly,
       this.suffixIcon,
         this.hintText,
@@ -46,6 +47,7 @@ class SimpleTextField extends StatelessWidget {
       focusNode: focusNode,
       validator: validator,
       controller: controller,
+      maxLength: maxLength,
       onTap: onTap,
       enabled: enabled ?? true,
       obscureText: obscureText ?? false,

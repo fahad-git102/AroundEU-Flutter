@@ -1,7 +1,7 @@
 class MessageModel{
   String? message, uid, image, video, audio, key, replyId;
   double? latitude, longitude;
-  int? audioTime;
+  int? audioTime, timeStamp;
 
   MessageModel({
     this.message,
@@ -11,6 +11,7 @@ class MessageModel{
     this.audio,
     this.key,
     this.replyId,
+    this.timeStamp,
     this.latitude,
     this.longitude,
     this.audioTime,
@@ -23,6 +24,7 @@ class MessageModel{
       'image': this.image,
       'video': this.video,
       'audio': this.audio,
+      'timeStamp': this.timeStamp,
       'key': this.key,
       'replyId': this.replyId,
       'latitude': this.latitude,
@@ -32,6 +34,9 @@ class MessageModel{
   }
 
   factory MessageModel.fromMap(Map<dynamic, dynamic> map) {
+    int convertedTimeStamp = (map['timeStamp'] is double)
+        ? (map['timeStamp'] as double).round()
+        : map['timeStamp'] as int;
     return MessageModel(
       message: map.containsKey('message')&&map['message']!=null ? map['message'] as String : null,
       uid: map.containsKey('uid')&&map['uid']!=null ? map['uid'] as String : null,
@@ -43,6 +48,7 @@ class MessageModel{
       latitude: map.containsKey('latitude')&&map['latitude']!=null ? map['latitude'] as double : null,
       longitude: map.containsKey('longitude')&&map['longitude']!=null ? map['longitude'] as double : null,
       audioTime: map.containsKey('audioTime')&&map['audioTime']!=null ? map['audioTime'] as int : null,
+      timeStamp: map.containsKey('timeStamp')&&map['timeStamp']!=null ? convertedTimeStamp : null,
     );
   }
 
