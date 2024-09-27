@@ -1,55 +1,54 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/component_library/chat_widgets/bottom_textfield_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/receiver_message_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/sender_message_widget.dart';
+import 'package:groupchat/core/utilities_class.dart';
+import 'package:groupchat/firebase/auth.dart';
+import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/app_bars/custom_app_bar.dart';
 import '../../core/assets_names.dart';
 import '../../core/size_config.dart';
+import '../../data/message_model.dart';
+import '../../data/users_model.dart';
+import '../../providers/groups_provider.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatScreen extends ConsumerStatefulWidget {
   static const route = 'ChatScreen';
+
+  const ChatScreen({super.key});
+
   @override
-  State<StatefulWidget> createState() => _ChatScreenState();
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
-
-  var list = [
-    {'text': 'Hello there, this is a message 1', 'sender': true},
-    {'text': 'Hello there, this is a message 2', 'sender': false},
-    {'text': 'Hello there, this is a message 3', 'sender': false},
-    {'text': 'Hello there, this is a message 4', 'sender': true},
-    {'text': 'Hello there, this is a message 5', 'sender': false},
-    {'text': 'Hello there, this is a message 6', 'sender': true},
-    {'text': 'Hello there, this is a message 7', 'sender': false},
-    {'text': 'Hello there, this is a message 8', 'sender': true},
-    {'text': 'Hello there, this is a message 9', 'sender': false},
-    {'text': 'Hello there, this is a message 10', 'sender': true},
-    {'text': 'Hello there, this is a message 11', 'sender': false},
-    {'text': 'Hello there, this is a message 12', 'sender': true},
-    {'text': 'Hello there, this is a message 13', 'sender': true},
-    {'text': 'Hello there, this is a message 14', 'sender': false},
-    {'text': 'Hello there, this is a message 15', 'sender': true},
-    {'text': 'Hello there, this is a message 16', 'sender': true},
-    {'text': 'Hello there, this is a message 17', 'sender': false},
-    {'text': 'Hello there, this is a message 18', 'sender': false},
-    {'text': 'Hello there, this is a message 19', 'sender': true},
-    {'text': 'Hello there, this is a message 20', 'sender': false},
-    {'text': 'Hello there, this is a message 21', 'sender': true},
-    {'text': 'Hello there, this is a message 22', 'sender': false},
-    {'text': 'Hello there, this is a message 23', 'sender': true},
-    {'text': 'Hello there, this is a message 24', 'sender': false},
-    {'text': 'Hello there, this is a message 25', 'sender': true},
-    {'text': 'Hello there, this is a message 26', 'sender': false},
-    {'text': 'Hello there, this is a message 27', 'sender': false},
-    {'text': 'Hello there, this is a message 28', 'sender': true},
-  ];
-
+class _ChatScreenState extends ConsumerState<ChatScreen> {
+  String? groupId;
+  bool? pageStarted = true;
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
+    final args = ModalRoute.of(context)!.settings.arguments != null
+        ? ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>
+        : null;
+    var groupsPro = ref.watch(groupsProvider);
+    if (args != null && pageStarted == true) {
+      pageStarted = false;
+      groupId = args['groupId'] ?? '';
+    }
+    if (groupsPro.currentBLGroupsList
+            ?.firstWhere((element) => element.key == groupId) ==
+        null) {
+      Utilities().showErrorMessage(context,
+          barrierDismissible: false,
+          message: "Something went wrong".tr(), onBtnTap: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      });
+    }
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
@@ -62,33 +61,67 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           child: Column(
             children: [
-              // AppBar at the top
               CustomAppBar(
-                title: 'Chat'.tr(),
+                title: groupsPro.currentBLGroupsList
+                            ?.firstWhere((element) => element.key == groupId) !=
+                        null
+                    ? groupsPro.currentBLGroupsList
+                        ?.firstWhere((element) => element.key == groupId)
+                        .name
+                    : 'Chat'.tr(),
               ),
-              // Chat message list
               Expanded(
                 child: ListView.builder(
-                  itemCount: list.length,
+                  itemCount: groupsPro.currentBLGroupsList
+                          ?.firstWhere((element) => element.key == groupId)
+                          .messages
+                          ?.length ??
+                      0,
                   padding: EdgeInsets.symmetric(horizontal: 13.sp),
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (BuildContext context, int index) {
-                    return list[index]['sender'] == true
+                    MessageModel? messageModel = groupsPro.currentBLGroupsList
+                        ?.firstWhere((element) => element.key == groupId)
+                        .messages?[index];
+                    return groupsPro.currentBLGroupsList
+                                ?.firstWhere(
+                                    (element) => element.key == groupId)
+                                .messages?[index]
+                                .uid ==
+                            Auth().currentUser?.uid
                         ? SenderMessageWidget(
-                      text: list[index]['text'].toString(),
-                    )
-                        : ReceiverMessageWidget(
-                      text: list[index]['text'].toString(),
-                    );
+                            messageModel: groupsPro.currentBLGroupsList
+                                ?.firstWhere(
+                                    (element) => element.key == groupId)
+                                .messages?[index],
+                          )
+                        : FutureBuilder<AppUser?>(
+                            future: fetchUser(messageModel?.uid ?? ''),
+                            builder: (context, snapshot) {
+                              var senderName = '';
+                              if (snapshot.hasData) {
+                                senderName =
+                                    '${snapshot.data!.firstName ?? ''} ${snapshot.data!.surName ?? ''}';
+                              }
+                              return InkWell(
+                                onTap: (){
+                                  print(messageModel?.timeStamp);
+                                },
+                                child: ReceiverMessageWidget(
+                                  senderName: senderName,
+                                  messageModel: messageModel,
+                                ),
+                              );
+                            },
+                          );
                   },
                 ),
               ),
-              // Bottom input field with dynamic padding based on keyboard visibility
               Padding(
                 padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom, // Adjusts padding when the keyboard is shown
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
-                child: BottomTextfieldWidget(), // Your custom input widget
+                child: BottomTextfieldWidget(),
               ),
             ],
           ),
@@ -96,5 +129,14 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
     );
   }
-}
 
+  Future<AppUser?> fetchUser(String id) async {
+    AppUser? user = await ref.watch(appUserProvider).getUserById(id);
+    return user;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+}

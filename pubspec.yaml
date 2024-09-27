@@ -64,9 +64,14 @@ dependencies:
   path_provider: ^2.1.4
   file_saver: ^0.2.12
   syncfusion_flutter_pdfviewer: ^26.1.35
+  pdfx: ^2.8.0
+  dio: ^5.7.0
+  video_thumbnail: ^0.5.3
   file_picker: ^5.2.5
   collection: ^1.18.0
   toastification: ^2.2.0
+  html: ^0.15.4
+  just_audio: ^0.9.40
 
 dev_dependencies:
   flutter_test:

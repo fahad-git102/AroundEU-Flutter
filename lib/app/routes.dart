@@ -74,6 +74,6 @@ getRoutes(){
     AllTeachersScreen.route: (context) => AllTeachersScreen(),
     AddNewGroupScreen.route: (context) => AddNewGroupScreen(),
     GroupsScreen.route: (context) => GroupsScreen(),
-    ChatScreen.route: (context) => ChatScreen()
+    ChatScreen.route: (context) => const ChatScreen()
   };
 }

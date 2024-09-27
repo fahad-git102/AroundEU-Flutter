@@ -1,5 +1,5 @@
 class MessageModel{
-  String? message, uid, image, video, audio, key, replyId;
+  String? message, uid, image, video, audio, key, replyId, document, documentName;
   double? latitude, longitude;
   int? audioTime, timeStamp;
 
@@ -9,7 +9,9 @@ class MessageModel{
     this.image,
     this.video,
     this.audio,
+    this.documentName,
     this.key,
+    this.document,
     this.replyId,
     this.timeStamp,
     this.latitude,
@@ -22,8 +24,10 @@ class MessageModel{
       'message': this.message,
       'uid': this.uid,
       'image': this.image,
+      'document': this.document,
       'video': this.video,
       'audio': this.audio,
+      'documentName': this.documentName,
       'timeStamp': this.timeStamp,
       'key': this.key,
       'replyId': this.replyId,
@@ -42,6 +46,8 @@ class MessageModel{
       uid: map.containsKey('uid')&&map['uid']!=null ? map['uid'] as String : null,
       image: map.containsKey('image')&&map['image']!=null ? map['image'] as String : null,
       video: map.containsKey('video')&&map['video']!=null ? map['video'] as String : null,
+      document: map.containsKey('document')&&map['document']!=null ? map['document'] as String : null,
+      documentName: map.containsKey('documentName')&&map['documentName']!=null ? map['documentName'] as String : null,
       audio: map.containsKey('audio')&&map['audio']!=null ? map['audio'] as String : null,
       key: map.containsKey('key')&&map['key']!=null ? map['key'] as String : null,
       replyId: map.containsKey('replyId')&&map['replyId']!=null ? map['replyId'] as String : null,
@@ -57,6 +63,14 @@ class MessageModel{
     for (int i = 0; i < m.length; i++) {
       messages.add(MessageModel.fromMap(m[i]));
     }
+    return messages;
+  }
+
+  static List<MessageModel> toListFromMap(Map<dynamic, dynamic> map) {
+    List<MessageModel> messages = [];
+    map.forEach((key, value) {
+      messages.add(MessageModel.fromMap(Map<String, dynamic>.from(value)));
+    });
     return messages;
   }
 

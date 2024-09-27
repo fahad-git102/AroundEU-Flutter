@@ -15,7 +15,7 @@ class AppUserProvider extends ChangeNotifier{
 
   AppUser? currentUser;
   List<CountryModel>? countriesList;
-  List<AppUser>? allTeachersList, filteredTeachersList;
+  List<AppUser>? allTeachersList, filteredTeachersList, usersCache;
 
   getCurrentUser() async {
     var map = await UsersRepository().getCurrentUser();
@@ -87,6 +87,38 @@ class AppUserProvider extends ChangeNotifier{
     }
     return null;
   }
+
+  Future<AppUser?> getUserById(String userId) async {
+    if(usersCache!=null){
+      for(AppUser user in usersCache??[]){
+        if(user.uid == userId){
+          return user;
+        }
+      }
+    }
+    if(allTeachersList!=null){
+      for(AppUser user in allTeachersList??[]){
+        if(user.uid == userId){
+          return user;
+        }
+      }
+    }
+    DatabaseReference userRef = FirebaseDatabase.instance.ref().child(users).child(userId);
+    try {
+      DatabaseEvent event = await userRef.once();
+      if (event.snapshot.exists) {
+        usersCache??=[];
+        usersCache?.add(AppUser.fromMap(event.snapshot.value as Map<dynamic, dynamic>));
+        return AppUser.fromMap(event.snapshot.value as Map<dynamic, dynamic>);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching user name: $e");
+      return null;
+    }
+  }
+
 
   updateSelectedCountry(BuildContext context, AppUserProvider userPro, String? selectedCountry, Function()? onComplete, Function(dynamic p0)? onError) async {
     Map<String, dynamic> map =  {

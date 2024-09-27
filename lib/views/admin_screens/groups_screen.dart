@@ -6,7 +6,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/chat_widgets/group_item_widget.dart';
 import 'package:groupchat/component_library/image_widgets/no_data_widget.dart';
 import 'package:groupchat/core/app_colors.dart';
-import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/data/business_list_model.dart';
 import 'package:groupchat/data/group_model.dart';
@@ -39,8 +38,14 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
 
-    final args = ModalRoute.of(context)!.settings.arguments != null
-        ? ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>
+    final args = ModalRoute
+        .of(context)!
+        .settings
+        .arguments != null
+        ? ModalRoute
+        .of(context)!
+        .settings
+        .arguments as Map<String, dynamic>
         : null;
     var groupsPro = ref.watch(groupsProvider);
     if (args != null && pageStarted == true) {
@@ -54,87 +59,81 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
     return Scaffold(
       body: SafeArea(
           child: Container(
-        height: SizeConfig.screenHeight,
-        width: SizeConfig.screenWidth,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(Images.mainBackground),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          children: [
-            CustomAppBar(
-              title: currentBusinessList != null
-                  ? currentBusinessList?.name
-                  : 'Groups'.tr(),
+            height: SizeConfig.screenHeight,
+            width: SizeConfig.screenWidth,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(Images.mainBackground),
+                fit: BoxFit.cover,
+              ),
             ),
-            SizedBox(
-              height: 10.sp,
-            ),
-            Expanded(
-                child: groupsPro.currentBLGroupsList == null
-                    ? Center(
-                        child: SpinKitPulse(
-                          color: AppColors.mainColorDark,
-                        ),
-                      )
-                    : groupsPro.currentBLGroupsList?.isEmpty == true
+            child: Column(
+              children: [
+                CustomAppBar(
+                  title: currentBusinessList != null
+                      ? currentBusinessList?.name
+                      : 'Groups'.tr(),
+                ),
+                SizedBox(
+                  height: 10.sp,
+                ),
+                Expanded(
+                    child: groupsPro.currentBLGroupsList == null
                         ? Center(
-                            child: Padding(
-                                padding: EdgeInsets.only(top: 50.sp),
-                                child: NoDataWidget(
-                                  text: 'No groups found'.tr(),
-                                )))
+                      child: SpinKitPulse(
+                        color: AppColors.mainColorDark,
+                      ),
+                    )
+                        : groupsPro.currentBLGroupsList?.isEmpty == true
+                        ? Center(
+                        child: Padding(
+                            padding: EdgeInsets.only(top: 50.sp),
+                            child: NoDataWidget(
+                              text: 'No groups found'.tr(),
+                            )))
                         : ListView.builder(
-                            itemCount: groupsPro.currentBLGroupsList?.length,
-                            shrinkWrap: true,
-                            physics: const BouncingScrollPhysics(),
-                            padding: EdgeInsets.symmetric(horizontal: 13.sp),
-                            itemBuilder: (BuildContext context, int index) {
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                      context, ChatScreen.route);
-                                },
-                                child: GroupItem(
-                                  title: groupsPro
-                                      .currentBLGroupsList?[index].name,
-                                  subTile: fetchLastMessage(
-                                      groupsPro.currentBLGroupsList?[index]),
-                                  imageUrl: groupsPro
-                                      .currentBLGroupsList?[index].groupImage,
-                                  messagesCount: fetchUnreadCount(groupsPro.currentBLGroupsList?[index].unReadCounts??{}),
-                                  lastMsgTime: groupsPro
-                                                  .currentBLGroupsList?[index]
-                                                  .messages !=
-                                              null &&
-                                          groupsPro.currentBLGroupsList?[index]
-                                                  .messages?.isNotEmpty ==
-                                              true
-                                      ? MessageModel.fromMap(
-                                                  groupsPro
-                                                          .currentBLGroupsList?[
-                                                              index]
-                                                          .messages
-                                                          ?.values
-                                                          .last
-                                                      as Map<dynamic, dynamic>)
-                                              .timeStamp ??
-                                          0
-                                      : 0,
-                                ),
-                              );
-                            }))
-          ],
-        ),
-      )),
+                        itemCount: groupsPro.currentBLGroupsList?.length,
+                        shrinkWrap: true,
+                        physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.symmetric(horizontal: 13.sp),
+                        itemBuilder: (BuildContext context, int index) {
+                          return InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(context, ChatScreen.route,
+                                  arguments: {
+                                    'groupId': groupsPro
+                                        .currentBLGroupsList?[index].key
+                                  });
+                            },
+                            child: GroupItem(
+                              title: groupsPro
+                                  .currentBLGroupsList?[index].name,
+                              subTile: Utilities().parseHtmlToPlainText(fetchLastMessage(
+                                  groupsPro.currentBLGroupsList?[index])),
+                              imageUrl: groupsPro
+                                  .currentBLGroupsList?[index].groupImage,
+                              messagesCount: fetchUnreadCount(groupsPro
+                                  .currentBLGroupsList?[index]
+                                  .unReadCounts ??
+                                  {}),
+                              lastMsgTime: groupsPro.currentBLGroupsList?[index]
+                                  .messages != null &&
+                                  groupsPro.currentBLGroupsList?[index].messages
+                                      ?.isNotEmpty == true ? groupsPro
+                                  .currentBLGroupsList![index].messages?.last
+                                  .timeStamp??0:0,
+                            ),
+                          );
+                        }))
+              ],
+            ),
+          )),
     );
   }
 
-  int fetchUnreadCount(Map<dynamic, dynamic> map){
-    for (var item in map.entries){
-      if(item.key == Auth().currentUser?.uid){
+  int fetchUnreadCount(Map<dynamic, dynamic> map) {
+    for (var item in map.entries) {
+      if (item.key == Auth().currentUser?.uid) {
         return item.value;
       }
     }
@@ -142,16 +141,15 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
   }
 
   String fetchLastMessage(GroupModel? group) {
-    if (group?.messages != null) {
-      MessageModel? lastMessage = MessageModel.fromMap(
-          group?.messages?.values.last as Map<dynamic, dynamic>);
+    if (group?.messages != null && group?.messages?.isNotEmpty==true) {
+      MessageModel? lastMessage = group?.messages?.last;
       if (lastMessage?.audio != null) {
         return 'Audio'.tr();
       } else if (lastMessage?.video != null) {
         return 'Video'.tr();
       } else if (lastMessage?.image != null) {
         return 'Image'.tr();
-      } else {
+      } else{
         return lastMessage?.message ?? 'Last Message'.tr();
       }
     } else {

@@ -8,7 +8,7 @@ class GroupModel{
   String? groupImage;
   bool? deleted;
   List<String?>? fileUrls;
-  Map<dynamic,dynamic>? messages;
+  List<MessageModel>? messages;
   String? key;
   Map<dynamic, dynamic>? unReadCounts;
   List<String?>? categoryList;
@@ -67,10 +67,10 @@ class GroupModel{
       approvedMembers: map.containsKey('approvedMembers') && map['approvedMembers'] != null
           ? List<String?>.from(map["approvedMembers"].map((x) => x))
           : null,
-      // messages: map.containsKey('messages')&& map['messages']!=null
-      //     ? MessageModel.toListFromListMap(map['messages']) : null,
       messages: map.containsKey('messages')&& map['messages']!=null
-          ? map['messages'] : null,
+          ? MessageModel.toListFromMap(map['messages']) : null,
+      // messages: map.containsKey('messages')&& map['messages']!=null
+      //     ? map['messages'] : null,
       pendingMembers: map.containsKey('pendingMembers') && map['pendingMembers'] != null
           ? List<String?>.from(map["pendingMembers"].map((x) => x))
           : null,

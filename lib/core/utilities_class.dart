@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as text_direction;
+import 'package:html/parser.dart' as html_parser;
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:sizer/sizer.dart';
@@ -137,6 +138,11 @@ class Utilities {
     }
   }
 
+  String parseHtmlToPlainText(String htmlString) {
+    final document = html_parser.parse(htmlString);
+    return document.body?.text ?? '';
+  }
+
   String formatTimestamp(int timestamp) {
     DateTime now = DateTime.now();
     DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp);
@@ -145,7 +151,7 @@ class Utilities {
     DateTime yesterday = DateTime(now.year, now.month, now.day - 1);
 
     if (date.isAfter(today)) {
-      return DateFormat('HH:mm').format(date);
+      return DateFormat('hh:mm aa').format(date);
     } else if (date.isAfter(yesterday)) {
       return 'Yesterday';
     } else {
