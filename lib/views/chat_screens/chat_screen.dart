@@ -27,7 +27,40 @@ class ChatScreen extends ConsumerStatefulWidget {
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   String? groupId;
+  final ScrollController _scrollController = ScrollController();
   bool? pageStarted = true;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    }
+  }
+
+  void _animateToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),  // Adjust the duration as needed
+        curve: Curves.easeInOut,  // Choose the desired animation curve
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      if(mounted){
+        _scrollToBottom();
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -72,6 +105,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               ),
               Expanded(
                 child: ListView.builder(
+                  controller: _scrollController,
                   itemCount: groupsPro.currentBLGroupsList
                           ?.firstWhere((element) => element.key == groupId)
                           .messages
@@ -135,8 +169,4 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return user;
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 }

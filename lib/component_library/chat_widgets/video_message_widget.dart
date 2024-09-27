@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sizer/sizer.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:path_provider/path_provider.dart';
@@ -23,7 +22,9 @@ class _CachedVideoThumbnailWidgetState extends State<VideoMessageWidget> {
   @override
   void initState() {
     super.initState();
-    _generateAndCacheThumbnail();
+    if(mounted){
+      _generateAndCacheThumbnail();
+    }
   }
 
   Future<void> _generateAndCacheThumbnail() async {
@@ -33,9 +34,11 @@ class _CachedVideoThumbnailWidgetState extends State<VideoMessageWidget> {
       final cachedThumbnailPath = '${tempDir.path}/$videoFileName-thumbnail.png';
       final cachedThumbnailFile = File(cachedThumbnailPath);
       if (await cachedThumbnailFile.exists()) {
-        setState(() {
-          _thumbnailPath = cachedThumbnailPath;
-        });
+        if(mounted){
+          setState(() {
+            _thumbnailPath = cachedThumbnailPath;
+          });
+        }
       } else {
         final thumbnailPath = await VideoThumbnail.thumbnailFile(
           video: widget.videoUrl,
@@ -46,9 +49,11 @@ class _CachedVideoThumbnailWidgetState extends State<VideoMessageWidget> {
         );
 
         if (thumbnailPath != null) {
-          setState(() {
-            _thumbnailPath = thumbnailPath;
-          });
+          if(mounted){
+            setState(() {
+              _thumbnailPath = thumbnailPath;
+            });
+          }
         }
       }
     } catch (e) {

@@ -31,7 +31,9 @@ class _DocumentMessageWidgetState extends State<DocumentMessageWidget> {
   @override
   void initState() {
     super.initState();
-    _downloadAndGenerateThumbnail();
+    if(mounted){
+      _downloadAndGenerateThumbnail();
+    }
   }
 
   Future<void> _downloadAndGenerateThumbnail() async {
@@ -40,12 +42,13 @@ class _DocumentMessageWidgetState extends State<DocumentMessageWidget> {
       final thumbnailPath = '${cacheDir.path}/${widget.messageId}_thumbnail.png';
 
       if (await File(thumbnailPath).exists()) {
-        setState(() {
-          _thumbnailPath = thumbnailPath;
-        });
+        if(mounted){
+          setState(() {
+            _thumbnailPath = thumbnailPath;
+          });
+        }
         return;
       }
-      print('hahahahahahahahah');
       print('${cacheDir.path}/${widget.messageId}.pdf');
       final pdfFilePath = '${cacheDir.path}/${widget.messageId}.pdf';
       await Dio().download(widget.documentUrl??'', pdfFilePath);
@@ -57,13 +60,10 @@ class _DocumentMessageWidgetState extends State<DocumentMessageWidget> {
         height: page.height,
         format: PdfPageImageFormat.png,
       );
-      print('hahahahahahahahah 2');
       final thumbnailFile = File(thumbnailPath);
       await thumbnailFile.writeAsBytes(pageImage!.bytes);
       await page.close();
-      print('hahahahahahahahah 3');
       if(mounted){
-        print('hahahahahahahahah 4');
         setState(() {
           _thumbnailPath = thumbnailPath;
         });

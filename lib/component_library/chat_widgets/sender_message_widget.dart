@@ -82,17 +82,12 @@ class _SenderMessageState extends State<SenderMessageWidget> {
                 : isVideo
                     ? VideoMessageWidget(videoUrl: message.video ?? '')
                     : isDocument
-                        ? InkWell(
-          onTap: (){
-            print(message.document);
-          },
-                          child: DocumentMessageWidget(
-                              messageId: message.key,
-                              documentName:
-                                  message.documentName ?? 'Document'.tr(),
-                              documentUrl: message.document ?? '',
-                            ),
-                        )
+                        ? DocumentMessageWidget(
+                            messageId: message.key,
+                            documentName:
+                                message.documentName ?? 'Document'.tr(),
+                            documentUrl: message.document ?? '',
+                          )
                         : isMessage
                             ? Padding(
                                 padding: EdgeInsets.all(7.sp),
