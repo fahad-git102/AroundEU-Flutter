@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:sizer/sizer.dart';
@@ -6,12 +7,14 @@ class BottomTextfieldWidget extends StatelessWidget {
   TextEditingController? controller;
   Function()? onSendTap;
   Function()? onAttachmentTap;
-  Function()? onMediaTap;
+  Function()? onCameraTap;
+  bool? showSendButton;
+  Function(String val)? onTextFieldChanged;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -22,7 +25,7 @@ class BottomTextfieldWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(25.0),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.lightFadedTextColor,
+                    color: Colors.grey.shade300,
                     offset: const Offset(0, 1),
                     blurRadius: 2.0,
                   ),
@@ -37,55 +40,59 @@ class BottomTextfieldWidget extends StatelessWidget {
                       // Handle emoji button press
                     },
                   ),
-                  const Expanded(
+                  Expanded(
                     child: TextField(
+                      controller: controller,
+                      onChanged: onTextFieldChanged,
                       decoration: InputDecoration(
-                        hintText: 'Type a message...',
+                        hintText: 'Type a message...'.tr(),
                         border: InputBorder.none,
                       ),
                     ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.attach_file),
-                    onPressed: () {
-                      // Handle attachment button press
-                    },
+                    onPressed: onAttachmentTap,
                   ),
                   IconButton(
                     icon: const Icon(Icons.camera_alt),
-                    onPressed: () {
-                      // Handle camera button press
-                    },
+                    onPressed: onCameraTap,
                   ),
                 ],
               ),
             ),
           ),
           SizedBox(width: 8.sp),
-          // Send button
+          // Send button or mic
           Container(
-            height: 36.sp,
-            width: 36.sp,
+            height: 48.sp,
+            width: 48.sp,
             decoration: BoxDecoration(
-              color: AppColors.mainColor,
-              border: Border.all(color: AppColors.extraLightFadedTextColor, width: 0.2.sp),
+              color: AppColors.mainColor, // Main color for the button
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.lightFadedTextColor,
+                  color: Colors.grey.shade300,
                   offset: const Offset(0, 1),
                   blurRadius: 2.0,
                 ),
-              ]
+              ],
             ),
-            child: IconButton(
-              icon: const Icon(
+            child: showSendButton == true
+                ? IconButton(
+              icon: Icon(
                 Icons.send,
-                color: Colors.white,
+                color: AppColors.lightBlack,
               ),
-              onPressed: () {},
-            ),
-          )
+              onPressed: onSendTap,
+            ): IconButton(
+              icon: Icon(
+                Icons.send,
+                color: AppColors.lightBlack,
+              ),
+              onPressed: onSendTap,
+            )
+          ),
         ],
       ),
     );
@@ -95,7 +102,9 @@ class BottomTextfieldWidget extends StatelessWidget {
     super.key,
     this.controller,
     this.onSendTap,
+    this.showSendButton,
+    this.onTextFieldChanged,
     this.onAttachmentTap,
-    this.onMediaTap,
+    this.onCameraTap,
   });
 }

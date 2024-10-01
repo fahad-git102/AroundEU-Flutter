@@ -69,8 +69,11 @@ dependencies:
   video_thumbnail: ^0.5.3
   file_picker: ^5.2.5
   collection: ^1.18.0
+  flutter_sound: ^9.16.2
   toastification: ^2.2.0
   html: ^0.15.4
+  emoji_picker_flutter: ^1.6.3
+  flutter_mentions: ^2.0.1
   just_audio: ^0.9.40
 
 dev_dependencies:

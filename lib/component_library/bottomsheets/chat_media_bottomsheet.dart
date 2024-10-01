@@ -1,0 +1,113 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
+import 'package:groupchat/core/static_keys.dart';
+import 'package:groupchat/views/chat_screens/chat_screen.dart';
+import 'package:sizer/sizer.dart';
+
+import '../../core/app_colors.dart';
+import '../text_widgets/small_light_text.dart';
+
+class ClassMediaBottomSheet extends StatelessWidget{
+
+  List<FileWithType>? pickedFiles;
+  Function()? onSendTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter setModalState) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Adjusts the height based on content
+            children: [
+              SizedBox(height: 10.sp,),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true, // Makes sure the list takes only necessary height
+                  itemCount: pickedFiles?.length??0,
+                  itemBuilder: (context, index) {
+                    File? file = pickedFiles?[index].file;
+                    MessageType? fileType = pickedFiles?[index].fileType;
+
+                    return ListTile(
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(7.sp)),
+                        child: fileType == MessageType.image
+                            ? Image.file(file!, width: 50, height: 50, fit: BoxFit.cover) : fileType == MessageType.document ?
+                            Icon(Icons.file_copy_outlined, size: 50, color: AppColors.mainColorDark,)
+                            : Icon(Icons.video_library, size: 50, color: AppColors.mainColorDark),
+                      ),
+                      title: ExtraMediumText(
+                        title: file!.path.split('/').last,
+                        textColor: AppColors.lightBlack,
+                      ),
+                      subtitle: SmallLightText(
+                        title: fileType?.name,
+                        textColor: AppColors.extraLightBlack,
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.clear, color: Colors.red),
+                        onPressed: () {
+                          setModalState(() {
+                            pickedFiles?.removeAt(index);
+                            if(pickedFiles?.isEmpty==true){
+                              Navigator.pop(context);
+                            }
+                          });
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Padding(padding: EdgeInsets.symmetric(vertical: 5.sp), child: const Divider(),),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 13.sp),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SmallLightText(
+                      title: '${pickedFiles?.length} files',
+                      textColor: AppColors.lightBlack,
+                    ),
+                    Container(
+                      height: 36.sp,
+                      width: 36.sp,
+                      decoration: BoxDecoration(
+                          color: AppColors.mainColor,
+                          border: Border.all(color: AppColors.extraLightFadedTextColor, width: 0.2.sp),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.lightFadedTextColor,
+                              offset: const Offset(0, 1),
+                              blurRadius: 2.0,
+                            ),
+                          ]
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.send,
+                          color: Colors.white,
+                        ),
+                        onPressed: onSendTap,
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  ClassMediaBottomSheet({super.key,
+    this.pickedFiles,
+    this.onSendTap,
+  });
+}

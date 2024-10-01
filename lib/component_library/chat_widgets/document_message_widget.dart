@@ -75,39 +75,49 @@ class _DocumentMessageWidgetState extends State<DocumentMessageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          color: AppColors.extraLightFadedTextColor.withOpacity(0.1),
-          borderRadius: BorderRadius.all(Radius.circular(7.sp))
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minWidth: 100.sp,
       ),
-      child: Column(
-        children: [
-          _thumbnailPath != null
-              ? ClipRRect(
-            borderRadius: BorderRadius.only(topRight: Radius.circular(7.0.sp), topLeft: Radius.circular(7.sp)),
-                child: Image.file(
-                            File(_thumbnailPath!),
-                            fit: BoxFit.cover,
-                            height: 100,
-                          ),
-              )
-              : Container(),
-          // Document Info
-          Padding(
-            padding: EdgeInsets.all(10.sp),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(Icons.file_copy_outlined, size: 16.sp, color: AppColors.lightBlack,),
-                SizedBox(width: 4.sp,),
-                SmallLightText(
-                  title: widget.documentName??'Document'.tr(),
-                  textColor: AppColors.lightBlack,
+      child: Container(
+        decoration: BoxDecoration(
+            color: AppColors.extraLightFadedTextColor.withOpacity(0.1),
+            borderRadius: BorderRadius.all(Radius.circular(7.sp))
+        ),
+        child: Column(
+          children: [
+            _thumbnailPath != null
+                ? ClipRRect(
+              borderRadius: BorderRadius.only(topRight: Radius.circular(7.0.sp), topLeft: Radius.circular(7.sp)),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: 100.sp
+                    ),
+                    child: Image.file(
+                                File(_thumbnailPath!),
+                                fit: BoxFit.cover,
+                                height: 90,
+                              ),
+                  ),
                 )
-              ],
+                : Container(),
+            // Document Info
+            Padding(
+              padding: EdgeInsets.all(10.sp),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.file_copy_outlined, size: 16.sp, color: AppColors.lightBlack,),
+                  SizedBox(width: 4.sp,),
+                  SmallLightText(
+                    title: widget.documentName==null || widget.documentName?.isEmpty==true?'Document'.tr() : widget.documentName,
+                    textColor: AppColors.lightBlack,
+                  )
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

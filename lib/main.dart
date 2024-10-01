@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/app/routes.dart';
 import 'package:groupchat/core/app_colors.dart';
@@ -20,7 +21,7 @@ Future<void> main() async {
         storageBucket: 'eprojectconsult-9d70e.appspot.com',
       )
   );
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: Portal(child: MyApp())));
 }
 
 class MyApp extends StatelessWidget {

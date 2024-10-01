@@ -104,6 +104,7 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                                     'groupId': groupsPro
                                         .currentBLGroupsList?[index].key
                                   });
+                              // Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()));
                             },
                             child: GroupItem(
                               title: groupsPro

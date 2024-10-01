@@ -58,9 +58,7 @@ class GroupsProvider extends ChangeNotifier {
           }
         }
       }
-
       notifyListeners();
-
     });
   }
 

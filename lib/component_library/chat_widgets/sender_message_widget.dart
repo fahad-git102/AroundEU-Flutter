@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/chat_widgets/document_message_widget.dart';
+import 'package:groupchat/component_library/chat_widgets/location_message_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/video_message_widget.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
@@ -60,6 +61,7 @@ class _SenderMessageState extends State<SenderMessageWidget> {
     final isVideo = message.video != null;
     final isDocument = message.document != null;
     final isMessage = message.message != null;
+    final isLocation = message.latitude != null && message.longitude != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -90,29 +92,30 @@ class _SenderMessageState extends State<SenderMessageWidget> {
                           )
                         : isMessage
                             ? Padding(
-                                padding: EdgeInsets.all(7.sp),
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                      left: 7.sp, right: 7.sp, top: 7.sp),
-                                  child: Linkify(
-                                    onOpen: (link) async {
-                                      if (!await launchUrl(
-                                          Uri.parse(link.url))) {
-                                        throw Exception(
-                                            'Could not launch ${link.url}');
-                                      }
-                                    },
-                                    textAlign: TextAlign.start,
-                                    text: Utilities().parseHtmlToPlainText(
-                                        widget.messageModel?.message ?? ''),
-                                    style: TextStyle(
-                                        color: AppColors.lightBlack,
-                                        fontSize: 12.3.sp),
-                                    linkStyle: TextStyle(
-                                        color: AppColors.hyperLinkColor),
-                                  ),
-                                ))
-                            : Container(),
+                              padding: EdgeInsets.only(
+                                  left: 7.sp, right: 7.sp, top: 7.sp),
+                              child: Linkify(
+                                onOpen: (link) async {
+                                  if (!await launchUrl(
+                                      Uri.parse(link.url))) {
+                                    throw Exception(
+                                        'Could not launch ${link.url}');
+                                  }
+                                },
+                                textAlign: TextAlign.start,
+                                text: Utilities().parseHtmlToPlainText(
+                                    widget.messageModel?.message ?? ''),
+                                style: TextStyle(
+                                    color: AppColors.lightBlack,
+                                    fontSize: 12.3.sp),
+                                linkStyle: TextStyle(
+                                    color: AppColors.hyperLinkColor),
+                              ),
+                            )
+                            : isLocation ? LocationMessageWidget(
+          latitude: message.latitude,
+          longitude: message.longitude,
+        ) : Container(),
         SizedBox(
           height: 3.sp,
         ),

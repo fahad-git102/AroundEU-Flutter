@@ -13,4 +13,7 @@ const String coordinators = "coordinators";
 const String emergency = "emergencyContacts";
 const String office = "office";
 const String groups = "groups";
+const String messages = "messages";
 const String businessLists = "businessList";
+
+enum MessageType { image, video, audio, location, document }

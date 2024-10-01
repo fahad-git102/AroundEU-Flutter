@@ -7,6 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/app_bars/custom_app_bar.dart';
 import 'package:groupchat/component_library/chat_widgets/audio_message_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/document_message_widget.dart';
+import 'package:groupchat/component_library/chat_widgets/location_message_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/video_message_widget.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/data/message_model.dart';
@@ -63,6 +64,7 @@ class _ReceiverMessageState extends State<ReceiverMessageWidget> {
     final isVideo = message.video != null;
     final isDocument = message.document != null;
     final isMessage = message.message != null;
+    final isLocation = message.latitude != null && message.longitude != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -114,7 +116,10 @@ class _ReceiverMessageState extends State<ReceiverMessageWidget> {
                                       color: AppColors.hyperLinkColor),
                                 ),
                               )
-                            : Container(),
+                            : isLocation ? LocationMessageWidget(
+          latitude: message.latitude,
+          longitude: message.longitude,
+        ) : Container(),
         SizedBox(
           height: 3.sp,
         ),

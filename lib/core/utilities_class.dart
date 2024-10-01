@@ -23,11 +23,8 @@ class Utilities {
     return showDatePicker(
             context: context,
             initialDate: initialDate ?? DateTime.now(),
+         firstDate: firstDate ?? DateTime(1950),
 
-            /// initial date from which user can select date
-            firstDate: firstDate ?? DateTime(1950),
-
-            ///initial value of date
             lastDate: lastDate ?? DateTime.now(),
             builder: (context, child) {
               return Theme(
