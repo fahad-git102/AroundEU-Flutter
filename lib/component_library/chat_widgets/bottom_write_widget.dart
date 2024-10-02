@@ -17,6 +17,8 @@ class BottomWriteWidget extends StatefulWidget {
   bool? showSendButton;
   List<Map<String, dynamic>>? mentionsData;
   Function()? onAttachmentTap;
+  Function(PointerUpEvent)? pointerUpEvent;
+  Function(PointerDownEvent)? pointerDownEvent;
   Function()? onCameraTap;
   Function()? onSendTap;
   Function(String val)? onTextFieldChanged;
@@ -29,6 +31,8 @@ class BottomWriteWidget extends StatefulWidget {
     this.emojiPressed,
     this.isRecording,
     this.showEmojis,
+    this.pointerUpEvent,
+    this.pointerDownEvent,
     this.showSendButton,
     this.mentionsData,
     this.onAttachmentTap,
@@ -47,15 +51,13 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade300,
-            offset: const Offset(0, 1),
-            blurRadius: 2.0,
-          ),
-        ]
-      ),
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(
+          color: Colors.grey.shade300,
+          offset: const Offset(0, 1),
+          blurRadius: 2.0,
+        ),
+      ]),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
@@ -94,8 +96,12 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                         border: _border(),
                         enabledBorder: _border(),
                         focusedBorder: _border(),
-                        hintStyle: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: AppColors.fadedTextColor, fontSize: 12.0.sp),
+                        hintStyle: Theme.of(context)
+                            .textTheme
+                            .bodySmall!
+                            .copyWith(
+                                color: AppColors.fadedTextColor,
+                                fontSize: 12.0.sp),
                         hintText: "Message".tr(),
                       ),
                       onSubmitted: (String value) async {},
@@ -103,7 +109,8 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                       mentions: [
                         Mention(
                           trigger: "@",
-                          style: TextStyle(color: Theme.of(context).primaryColor),
+                          style:
+                              TextStyle(color: Theme.of(context).primaryColor),
                           data: widget.mentionsData ?? [],
                           suggestionBuilder: (p0) {
                             return Container(
@@ -129,9 +136,9 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                              icon: const Icon(Icons.attach_file),
-                              onPressed: widget.onAttachmentTap,
-                            ),
+                        icon: const Icon(Icons.attach_file),
+                        onPressed: widget.onAttachmentTap,
+                      ),
 
                       IconButton(
                         icon: const Icon(Icons.camera_alt_outlined),
@@ -143,31 +150,30 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                       const SizedBox(
                         width: 5,
                       ),
-                      Listener(
-                        onPointerUp: (details) {},
-                        onPointerDown: (details) {},
-                        child: widget.showSendButton == true
-                            ? InkWell(
-                          onTap: widget.onSendTap,
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  padding: const EdgeInsets.all(10),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.send,
-                                      size: 20.sp,
-                                      color: AppColors.white,
-                                    ),
-                                  ),
+                      widget.showSendButton == true
+                          ? Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              padding: const EdgeInsets.all(10),
+                              child: Center(
+                                child: Icon(
+                                  Icons.send,
+                                  size: 20.sp,
+                                  color: AppColors.white,
                                 ),
+                              ),
                             )
-                            : Container(
+                          : Listener(
+                              onPointerUp: widget.pointerUpEvent,
+                              onPointerDown: widget.pointerDownEvent,
+                              child: Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Theme.of(context).primaryColor,
+                                  color: widget.isRecording == true
+                                      ? Colors.red
+                                      : Theme.of(context).primaryColor,
                                 ),
                                 padding: const EdgeInsets.all(10),
                                 child: Center(
@@ -178,7 +184,7 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                                   ),
                                 ),
                               ),
-                      ),
+                            ),
                       const SizedBox(
                         width: 5,
                       ),
@@ -201,10 +207,10 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                             .text.characters
                             .toString()
                         ..selection = TextSelection.fromPosition(TextPosition(
-                            offset: widget.mentionsKey!.currentState!.controller!
-                                .text.length));
-                      if (widget
-                          .mentionsKey!.currentState!.controller!.text.isEmpty) {
+                            offset: widget.mentionsKey!.currentState!
+                                .controller!.text.length));
+                      if (widget.mentionsKey!.currentState!.controller!.text
+                          .isEmpty) {
                         widget.showSendButton = false;
                         updateState();
                       }

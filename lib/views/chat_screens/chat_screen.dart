@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -8,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:groupchat/component_library/bottomsheets/chat_media_bottomsheet.dart';
 import 'package:groupchat/component_library/bottomsheets/pick_media_bottomsheet.dart';
-import 'package:groupchat/component_library/chat_widgets/bottom_textfield_widget.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 import 'package:groupchat/component_library/chat_widgets/bottom_write_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/receiver_message_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/sender_message_widget.dart';
@@ -19,6 +20,8 @@ import 'package:groupchat/firebase/auth.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/repositories/groups_repository.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/app_bars/custom_app_bar.dart';
@@ -42,18 +45,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   String? groupId;
   final ScrollController _scrollController = ScrollController();
   bool? pageStarted = true;
-  // TextEditingController? messageController = TextEditingController();
   List<FileWithType>? pickedFiles;
   bool? isLoading = false;
   bool? showSendButton = false;
   GlobalKey<FlutterMentionsState> key = GlobalKey<FlutterMentionsState>();
-
-  // FlutterSoundRecorder? recorder;
   bool? isRecording = false;
   bool? showEmojis = false;
+  Timer? _timer;
+  int _start = 0;
+  String? fileName;
+  int recordDuration = 0;
+  FlutterSoundRecorder? recorder;
 
-  // String? audioRecordedFileName;
-
+  void startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
+      _start = _start + 1;
+    });
+  }
   updateState() {
     setState(() {});
   }
@@ -197,8 +205,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         showEmojis: showEmojis,
                         showSendButton: showSendButton,
                         mentionsData: [],
+                        pointerDownEvent: (details){
+                          isRecording = true;
+                          updateState();
+                          key.currentState?.controller?.text = 'Recording...'.tr();
+                          record();
+                        },
+                        pointerUpEvent: (details){
+                          isRecording = false;
+                          updateState();
+                          key.currentState?.controller?.clear();
+                          stop();
+                        },
                         onTextFieldChanged: (val) {
-                          if (val.isNotEmpty) {
+                          if (val.isNotEmpty && isRecording==false) {
                             showSendButton = true;
                             updateState();
                           } else {
@@ -209,13 +229,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         onCameraTap: () async {
                           XFile? pickedImage =
                               await Utilities.pickImage(imageSource: 'camera');
-                          FileWithType fileWithType = FileWithType(
-                              file: File(pickedImage?.path ?? ''),
-                              fileType: MessageType.image);
-                          pickedFiles ??= [];
-                          pickedFiles?.add(fileWithType);
-                          showBottomSheetWithFiles();
-                          updateState();
+                          if(pickedImage!=null){
+                            FileWithType fileWithType = FileWithType(
+                                file: File(pickedImage.path ?? ''),
+                                fileType: MessageType.image);
+                            pickedFiles ??= [];
+                            pickedFiles?.add(fileWithType);
+                            showBottomSheetWithFiles();
+                            updateState();
+                          }
                         },
                         onAttachmentTap: () {
                           showModalBottomSheet(
@@ -395,6 +417,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       },
       isScrollControlled: true,
     );
+  }
+
+  Future<void> stop() async {
+
+  }
+
+  Future<void> record() async {
+
   }
 
   Future<void> sendLocationMessage() async {
