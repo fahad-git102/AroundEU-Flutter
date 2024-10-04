@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart' as text_direction;
 import 'package:html/parser.dart' as html_parser;
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -197,6 +199,45 @@ class Utilities {
       return null;
     }
   }
+
+  String getFileNameFromStorageUrl(String url) {
+    Uri uri = Uri.parse(url);
+    String decodedPath = Uri.decodeFull(uri.path);
+    return decodedPath.split('/').last;
+  }
+
+  Future<String> downloadFileIfNotExists(String url, String fileName) async {
+    try {
+      var dir = await getApplicationDocumentsDirectory();
+      String filePath = "${dir.path}/$fileName";
+      File file = File(filePath);
+      if (await file.exists()) {
+        print("File already exists at: $filePath");
+        return filePath;
+      }
+      Dio dio = Dio();
+      await dio.download(url, filePath);
+      print("File downloaded to: $filePath");
+
+      return filePath;
+    } catch (e) {
+      print("Error: $e");
+      return "";
+    }
+  }
+
+  Future<String>? handleFileDownload(String url, String fileName) async {
+    String filePath = await downloadFileIfNotExists(url, fileName);
+
+    if (filePath.isNotEmpty) {
+      return filePath;
+    } else {
+      print("Failed to download or find the file");
+      return '';
+    }
+  }
+
+
 
   String getMonthShortName(int val) {
     switch (val) {

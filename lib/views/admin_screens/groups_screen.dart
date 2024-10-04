@@ -99,6 +99,8 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                         itemBuilder: (BuildContext context, int index) {
                           return InkWell(
                             onTap: () {
+                              print('group id == ${groupsPro
+                                  .currentBLGroupsList?[index].key}');
                               Navigator.pushNamed(context, ChatScreen.route,
                                   arguments: {
                                     'groupId': groupsPro

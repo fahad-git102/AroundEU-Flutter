@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:groupchat/component_library/text_fields/simple_text_field.dart';
+import 'package:groupchat/core/disabled_focus_node.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_colors.dart';
@@ -13,10 +14,11 @@ class WhiteBackTextField extends StatelessWidget{
   final int? maxLines, maxLength;
   final Function(String?)? onChanged;
   final bool? allowNumersOnly;
+  final bool? enabled;
   final List<TextInputFormatter>? inputFormatters;
   final String? Function(String?)? validator;
 
-  WhiteBackTextField({super.key, this.hintText, this.maxLength, this.controller, this.maxLines, this.allowNumersOnly, this.inputFormatters, this.validator, this.onChanged});
+  WhiteBackTextField({super.key, this.hintText, this.enabled=true, this.maxLength, this.controller, this.maxLines, this.allowNumersOnly, this.inputFormatters, this.validator, this.onChanged});
 
 
   @override
@@ -33,6 +35,7 @@ class WhiteBackTextField extends StatelessWidget{
         minLines: maxLines,
         maxLength: maxLength,
         noBorder: true,
+        enabled: enabled,
         onChanged: onChanged,
         validator: validator,
         inputFormatters: inputFormatters,

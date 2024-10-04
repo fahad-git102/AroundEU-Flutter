@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,10 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:groupchat/component_library/chat_widgets/bottom_write_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/receiver_message_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/sender_message_widget.dart';
+import 'package:groupchat/component_library/dialogs/add_new_group_dialog.dart';
+import 'package:groupchat/component_library/dialogs/group_info_dialog.dart';
 import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
+import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/firebase/auth.dart';
@@ -25,6 +29,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/app_bars/custom_app_bar.dart';
+import '../../component_library/buttons/back_button.dart';
+import '../../component_library/text_widgets/extra_medium_text.dart';
 import '../../core/assets_names.dart';
 import '../../core/size_config.dart';
 import '../../data/message_model.dart';
@@ -51,23 +57,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   GlobalKey<FlutterMentionsState> key = GlobalKey<FlutterMentionsState>();
   bool? isRecording = false;
   bool? showEmojis = false;
-  Timer? _timer;
-  int _start = 0;
-  String? fileName;
-  int recordDuration = 0;
-  FlutterSoundRecorder? recorder;
+  FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
+  String? filePath;
 
-  void startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
-      _start = _start + 1;
-    });
-  }
   updateState() {
     setState(() {});
   }
 
+  Future<void> _initRecorder() async {
+    await Permission.microphone.request();
+    await audioRecorder.openRecorder();
+  }
+
   @override
   void dispose() {
+    audioRecorder.closeRecorder();
     _scrollController.dispose();
     super.dispose();
   }
@@ -90,6 +94,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   void initState() {
+    _initRecorder();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _scrollToBottom();
@@ -125,7 +130,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         child: Stack(
           children: [
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 showEmojis = false;
                 updateState();
               },
@@ -138,20 +143,64 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
                 child: Column(
                   children: [
-                    CustomAppBar(
-                      title: groupsPro.currentBLGroupsList?.firstWhere(
-                                  (element) => element.key == groupId) !=
-                              null
-                          ? groupsPro.currentBLGroupsList
-                              ?.firstWhere((element) => element.key == groupId)
-                              .name
-                          : 'Chat'.tr(),
+                    Container(
+                      width: SizeConfig.screenWidth,
+                      color: Colors.transparent,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 13.sp, right: 13.sp, top: 18.sp, bottom: 15.sp),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            BackIconButton(
+                              size: 24.0.sp,
+                              onTap: (){
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            SizedBox(width: 6.0.sp,),
+                            ClipRRect(
+                              borderRadius: BorderRadius.all(Radius.circular(30.sp)),
+                              child: CachedNetworkImage(imageUrl: groupsPro.currentBLGroupsList
+                                  ?.firstWhere((element) => element.key == groupId)
+                                  .groupImage??'', height: 30.sp, width: 30.sp, fit: BoxFit.fill,),
+                            ),
+                            SizedBox(width: 10.0.sp,),
+                            Expanded(
+                              child: ExtraMediumText(
+                                title: groupsPro.currentBLGroupsList?.firstWhere(
+                                        (element) => element.key == groupId) !=
+                                    null
+                                    ? groupsPro.currentBLGroupsList
+                                    ?.firstWhere((element) => element.key == groupId)
+                                    .name
+                                    : 'Chat'.tr(),
+                                textColor: AppColors.lightBlack,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: (){
+                                showDialog(context: context, builder: (ctx)=> GroupInfoDialog(
+                                  groupModel: groupsPro.currentBLGroupsList
+                                      ?.firstWhere((element) => element.key == groupId),
+                                ));
+                              },
+                              child: Padding(
+                                  padding: EdgeInsets.all(4.sp),
+                                  child: Icon(
+                                    Icons.info_outline,
+                                    color: AppColors.lightBlack,
+                                  )),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     Expanded(
                       child: ListView.builder(
                         controller: _scrollController,
                         itemCount: groupsPro.currentBLGroupsList
-                                ?.firstWhere((element) => element.key == groupId)
+                                ?.firstWhere(
+                                    (element) => element.key == groupId)
                                 .messages
                                 ?.length ??
                             0,
@@ -195,75 +244,85 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       padding: EdgeInsets.only(
                         bottom: MediaQuery.of(context).viewInsets.bottom,
                       ),
-                      child: BottomWriteWidget(
-                        mentionsKey: key,
-                        emojiPressed: () {
-                          showEmojis = !showEmojis!;
+                      child: GestureDetector(
+                        onTap: () {
+                          showEmojis = false;
                           updateState();
                         },
-                        isRecording: isRecording,
-                        showEmojis: showEmojis,
-                        showSendButton: showSendButton,
-                        mentionsData: [],
-                        pointerDownEvent: (details){
-                          isRecording = true;
-                          updateState();
-                          key.currentState?.controller?.text = 'Recording...'.tr();
-                          record();
-                        },
-                        pointerUpEvent: (details){
-                          isRecording = false;
-                          updateState();
-                          key.currentState?.controller?.clear();
-                          stop();
-                        },
-                        onTextFieldChanged: (val) {
-                          if (val.isNotEmpty && isRecording==false) {
-                            showSendButton = true;
+                        child: BottomWriteWidget(
+                          mentionsKey: key,
+                          emojiPressed: () {
+                            showEmojis = !showEmojis!;
                             updateState();
-                          } else {
-                            showSendButton = false;
+                          },
+                          isRecording: isRecording,
+                          showEmojis: showEmojis,
+                          showSendButton: showSendButton,
+                          mentionsData: [],
+                          pointerDownEvent: (details) {
+                            showEmojis = false;
+                            isRecording = true;
                             updateState();
-                          }
-                        },
-                        onCameraTap: () async {
-                          XFile? pickedImage =
-                              await Utilities.pickImage(imageSource: 'camera');
-                          if(pickedImage!=null){
-                            FileWithType fileWithType = FileWithType(
-                                file: File(pickedImage.path ?? ''),
-                                fileType: MessageType.image);
-                            pickedFiles ??= [];
-                            pickedFiles?.add(fileWithType);
-                            showBottomSheetWithFiles();
+                            key.currentState?.controller?.text =
+                                'Recording...'.tr();
+                            _startRecording();
+                          },
+                          pointerUpEvent: (details) {
+                            isRecording = false;
                             updateState();
-                          }
-                        },
-                        onAttachmentTap: () {
-                          showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (BuildContext context) {
-                                return PickMediaBottomsheet(
-                                  onMediaTap: () {
-                                    Navigator.pop(context);
-                                    pickMultipleImagesFromGallery();
-                                  },
-                                  onDocumentTap: () {
-                                    Navigator.pop(context);
-                                    pickFiles();
-                                  },
-                                  onLocationTap: () {
-                                    Navigator.pop(context);
-                                    sendLocationMessage();
-                                  },
-                                );
-                              });
-                        },
-                        onSendTap: () {
-                          sendTextMessage(groupId ?? '');
-                        },
+                            key.currentState?.controller?.clear();
+                            _stopRecording();
+                          },
+                          onTextFieldChanged: (val) {
+                            if (val.isNotEmpty && isRecording == false) {
+                              showSendButton = true;
+                              updateState();
+                            } else {
+                              showSendButton = false;
+                              updateState();
+                            }
+                          },
+                          onCameraTap: () async {
+                            showEmojis = false;
+                            XFile? pickedImage = await Utilities.pickImage(
+                                imageSource: 'camera');
+                            if (pickedImage != null) {
+                              FileWithType fileWithType = FileWithType(
+                                  file: File(pickedImage.path ?? ''),
+                                  fileType: MessageType.image);
+                              pickedFiles ??= [];
+                              pickedFiles?.add(fileWithType);
+                              showBottomSheetWithFiles();
+                              updateState();
+                            }
+                          },
+                          onAttachmentTap: () {
+                            showEmojis = false;
+                            showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (BuildContext context) {
+                                  return PickMediaBottomsheet(
+                                    onMediaTap: () {
+                                      Navigator.pop(context);
+                                      pickMultipleImagesFromGallery();
+                                    },
+                                    onDocumentTap: () {
+                                      Navigator.pop(context);
+                                      pickFiles();
+                                    },
+                                    onLocationTap: () {
+                                      Navigator.pop(context);
+                                      sendLocationMessage();
+                                    },
+                                  );
+                                });
+                          },
+                          onSendTap: () {
+                            sendTextMessage(groupId ?? '');
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -419,14 +478,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  Future<void> stop() async {
-
-  }
-
-  Future<void> record() async {
-
-  }
-
   Future<void> sendLocationMessage() async {
     isLoading = true;
     updateState();
@@ -449,23 +500,50 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    MessageModel messageModel = MessageModel(
-        latitude: position.latitude,
-        longitude: position.longitude,
-        uid: Auth().currentUser?.uid,
-        timeStamp: DateTime.now().millisecondsSinceEpoch);
-    GroupsRepository().sendMessage(messageModel, groupId ?? '', context, () {
+    if (permission != LocationPermission.denied &&
+        permission != LocationPermission.deniedForever) {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      MessageModel messageModel = MessageModel(
+          latitude: position.latitude,
+          longitude: position.longitude,
+          uid: Auth().currentUser?.uid,
+          timeStamp: DateTime.now().millisecondsSinceEpoch);
+      GroupsRepository().sendMessage(messageModel, groupId ?? '', context, () {
+        isLoading = false;
+        updateState();
+        key.currentState?.controller?.clear();
+        _animateToBottom();
+      }, (p0) {
+        isLoading = false;
+        updateState();
+        Utilities().showErrorMessage(context, message: p0.toString());
+      });
+    } else {
       isLoading = false;
       updateState();
-      key.currentState?.controller?.clear();
-      _animateToBottom();
-    }, (p0) {
-      isLoading = false;
+    }
+  }
+
+  Future<void> _startRecording() async {
+    final Directory appDir = await getApplicationDocumentsDirectory();
+    filePath = '${appDir.path}/audio_record.aac';
+    await audioRecorder.startRecorder(
+      toFile: filePath,
+      codec: Codec.aacADTS,
+    );
+  }
+
+  Future<void> _stopRecording() async {
+    await audioRecorder.stopRecorder();
+    if (filePath != null && filePath?.isNotEmpty == true) {
+      FileWithType fileWithType =
+          FileWithType(file: File(filePath ?? ''), fileType: MessageType.audio);
+      pickedFiles = [];
+      pickedFiles?.add(fileWithType);
+      showBottomSheetWithFiles();
       updateState();
-      Utilities().showErrorMessage(context, message: p0.toString());
-    });
+    }
   }
 }
 

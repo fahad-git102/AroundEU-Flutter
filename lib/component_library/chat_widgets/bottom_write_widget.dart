@@ -15,12 +15,14 @@ class BottomWriteWidget extends StatefulWidget {
   bool? isRecording;
   bool? showEmojis;
   bool? showSendButton;
+  FocusNode? focusNode;
   List<Map<String, dynamic>>? mentionsData;
   Function()? onAttachmentTap;
   Function(PointerUpEvent)? pointerUpEvent;
   Function(PointerDownEvent)? pointerDownEvent;
   Function()? onCameraTap;
   Function()? onSendTap;
+  Function()? onTextFieldTap;
   Function(String val)? onTextFieldChanged;
   GlobalKey<FlutterMentionsState>? mentionsKey;
 
@@ -31,6 +33,8 @@ class BottomWriteWidget extends StatefulWidget {
     this.emojiPressed,
     this.isRecording,
     this.showEmojis,
+    this.focusNode,
+    this.onTextFieldTap,
     this.pointerUpEvent,
     this.pointerDownEvent,
     this.showSendButton,
@@ -82,8 +86,10 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                       key: widget.mentionsKey,
                       suggestionPosition: SuggestionPosition.Top,
                       maxLines: 5,
+                      focusNode: widget.focusNode,
                       minLines: 1,
                       textInputAction: TextInputAction.done,
+                      onTap: widget.onTextFieldTap,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: widget.isRecording == true
                               ? AppColors.green
@@ -151,20 +157,23 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                         width: 5,
                       ),
                       widget.showSendButton == true
-                          ? Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                              padding: const EdgeInsets.all(10),
-                              child: Center(
-                                child: Icon(
-                                  Icons.send,
-                                  size: 20.sp,
-                                  color: AppColors.white,
+                          ? InkWell(
+                        onTap: widget.onSendTap,
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                padding: const EdgeInsets.all(10),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.send,
+                                    size: 20.sp,
+                                    color: AppColors.white,
+                                  ),
                                 ),
                               ),
-                            )
+                          )
                           : Listener(
                               onPointerUp: widget.pointerUpEvent,
                               onPointerDown: widget.pointerDownEvent,
