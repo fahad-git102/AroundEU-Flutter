@@ -50,5 +50,7 @@ class Images{
   static String officeContactIcon = 'assets/constant_icons/call_icon.svg';
   static String filePdfIcon = 'assets/constant_icons/file_pdf.svg';
   static String logoutIcon = 'assets/constant_icons/logout.svg';
+  static String deleteBig = 'assets/constant_icons/delete_big.svg';
+  static String closeNormal = 'assets/constant_icons/cross_normal.svg';
   static String profileImageIcon = 'assets/constant_icons/profile_picture.png';
 }

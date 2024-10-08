@@ -226,6 +226,29 @@ class Utilities {
     }
   }
 
+  String getMimeTypeFromExtension(String extension) {
+    switch (extension) {
+      case 'pdf':
+        return 'application/pdf';
+      case 'doc':
+        return 'application/msword';
+      case 'docx':
+        return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      case 'xls':
+        return 'application/vnd.ms-excel';
+      case 'xlsx':
+        return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+      case 'ppt':
+        return 'application/vnd.ms-powerpoint';
+      case 'pptx':
+        return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+      case 'txt':
+        return 'text/plain';
+      default:
+        return 'application/octet-stream';
+    }
+  }
+
   Future<String>? handleFileDownload(String url, String fileName) async {
     String filePath = await downloadFileIfNotExists(url, fileName);
 
@@ -236,8 +259,6 @@ class Utilities {
       return '';
     }
   }
-
-
 
   String getMonthShortName(int val) {
     switch (val) {

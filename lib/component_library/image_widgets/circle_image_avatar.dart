@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:groupchat/core/assets_names.dart';
+import 'package:groupchat/views/profile_screens/full_image_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_colors.dart';
@@ -21,42 +22,57 @@ class CircleImageAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: size ?? 70.0.sp,
-      height: size ?? 70.0.sp,
-      child: CircleAvatar(
-        backgroundColor: borderColor, // Border color
-        radius: (size ?? 70.0.sp) / 2,
-        child: ClipOval(
-          child: Container(
-            padding: EdgeInsets.all(borderWidth), // Border width
-            color: AppColors.fadedTextColor2, // Inner background color
-            child: ClipOval(
-              child: imagePath != null && imagePath?.isNotEmpty==true
-                  ? CachedNetworkImage(
-                height: size,
-                width: size,
-                imageUrl: imagePath ?? '',
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Center(
-                  child: SizedBox(
-                    height: 12.0.sp,
-                    width: 12.0.sp,
-                    child: const CircularProgressIndicator(),
+    return InkWell(
+      onTap: (){
+        if(imagePath!=null && imagePath!.isNotEmpty){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  FullImageScreen(
+                    imageUrl: imagePath??'',
                   ),
-                ),
-                errorWidget: (context, url, error) => const Center(
-                  child: Text(
-                    'Failed to load image',
-                    style: TextStyle(color: Colors.red),
+            ),
+          );
+        }
+      },
+      child: SizedBox(
+        width: size ?? 70.0.sp,
+        height: size ?? 70.0.sp,
+        child: CircleAvatar(
+          backgroundColor: borderColor, // Border color
+          radius: (size ?? 70.0.sp) / 2,
+          child: ClipOval(
+            child: Container(
+              padding: EdgeInsets.all(borderWidth), // Border width
+              color: AppColors.fadedTextColor2, // Inner background color
+              child: ClipOval(
+                child: imagePath != null && imagePath?.isNotEmpty==true
+                    ? CachedNetworkImage(
+                  height: size,
+                  width: size,
+                  imageUrl: imagePath ?? '',
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Center(
+                    child: SizedBox(
+                      height: 12.0.sp,
+                      width: 12.0.sp,
+                      child: const CircularProgressIndicator(),
+                    ),
                   ),
+                  errorWidget: (context, url, error) => const Center(
+                    child: Text(
+                      'Failed to load image',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                )
+                    : Image.asset(
+                  Images.profileImageIcon,
+                  width: size ?? 70.0.sp,
+                  height: size ?? 70.0.sp,
+                  fit: BoxFit.fill,
                 ),
-              )
-                  : Image.asset(
-                Images.profileImageIcon,
-                width: size ?? 70.0.sp,
-                height: size ?? 70.0.sp,
-                fit: BoxFit.fill,
               ),
             ),
           ),

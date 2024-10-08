@@ -6,6 +6,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
+import 'package:groupchat/component_library/bottomsheets/delete_message_bottomsheet.dart';
+import 'package:groupchat/component_library/dialogs/group_members_dialog.dart';
+import 'package:groupchat/component_library/image_widgets/circle_image_avatar.dart';
+import 'package:path/path.dart' as path;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:groupchat/component_library/bottomsheets/chat_media_bottomsheet.dart';
@@ -14,7 +18,6 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:groupchat/component_library/chat_widgets/bottom_write_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/receiver_message_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/sender_message_widget.dart';
-import 'package:groupchat/component_library/dialogs/add_new_group_dialog.dart';
 import 'package:groupchat/component_library/dialogs/group_info_dialog.dart';
 import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
 import 'package:groupchat/core/app_colors.dart';
@@ -28,7 +31,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../component_library/app_bars/custom_app_bar.dart';
 import '../../component_library/buttons/back_button.dart';
 import '../../component_library/text_widgets/extra_medium_text.dart';
 import '../../core/assets_names.dart';
@@ -158,11 +160,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               },
                             ),
                             SizedBox(width: 6.0.sp,),
-                            ClipRRect(
-                              borderRadius: BorderRadius.all(Radius.circular(30.sp)),
-                              child: CachedNetworkImage(imageUrl: groupsPro.currentBLGroupsList
-                                  ?.firstWhere((element) => element.key == groupId)
-                                  .groupImage??'', height: 30.sp, width: 30.sp, fit: BoxFit.fill,),
+                            CircleImageAvatar(
+                              imagePath: groupsPro.currentBLGroupsList
+                                ?.firstWhere((element) => element.key == groupId)
+                          .groupImage??'',
+                              size: 30.sp,
                             ),
                             SizedBox(width: 10.0.sp,),
                             Expanded(
@@ -179,9 +181,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             ),
                             InkWell(
                               onTap: (){
-                                showDialog(context: context, builder: (ctx)=> GroupInfoDialog(
+                                showDialog(context: context, builder: (ctx) => GroupInfoDialog(
                                   groupModel: groupsPro.currentBLGroupsList
                                       ?.firstWhere((element) => element.key == groupId),
+                                  onMembersTap: (){
+                                    showDialog(context: context, builder: (ctx) => GroupMembersDialog(
+                                      userIds: groupsPro.currentBLGroupsList
+                                          ?.firstWhere((element) => element.key == groupId).approvedMembers??[],
+                                    ));
+                                  },
                                 ));
                               },
                               child: Padding(
@@ -211,32 +219,37 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               .currentBLGroupsList
                               ?.firstWhere((element) => element.key == groupId)
                               .messages?[index];
-                          return groupsPro.currentBLGroupsList
-                                      ?.firstWhere(
-                                          (element) => element.key == groupId)
-                                      .messages?[index]
-                                      .uid ==
-                                  Auth().currentUser?.uid
-                              ? SenderMessageWidget(
-                                  messageModel: groupsPro.currentBLGroupsList
-                                      ?.firstWhere(
-                                          (element) => element.key == groupId)
-                                      .messages?[index],
-                                )
-                              : FutureBuilder<AppUser?>(
-                                  future: fetchUser(messageModel?.uid ?? ''),
-                                  builder: (context, snapshot) {
-                                    var senderName = '';
-                                    if (snapshot.hasData) {
-                                      senderName =
-                                          '${snapshot.data!.firstName ?? ''} ${snapshot.data!.surName ?? ''}';
-                                    }
-                                    return ReceiverMessageWidget(
-                                      senderName: senderName,
-                                      messageModel: messageModel,
-                                    );
-                                  },
-                                );
+                          return GestureDetector(
+                            onLongPress: (){
+                              showDeleteMessageBottomSheet(context, messageModel!);
+                            },
+                            child: groupsPro.currentBLGroupsList
+                                        ?.firstWhere(
+                                            (element) => element.key == groupId)
+                                        .messages?[index]
+                                        .uid ==
+                                    Auth().currentUser?.uid
+                                ? SenderMessageWidget(
+                                    messageModel: groupsPro.currentBLGroupsList
+                                        ?.firstWhere(
+                                            (element) => element.key == groupId)
+                                        .messages?[index],
+                                  )
+                                : FutureBuilder<AppUser?>(
+                                    future: fetchUser(messageModel?.uid ?? ''),
+                                    builder: (context, snapshot) {
+                                      var senderName = '';
+                                      if (snapshot.hasData) {
+                                        senderName =
+                                            '${snapshot.data!.firstName ?? ''} ${snapshot.data!.surName ?? ''}';
+                                      }
+                                      return ReceiverMessageWidget(
+                                        senderName: senderName,
+                                        messageModel: messageModel,
+                                      );
+                                    },
+                                  ),
+                          );
                         },
                       ),
                     ),
@@ -362,9 +375,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       {String? documentName}) async {
     isLoading = true;
     updateState();
+    String? extension = path.extension(fileWithType.file?.path??'').toLowerCase().replaceAll('.', '');
     String? fileUrl = fileWithType.file != null
         ? await FirebaseCrud()
-            .uploadImage(context: context, file: File(fileWithType.file!.path))
+            .uploadImage(context: context, file: File(fileWithType.file!.path), ext: extension)
         : null;
     MessageModel messageModel = MessageModel(
         uid: Auth().currentUser?.uid,
@@ -422,6 +436,29 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       }
     }
   }
+
+  void showDeleteMessageBottomSheet(BuildContext context, MessageModel item) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DeleteMessageBottomsheet(
+          onCancelTap: () {
+            Navigator.pop(context); // Close the sheet on cancel
+          },
+          onDeleteForMeTap: (){
+
+          },
+          showEveryoneButton: item.uid != Auth().currentUser?.uid,
+          onDeleteForEveryoneTap: () {
+
+          },
+        );
+      },
+    );
+  }
+
 
   Future<void> pickFiles() async {
     pickedFiles = null;

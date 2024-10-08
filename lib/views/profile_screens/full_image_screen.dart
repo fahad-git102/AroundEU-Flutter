@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/app_colors.dart';
@@ -14,34 +15,18 @@ class FullImageScreen extends StatelessWidget {
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.network(
-              imageUrl,
-              errorBuilder: (context, error, stackTrace) {
-                return const Center(
-                  child: Text(
-                    'Failed to load image',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                );
-              },
-              loadingBuilder: (context, child, progress) {
-                if (progress == null) return child;
-                return Center(
-                  child: CircularProgressIndicator(
-                    value: progress.expectedTotalBytes != null
-                        ? progress.cumulativeBytesLoaded /
-                        (progress.expectedTotalBytes ?? 1)
-                        : null,
-                  ),
-                );
-              },
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
+              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  CircularProgressIndicator(value: downloadProgress.progress),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
           ),
           Positioned(
             top: 40,
             left: 16,
             child: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white),
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () {
                 Navigator.of(context).pop();
               },

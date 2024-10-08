@@ -8,11 +8,13 @@ import 'package:groupchat/component_library/chat_widgets/location_message_widget
 import 'package:groupchat/component_library/chat_widgets/video_message_widget.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
+import 'package:groupchat/core/download_manager.dart';
 import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/data/message_model.dart';
+import 'package:groupchat/views/profile_screens/full_image_screen.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import '../../views/chat_screens/full_video_screen.dart';
 import 'audio_message_widget.dart';
 
 class SenderMessageWidget extends StatefulWidget {
@@ -66,56 +68,84 @@ class _SenderMessageState extends State<SenderMessageWidget> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         isImage == true
-            ? ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(7.sp)),
-                child: CachedNetworkImage(
-                  height: 140.sp,
-                  width: 140.sp,
-                  imageUrl: message.image ?? '',
-                  placeholder: (context, url) => SpinKitPulse(
-                    color: AppColors.mainColorDark,
+            ? InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FullImageScreen(
+                        imageUrl: message.image ?? '',
+                      ),
+                    ),
+                  );
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(7.sp)),
+                  child: CachedNetworkImage(
+                    height: 140.sp,
+                    width: 140.sp,
+                    imageUrl: message.image ?? '',
+                    placeholder: (context, url) => SpinKitPulse(
+                      color: AppColors.mainColorDark,
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                    fit: BoxFit.cover,
                   ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  fit: BoxFit.cover,
                 ),
               )
             : isAudio == true
                 ? AudioMessageWidget(audioUrl: message.audio ?? '')
                 : isVideo
-                    ? VideoMessageWidget(videoUrl: message.video ?? '')
+                    ? InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (ctx) => VideoPlayerScreen(
+                                      videoUrl: message.video ?? '')));
+                        },
+                        child:
+                            VideoMessageWidget(videoUrl: message.video ?? ''))
                     : isDocument
-                        ? DocumentMessageWidget(
-                            messageId: message.key,
-                            documentName:
-                                message.documentName ?? 'Document'.tr(),
-                            documentUrl: message.document ?? '',
+                        ? InkWell(
+                            onTap: () {
+                              DownloadManager().downloadFile(message.document??'', message.documentName??'document.pdf');
+                            },
+                            child: DocumentMessageWidget(
+                              messageId: message.key,
+                              documentName:
+                                  message.documentName ?? 'Document'.tr(),
+                              documentUrl: message.document ?? '',
+                            ),
                           )
                         : isMessage
                             ? Padding(
-                              padding: EdgeInsets.only(
-                                  left: 7.sp, right: 7.sp, top: 7.sp),
-                              child: Linkify(
-                                onOpen: (link) async {
-                                  if (!await launchUrl(
-                                      Uri.parse(link.url))) {
-                                    throw Exception(
-                                        'Could not launch ${link.url}');
-                                  }
-                                },
-                                textAlign: TextAlign.start,
-                                text: Utilities().parseHtmlToPlainText(
-                                    widget.messageModel?.message ?? ''),
-                                style: TextStyle(
-                                    color: AppColors.lightBlack,
-                                    fontSize: 12.3.sp),
-                                linkStyle: TextStyle(
-                                    color: AppColors.hyperLinkColor),
-                              ),
-                            )
-                            : isLocation ? LocationMessageWidget(
-          latitude: message.latitude,
-          longitude: message.longitude,
-        ) : Container(),
+                                padding: EdgeInsets.only(
+                                    left: 7.sp, right: 7.sp, top: 7.sp),
+                                child: Linkify(
+                                  onOpen: (link) async {
+                                    if (!await launchUrl(Uri.parse(link.url))) {
+                                      throw Exception(
+                                          'Could not launch ${link.url}');
+                                    }
+                                  },
+                                  textAlign: TextAlign.start,
+                                  text: Utilities().parseHtmlToPlainText(
+                                      widget.messageModel?.message ?? ''),
+                                  style: TextStyle(
+                                      color: AppColors.lightBlack,
+                                      fontSize: 12.3.sp),
+                                  linkStyle: TextStyle(
+                                      color: AppColors.hyperLinkColor),
+                                ),
+                              )
+                            : isLocation
+                                ? LocationMessageWidget(
+                                    latitude: message.latitude,
+                                    longitude: message.longitude,
+                                  )
+                                : Container(),
         SizedBox(
           height: 3.sp,
         ),

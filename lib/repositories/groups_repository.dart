@@ -20,6 +20,16 @@ class GroupsRepository {
     );
   }
 
+  Future<void> updateGroup(Map<String, dynamic> map, String groupId, BuildContext context,
+      Function() onComplete, Function(dynamic p0) onError) async {
+    FirebaseCrud().updateData(
+        key: "$groups/$groupId",
+        context: context,
+        data: map,
+        onComplete: onComplete,
+        onCatchError: onError);
+  }
+
   Future<void> sendMessage(MessageModel messageModel, String groupId, BuildContext context,
       Function() onComplete, Function(dynamic p0) onError) async {
     String? key = FirebaseDatabase.instance.ref(groups).push().key;

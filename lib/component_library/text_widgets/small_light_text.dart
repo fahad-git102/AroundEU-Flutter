@@ -10,6 +10,7 @@ class SmallLightText extends StatelessWidget {
         this.textColor,
         this.textAlign,
         this.lineThrough=false,
+        this.textDecoration,
         this.maxLines,
         this.overflow, this.fontWeight, this.fontSize})
       : super(key: key);
@@ -18,6 +19,7 @@ class SmallLightText extends StatelessWidget {
   final double? fontSize;
   final FontWeight? fontWeight;
   final TextAlign? textAlign;
+  final TextDecoration? textDecoration;
   final int? maxLines;
   final TextOverflow? overflow;
   final bool? lineThrough;
@@ -29,7 +31,7 @@ class SmallLightText extends StatelessWidget {
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
             fontSize: fontSize??10.5.sp,
             fontWeight: fontWeight??FontWeight.w300,
-            decoration: lineThrough==true?TextDecoration.lineThrough:TextDecoration.none,
+            decoration: textDecoration ?? (lineThrough==true?TextDecoration.lineThrough:TextDecoration.none),
             color: textColor ?? AppColors.black),
         textAlign: textAlign,
         maxLines: maxLines,

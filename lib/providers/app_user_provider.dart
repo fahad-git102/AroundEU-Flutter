@@ -88,6 +88,18 @@ class AppUserProvider extends ChangeNotifier{
     return null;
   }
 
+  Future<List<AppUser?>> getUsersListByIds(List<String?>? usersIds) async {
+    if (usersIds == null || usersIds.isEmpty) [];
+    List<AppUser> fetchedUsers = [];
+    await Future.wait(usersIds!.map((id) async {
+      AppUser? user = await getUserById(id??'');
+      if (user != null) {
+        fetchedUsers.add(user);
+      }
+    }));
+    return fetchedUsers;
+  }
+
   Future<AppUser?> getUserById(String userId) async {
     if(usersCache!=null){
       for(AppUser user in usersCache??[]){

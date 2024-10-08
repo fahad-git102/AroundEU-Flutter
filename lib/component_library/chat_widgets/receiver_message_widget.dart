@@ -1,22 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:groupchat/component_library/app_bars/custom_app_bar.dart';
 import 'package:groupchat/component_library/chat_widgets/audio_message_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/document_message_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/location_message_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/video_message_widget.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/data/message_model.dart';
+import 'package:groupchat/views/chat_screens/full_video_screen.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/app_colors.dart';
+import '../../core/download_manager.dart';
 import '../../core/utilities_class.dart';
-import '../text_widgets/extra_medium_text.dart';
+import '../../views/profile_screens/full_image_screen.dart';
 
 class ReceiverMessageWidget extends StatefulWidget {
   MessageModel? messageModel;
@@ -69,32 +69,58 @@ class _ReceiverMessageState extends State<ReceiverMessageWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         isImage == true
-            ? ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(7.sp)),
-                child: CachedNetworkImage(
-                  height: 140.sp,
-                  width: 140.sp,
-                  imageUrl: message.image ?? '',
-                  placeholder: (context, url) => SpinKitPulse(
-                    color: AppColors.mainColorDark,
+            ? InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FullImageScreen(
+                        imageUrl: message.image ?? '',
+                      ),
+                    ),
+                  );
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(7.sp)),
+                  child: CachedNetworkImage(
+                    height: 140.sp,
+                    width: 140.sp,
+                    imageUrl: message.image ?? '',
+                    placeholder: (context, url) => SpinKitPulse(
+                      color: AppColors.mainColorDark,
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                    fit: BoxFit.cover,
                   ),
-                  // Placeholder while loading
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  // Error widget
-                  fit: BoxFit.cover, // Adjust this as needed
                 ),
               )
             : isAudio == true
                 ? AudioMessageWidget(audioUrl: message.audio ?? '')
                 : isVideo
-                    ? VideoMessageWidget(videoUrl: message.video ?? '')
+                    ? InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (ctx) => VideoPlayerScreen(
+                                      videoUrl: message.video ?? '')));
+                        },
+                        child:
+                            VideoMessageWidget(videoUrl: message.video ?? ''))
                     : isDocument
-                        ? DocumentMessageWidget(
-                            messageId: message.key,
-                            documentUrl: message.document ?? '',
-                            documentName:
-                                message.documentName ?? 'Document'.tr(),
-                          )
+                        ? InkWell(
+          onTap: () {
+
+            DownloadManager().downloadFile(message.document??'', message.documentName??'document.pdf');
+          },
+                          child: DocumentMessageWidget(
+                              messageId: message.key,
+                              documentUrl: message.document ?? '',
+                              documentName:
+                                  message.documentName ?? 'Document'.tr(),
+                            ),
+                        )
                         : isMessage
                             ? Padding(
                                 padding: EdgeInsets.only(
@@ -116,10 +142,12 @@ class _ReceiverMessageState extends State<ReceiverMessageWidget> {
                                       color: AppColors.hyperLinkColor),
                                 ),
                               )
-                            : isLocation ? LocationMessageWidget(
-          latitude: message.latitude,
-          longitude: message.longitude,
-        ) : Container(),
+                            : isLocation
+                                ? LocationMessageWidget(
+                                    latitude: message.latitude,
+                                    longitude: message.longitude,
+                                  )
+                                : Container(),
         SizedBox(
           height: 3.sp,
         ),

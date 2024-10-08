@@ -37,11 +37,13 @@ class FirebaseCrud {
 
   Future<String> uploadImage({
     required BuildContext context,
+    String? ext,
     required File file}) async {
     final bytes = await file.readAsBytes();
     var b64 = base64.encode(bytes);
     var mime = lookupMimeType('', headerBytes: bytes);
-    var extension = extensionFromMime(mime!);
+    mime ??= Utilities().getMimeTypeFromExtension(ext??'');
+    var extension = extensionFromMime(mime);
     var path = '$media/${DateTime
         .now()
         .millisecondsSinceEpoch}_${file.path
