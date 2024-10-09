@@ -30,6 +30,19 @@ class GroupsRepository {
         onCatchError: onError);
   }
 
+  deleteMessage(BuildContext ctx, String messageKey, String groupKey,
+      Function() onComplete, Function(dynamic p0) onError) {
+    FirebaseDatabase.instance
+        .ref(groups)
+        .child('$groupKey/$messages/$messageKey')
+        .remove()
+        .then((value) {
+      onComplete();
+    }).onError((error, stackTrace){
+      onError(error);
+    });
+  }
+
   Future<void> sendMessage(MessageModel messageModel, String groupId, BuildContext context,
       Function() onComplete, Function(dynamic p0) onError) async {
     String? key = FirebaseDatabase.instance.ref(groups).push().key;

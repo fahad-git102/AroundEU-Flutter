@@ -11,11 +11,10 @@ import '../buttons/button.dart';
 import '../text_widgets/small_light_text.dart';
 
 class DeleteMessageBottomsheet extends StatefulWidget {
-  final Function()? onDeleteForMeTap;
   final Function()? onDeleteForEveryoneTap;
   final Function()? onCancelTap;
   final bool? showEveryoneButton;
-  const DeleteMessageBottomsheet({super.key, this.onDeleteForMeTap, this.showEveryoneButton= false, this.onCancelTap, this.onDeleteForEveryoneTap});
+  const DeleteMessageBottomsheet({super.key, this.showEveryoneButton= false, this.onCancelTap, this.onDeleteForEveryoneTap});
 
   @override
   State<DeleteMessageBottomsheet> createState() => _DeleteMessageBottomsheetState();
@@ -25,7 +24,7 @@ class _DeleteMessageBottomsheetState extends State<DeleteMessageBottomsheet> {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.6,
+      initialChildSize: 0.5,
       minChildSize: 0.4,
       maxChildSize: 0.9,
       builder: (BuildContext context, ScrollController scrollController) {
@@ -68,14 +67,6 @@ class _DeleteMessageBottomsheetState extends State<DeleteMessageBottomsheet> {
                     ),
                     SizedBox(
                       height: 15.sp,
-                    ),
-                    Button(
-                        btnColor: AppColors.red,
-                        text: 'Delete for me'.tr(),
-                        btnTxtColor: AppColors.white,
-                        tapAction: widget.onDeleteForMeTap),
-                    SizedBox(
-                      height: 6.sp,
                     ),
                     Button(
                         btnColor: AppColors.red,

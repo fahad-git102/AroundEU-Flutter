@@ -74,34 +74,34 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void dispose() {
     audioRecorder.closeRecorder();
-    _scrollController.dispose();
+    // _scrollController.dispose();
     super.dispose();
   }
 
-  void _scrollToBottom() {
-    if (_scrollController.hasClients) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    }
-  }
+  // void _scrollToBottom() {
+  //   if (_scrollController.hasClients) {
+  //     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  //   }
+  // }
 
-  void _animateToBottom() {
-    if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
+  // void _animateToBottom() {
+  //   if (_scrollController.hasClients) {
+  //     _scrollController.animateTo(
+  //       _scrollController.position.maxScrollExtent,
+  //       duration: const Duration(milliseconds: 300),
+  //       curve: Curves.easeInOut,
+  //     );
+  //   }
+  // }
 
   @override
   void initState() {
     _initRecorder();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _scrollToBottom();
-      }
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (mounted) {
+    //     _scrollToBottom();
+    //   }
+    // });
     super.initState();
   }
 
@@ -203,52 +203,101 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         ),
                       ),
                     ),
+                    // Expanded(
+                    //   child: ListView.builder(
+                    //     controller: _scrollController,
+                    //     reverse: true,
+                    //     itemCount: groupsPro.currentBLGroupsList
+                    //             ?.firstWhere(
+                    //                 (element) => element.key == groupId)
+                    //             .messages
+                    //             ?.length ??
+                    //         0,
+                    //     padding: EdgeInsets.symmetric(horizontal: 13.sp),
+                    //     physics: const BouncingScrollPhysics(),
+                    //     itemBuilder: (BuildContext context, int index) {
+                    //       MessageModel? messageModel = groupsPro
+                    //           .currentBLGroupsList
+                    //           ?.firstWhere((element) => element.key == groupId)
+                    //           .messages?[index];
+                    //       return GestureDetector(
+                    //         onLongPress: (){
+                    //           showDeleteMessageBottomSheet(context, messageModel!);
+                    //         },
+                    //         child: groupsPro.currentBLGroupsList
+                    //                     ?.firstWhere(
+                    //                         (element) => element.key == groupId)
+                    //                     .messages?[index]
+                    //                     .uid ==
+                    //                 Auth().currentUser?.uid
+                    //             ? SenderMessageWidget(
+                    //                 messageModel: groupsPro.currentBLGroupsList
+                    //                     ?.firstWhere(
+                    //                         (element) => element.key == groupId)
+                    //                     .messages?[index],
+                    //               )
+                    //             : FutureBuilder<AppUser?>(
+                    //                 future: fetchUser(messageModel?.uid ?? ''),
+                    //                 builder: (context, snapshot) {
+                    //                   var senderName = '';
+                    //                   if (snapshot.hasData) {
+                    //                     senderName =
+                    //                         '${snapshot.data!.firstName ?? ''} ${snapshot.data!.surName ?? ''}';
+                    //                   }
+                    //                   return ReceiverMessageWidget(
+                    //                     senderName: senderName,
+                    //                     messageModel: messageModel,
+                    //                   );
+                    //                 },
+                    //               ),
+                    //       );
+                    //     },
+                    //   ),
+                    // ),
                     Expanded(
                       child: ListView.builder(
+                        reverse: true,
                         controller: _scrollController,
                         itemCount: groupsPro.currentBLGroupsList
-                                ?.firstWhere(
-                                    (element) => element.key == groupId)
-                                .messages
-                                ?.length ??
+                            ?.firstWhere((element) => element.key == groupId)
+                            .messages
+                            ?.length ??
                             0,
                         padding: EdgeInsets.symmetric(horizontal: 13.sp),
                         physics: const BouncingScrollPhysics(),
                         itemBuilder: (BuildContext context, int index) {
-                          MessageModel? messageModel = groupsPro
+                          List<MessageModel>? reversedMessages = groupsPro
                               .currentBLGroupsList
                               ?.firstWhere((element) => element.key == groupId)
-                              .messages?[index];
+                              .messages
+                              ?.reversed
+                              .toList();
+                          MessageModel? messageModel = reversedMessages?[index];
+
                           return GestureDetector(
-                            onLongPress: (){
-                              showDeleteMessageBottomSheet(context, messageModel!);
+                            onLongPress: () {
+                              if(messageModel?.uid == Auth().currentUser?.uid){
+                                showDeleteMessageBottomSheet(context, messageModel!);
+                              }
                             },
-                            child: groupsPro.currentBLGroupsList
-                                        ?.firstWhere(
-                                            (element) => element.key == groupId)
-                                        .messages?[index]
-                                        .uid ==
-                                    Auth().currentUser?.uid
+                            child: messageModel?.uid == Auth().currentUser?.uid
                                 ? SenderMessageWidget(
-                                    messageModel: groupsPro.currentBLGroupsList
-                                        ?.firstWhere(
-                                            (element) => element.key == groupId)
-                                        .messages?[index],
-                                  )
+                              messageModel: messageModel,
+                            )
                                 : FutureBuilder<AppUser?>(
-                                    future: fetchUser(messageModel?.uid ?? ''),
-                                    builder: (context, snapshot) {
-                                      var senderName = '';
-                                      if (snapshot.hasData) {
-                                        senderName =
-                                            '${snapshot.data!.firstName ?? ''} ${snapshot.data!.surName ?? ''}';
-                                      }
-                                      return ReceiverMessageWidget(
-                                        senderName: senderName,
-                                        messageModel: messageModel,
-                                      );
-                                    },
-                                  ),
+                              future: fetchUser(messageModel?.uid ?? ''),
+                              builder: (context, snapshot) {
+                                var senderName = '';
+                                if (snapshot.hasData) {
+                                  senderName =
+                                  '${snapshot.data!.firstName ?? ''} ${snapshot.data!.surName ?? ''}';
+                                }
+                                return ReceiverMessageWidget(
+                                  senderName: senderName,
+                                  messageModel: messageModel,
+                                );
+                              },
+                            ),
                           );
                         },
                       ),
@@ -364,7 +413,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           timeStamp: DateTime.now().millisecondsSinceEpoch);
       GroupsRepository().sendMessage(messageModel, groupId, context, () {
         key.currentState?.controller?.clear();
-        _animateToBottom();
+        // _animateToBottom();
       }, (p0) {
         Utilities().showErrorMessage(context, message: p0.toString());
       });
@@ -397,7 +446,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       isLoading = false;
       updateState();
       key.currentState?.controller?.clear();
-      _animateToBottom();
+      // _animateToBottom();
     }, (p0) {
       isLoading = false;
       updateState();
@@ -447,12 +496,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           onCancelTap: () {
             Navigator.pop(context); // Close the sheet on cancel
           },
-          onDeleteForMeTap: (){
-
-          },
           showEveryoneButton: item.uid != Auth().currentUser?.uid,
           onDeleteForEveryoneTap: () {
+            Navigator.pop(context);
+            GroupsRepository().deleteMessage(context, item.key??'', groupId??'', (){
 
+            }, (p0){
+              Utilities().showCustomToast(message: p0.toString(), isError: true);
+            });
           },
         );
       },
@@ -550,7 +601,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         isLoading = false;
         updateState();
         key.currentState?.controller?.clear();
-        _animateToBottom();
+        // _animateToBottom();
       }, (p0) {
         isLoading = false;
         updateState();
