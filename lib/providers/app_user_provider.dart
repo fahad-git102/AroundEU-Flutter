@@ -15,7 +15,7 @@ class AppUserProvider extends ChangeNotifier{
 
   AppUser? currentUser;
   List<CountryModel>? countriesList;
-  List<AppUser>? allTeachersList, filteredTeachersList, usersCache;
+  List<AppUser>? allTeachersList, filteredTeachersList, usersCache, allAdminsList;
 
   getCurrentUser() async {
     var map = await UsersRepository().getCurrentUser();
@@ -37,6 +37,22 @@ class AppUserProvider extends ChangeNotifier{
         );
       }).toList();
       notifyListeners();
+    });
+  }
+
+  listenToAdmins(){
+    if(allAdminsList!=null){
+      return;
+    }
+    UsersRepository().getAllAdminsStream().listen((usersData) {
+      if(usersData.isNotEmpty){
+        allAdminsList ??= [];
+        allAdminsList = usersData.values.toList();
+        notifyListeners();
+      }else{
+        allAdminsList = [];
+        notifyListeners();
+      }
     });
   }
 

@@ -129,6 +129,18 @@ class UsersRepository{
     });
   }
 
+  Stream<Map<String, AppUser>> getAllAdminsStream() {
+    final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+    return dbRef.child(users)
+        .orderByChild('admin').equalTo(true)
+        .onValue.map((event) {
+      final data = event.snapshot.value != null
+          ? Map<String, dynamic>.from(event.snapshot.value as Map)
+          : {};
+      return data.map((key, value) => MapEntry(key, AppUser.fromMap(Map<String, dynamic>.from(value))));
+    });
+  }
+
   deleteCountry(BuildContext ctx, String countryId) {
     FirebaseDatabase.instance
         .ref(countries)

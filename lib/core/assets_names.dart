@@ -12,6 +12,7 @@ class Images{
   static String launcherIcon = 'assets/logos_backgrounds/launcher_icon.png';
   static String logoAroundEU = 'assets/logos_backgrounds/logo_around.png';
   static String mainBackground = 'assets/logos_backgrounds/main_background.png';
+  static String chatBackground = 'assets/logos_backgrounds/chat_background.png';
 
   // social media icons
   static String appleIcon = 'assets/social_media_icons/apple.svg';

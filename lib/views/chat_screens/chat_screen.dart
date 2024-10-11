@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -97,6 +95,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void initState() {
     _initRecorder();
+    // GroupsRepository().readAllMessages(groupId??'');
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   if (mounted) {
     //     _scrollToBottom();
@@ -115,6 +114,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (args != null && pageStarted == true) {
       pageStarted = false;
       groupId = args['groupId'] ?? '';
+      GroupsRepository().readAllMessages(groupId??'');
+      ref.watch(appUserProvider).listenToAdmins();
     }
     if (groupsPro.currentBLGroupsList
             ?.firstWhere((element) => element.key == groupId) ==
@@ -139,7 +140,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(Images.mainBackground),
+                    image: AssetImage(Images.chatBackground),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -406,6 +407,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   sendTextMessage(String groupId) {
+    var groupsPro = ref.watch(groupsProvider);
+    var appUserPro = ref.watch(appUserProvider);
     if (key.currentState?.controller?.text.isNotEmpty == true) {
       MessageModel messageModel = MessageModel(
           message: key.currentState?.controller?.text,
@@ -413,7 +416,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           timeStamp: DateTime.now().millisecondsSinceEpoch);
       GroupsRepository().sendMessage(messageModel, groupId, context, () {
         key.currentState?.controller?.clear();
-        // _animateToBottom();
+        groupsPro.incrementUnreadCountsForGroup(context, groupsPro.currentBLGroupsList
+        !.firstWhere((element) => element.key == groupId), appUserPro.allAdminsList??[]);
       }, (p0) {
         Utilities().showErrorMessage(context, message: p0.toString());
       });
@@ -422,6 +426,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   sendFileMessage(String groupId, FileWithType fileWithType,
       {String? documentName}) async {
+    var groupsPro = ref.watch(groupsProvider);
+    var appUserPro = ref.watch(appUserProvider);
     isLoading = true;
     updateState();
     String? extension = path.extension(fileWithType.file?.path??'').toLowerCase().replaceAll('.', '');
@@ -446,7 +452,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       isLoading = false;
       updateState();
       key.currentState?.controller?.clear();
-      // _animateToBottom();
+      groupsPro.incrementUnreadCountsForGroup(context, groupsPro.currentBLGroupsList
+          !.firstWhere((element) => element.key == groupId), appUserPro.allAdminsList??[]);
     }, (p0) {
       isLoading = false;
       updateState();
@@ -567,6 +574,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Future<void> sendLocationMessage() async {
+    var groupsPro = ref.watch(groupsProvider);
+    var appUserPro = ref.watch(appUserProvider);
     isLoading = true;
     updateState();
     bool serviceEnabled;
@@ -601,6 +610,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         isLoading = false;
         updateState();
         key.currentState?.controller?.clear();
+        groupsPro.incrementUnreadCountsForGroup(context, groupsPro.currentBLGroupsList
+        !.firstWhere((element) => element.key == groupId), appUserPro.allAdminsList??[]);
         // _animateToBottom();
       }, (p0) {
         isLoading = false;

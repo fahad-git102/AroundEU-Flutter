@@ -60,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen>{
         }
       }
       appUserPro.listenToCountries();
+      appUserPro.listenToAdmins();
       return Scaffold(
         key: _scaffoldKey,
         drawer: HomeDrawer(),

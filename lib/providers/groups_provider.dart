@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/data/users_model.dart';
+import 'package:groupchat/firebase/firebase_crud.dart';
 
 import '../data/group_model.dart';
 import '../data/message_model.dart';
+import '../firebase/auth.dart';
 import '../repositories/groups_repository.dart';
 
 final groupsProvider = ChangeNotifierProvider((ref) => GroupsProvider());
@@ -64,6 +67,34 @@ class GroupsProvider extends ChangeNotifier {
       }
       notifyListeners();
     });
+  }
+
+  incrementUnreadCountsForGroup(BuildContext context, GroupModel groupModel, List<AppUser> admins){
+    for (String? item in groupModel.approvedMembers??[]){
+      if(item != Auth().currentUser?.uid){
+        if (groupModel.unReadCounts?.containsKey(item)==true) {
+          groupModel.unReadCounts?[item] = (groupModel.unReadCounts?[item] as int) + 1;
+        } else {
+          groupModel.unReadCounts?[item] = 1;
+        }
+      }
+    }
+
+    for(AppUser admin in admins){
+      if(admin.uid != Auth().currentUser?.uid){
+        if (groupModel.unReadCounts?.containsKey(admin.uid)==true) {
+          groupModel.unReadCounts?[admin.uid] = (groupModel.unReadCounts?[admin.uid] as int) + 1;
+        } else {
+          groupModel.unReadCounts?[admin.uid] = 1;
+        }
+      }
+    }
+    if (groupModel.unReadCounts != null) {
+      Map<String, dynamic> map = groupModel.unReadCounts!.cast<String, dynamic>();
+      FirebaseCrud().updateData(key: '$groups/${groupModel.key}/unReadCounts', context: context, data: map, onComplete: (){
+        print('counts increased...');
+      });
+    }
   }
 
 }

@@ -4,6 +4,7 @@ import 'package:groupchat/data/group_model.dart';
 
 import '../core/static_keys.dart';
 import '../data/message_model.dart';
+import '../firebase/auth.dart';
 import '../firebase/firebase_crud.dart';
 
 class GroupsRepository {
@@ -18,6 +19,10 @@ class GroupsRepository {
       onComplete: onComplete,
       onCatchError: onError,
     );
+  }
+
+  readAllMessages(String groupId){
+    FirebaseDatabase.instance.ref(groups).child('$groupId/unReadCounts/${Auth().currentUser?.uid}').set(0);
   }
 
   Future<void> updateGroup(Map<String, dynamic> map, String groupId, BuildContext context,
@@ -55,6 +60,8 @@ class GroupsRepository {
       onCatchError: onError
     );
   }
+
+
 
   Stream<Map<String, GroupModel>> getGroupsStream(
       {required String businessKey}) {
