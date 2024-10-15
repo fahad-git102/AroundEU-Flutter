@@ -94,15 +94,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       GroupsRepository().readAllMessages(groupId??'');
       ref.watch(appUserProvider).listenToAdmins();
     }
-    if (groupsPro.currentBLGroupsList
-            ?.firstWhere((element) => element.key == groupId) ==
-        null) {
-      Utilities().showErrorMessage(context,
-          barrierDismissible: false,
-          message: "Something went wrong".tr(), onBtnTap: () {
-        Navigator.pop(context);
-        Navigator.pop(context);
-      });
+    if(groupsPro.currentBLGroupsList==null || groupsPro.currentBLGroupsList?.isEmpty==true){
+      groupsPro.listenToGroupById(groupId??'');
+    }else{
+      if (groupsPro.currentBLGroupsList
+          ?.firstWhere((element) => element.key == groupId) ==
+          null) {
+        Utilities().showErrorMessage(context,
+            barrierDismissible: false,
+            message: "Something went wrong".tr(), onBtnTap: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            });
+      }
     }
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -153,7 +157,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                     ? groupsPro.currentBLGroupsList
                                     ?.firstWhere((element) => element.key == groupId)
                                     .name
-                                    : 'Chat'.tr(),
+                                    : ''.tr(),
                                 textColor: AppColors.lightBlack,
                               ),
                             ),

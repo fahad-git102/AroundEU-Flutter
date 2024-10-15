@@ -27,8 +27,6 @@ class _SelectBusinessState extends ConsumerState<SelectBusinessScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await ref.watch(businessListProvider).listenToBusinessList();
-      // ref.watch(businessListProvider).filterBusinessListByCountry(
-      //     ref.read(appUserProvider).coordinatorsCountryModel?.id ?? '');
     });
   }
 

@@ -15,6 +15,33 @@ class GroupsProvider extends ChangeNotifier {
   List<GroupModel>? currentBLGroupsList;
   List<AppUser>? usersCache;
 
+  void listenToGroupById(String groupId){
+    GroupsRepository().getGroupStreamById(groupId: groupId).listen((groupModel){
+      if(groupModel!=null){
+        int? existingIndex = currentBLGroupsList?.indexWhere((group) => group.key == groupModel?.key);
+        groupModel.messages?.sort((a, b) => a.timeStamp??0.compareTo(b.timeStamp??0));
+        if (existingIndex!=null&&existingIndex >= 0) {
+          currentBLGroupsList?[existingIndex] = groupModel;
+        } else {
+          currentBLGroupsList??=[];
+          currentBLGroupsList?.add(groupModel);
+        }
+        if(currentBLGroupsList!=null && currentBLGroupsList?.isNotEmpty==true){
+          for(GroupModel group in currentBLGroupsList??[]){
+            if(group.messages!=null && group.messages?.isNotEmpty==true){
+              group.messages?.sort((a, b) {
+                var aTimeStamp = a.timeStamp??0;
+                var bTimeStamp = b.timeStamp??0;
+                return aTimeStamp.compareTo(bTimeStamp);
+              });
+            }
+          }
+        }
+        notifyListeners();
+      }
+    });
+  }
+
   void listenToCurrentBLGroups(String businessKey) {
     GroupsRepository().getGroupsStream(businessKey: businessKey).listen((groupsData) {
       if(groupsData.entries.isNotEmpty == true){

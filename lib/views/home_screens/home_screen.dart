@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/component_library/buttons/custom_icon_button.dart';
 import 'package:groupchat/component_library/drawers/home_drawer.dart';
-import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
+import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/permissions_manager.dart';
@@ -14,6 +14,8 @@ import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/business_list_provider.dart';
 import 'package:groupchat/providers/companies_provider.dart';
+import 'package:groupchat/repositories/groups_repository.dart';
+import 'package:groupchat/repositories/users_repository.dart';
 import 'package:groupchat/views/categories_screens/categories_screen.dart';
 import 'package:groupchat/views/chat_screens/select_business_screen.dart';
 import 'package:groupchat/views/companies_screens/companies_screen.dart';
@@ -21,13 +23,16 @@ import 'package:groupchat/views/news_screens/news_screen.dart';
 import 'package:groupchat/views/profile_screens/profile_home_screen.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../component_library/bottomsheets/pin_input_bottomsheet.dart';
 import '../../component_library/buttons/home_grid_widget.dart';
 import '../../component_library/dialogs/select_country_dialog.dart';
 import '../../core/assets_names.dart';
 import '../../core/size_config.dart';
 import '../../core/utilities_class.dart';
+import '../../data/group_model.dart';
 import '../../firebase/auth.dart';
 import '../auth/login_screen.dart';
+import '../chat_screens/chat_screen.dart';
 import '../companies_screens/company_detail_screen.dart';
 import '../places_screens/places_screen.dart';
 
@@ -40,12 +45,11 @@ class HomeScreen extends StatefulWidget{
 class _HomeScreenState extends State<HomeScreen>{
   bool? dialogShown = false;
   bool? isCoordinator = false;
+  bool? isLoading = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   updateState(){
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
@@ -112,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen>{
                           width: 220.0.sp,
                           fit: BoxFit.fill,
                         ),
-                        InkWell(
+                        appUserPro.currentUser?.userType==coordinator?InkWell(
                           onTap: (){
                             showDialog(
                               context: context,
@@ -148,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen>{
                               ],
                             ),
                           ),
-                        ),
+                        ):Container(),
                         Row(
                           children: [
                             Expanded(
@@ -165,7 +169,17 @@ class _HomeScreenState extends State<HomeScreen>{
                                 icon: Images.chatIcon,
                                 title: 'Chat'.tr(),
                                 onTap: (){
-                                  if(appUserPro.currentUser?.userType == coordinator){
+                                  if(appUserPro.currentUser?.userType == student){
+                                    if(appUserPro.currentUser?.joinedGroupId!=null && appUserPro.currentUser?.joinedGroupId?.isNotEmpty==true){
+                                      print('group id is ----- ${appUserPro.currentUser?.joinedGroupId}');
+                                      Navigator.pushNamed(
+                                          context, ChatScreen.route, arguments: {
+                                        'groupId': appUserPro.currentUser?.joinedGroupId
+                                      });
+                                    }else{
+                                      showPinInputBottomSheet(context);
+                                    }
+                                  }else if(appUserPro.currentUser?.userType == coordinator){
                                     ref.watch(businessListProvider).filteredBusinessList = null;
                                     Navigator.pushNamed(context, SelectBusinessScreen.route);
                                   }
@@ -251,6 +265,9 @@ class _HomeScreenState extends State<HomeScreen>{
                           },
                         ),
                       ),
+                    ),
+                    FullScreenLoader(
+                      loading: isLoading,
                     )
                   ],
                 )
@@ -273,6 +290,55 @@ class _HomeScreenState extends State<HomeScreen>{
             Navigator.pushNamedAndRemoveUntil(context, LoginScreen.route, (route) => false);
           });
     });
+  }
+
+  void showPinInputBottomSheet(BuildContext context) async {
+    final pin = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const PinInputBottomSheet(),
+    );
+    if (pin != null) {
+      isLoading = true;
+      updateState();
+      List<GroupModel> groups = await GroupsRepository().getGroupsWithPin(pin);
+      if (groups.isNotEmpty) {
+        GroupModel group = groups[groups.length-1];
+        List<String?>? list = group.approvedMembers ?? [];
+        if(!list.contains(Auth().currentUser?.uid)){
+          list.add(Auth().currentUser?.uid);
+          var map = {'approvedMembers': list};
+          GroupsRepository().updateGroup(map, group.key??'', context, (){
+            Map<String, dynamic> joinedMap = {
+              'joinedGroupId': group.key
+            };
+            UsersRepository().updateUser(joinedMap, Auth().currentUser?.uid??'', context, (){
+              isLoading = false;
+              updateState();
+              print('group id is ----- ${group.toMap()}');
+              Navigator.pushNamed(
+                  context, ChatScreen.route,
+                  arguments: {
+                    'groupId': group.key
+                  });
+            }, (p0){
+              isLoading = false;
+              updateState();
+              Utilities().showCustomToast(message: p0.toString(), isError: true);
+            });
+          }, (p0){
+            isLoading = false;
+            updateState();
+            Utilities().showCustomToast(message: p0.toString(), isError: true);
+          });
+        }
+      } else {
+        isLoading = false;
+        updateState();
+        Utilities().showCustomToast(message: 'No groups found with this pin'.tr(), isError: true);
+      }
+    }
   }
 
 }

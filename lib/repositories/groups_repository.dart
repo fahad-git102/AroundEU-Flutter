@@ -48,6 +48,26 @@ class GroupsRepository {
     });
   }
 
+  Future<List<GroupModel>> getGroupsWithPin(String pin) async {
+    final databaseRef = FirebaseDatabase.instance.ref(groups);
+    Query query = databaseRef.orderByChild('pincode').equalTo(pin);
+    List<GroupModel> groupsWithPin = [];
+    try {
+      DatabaseEvent event = await query.once();
+      if (event.snapshot.exists) {
+        final data = event.snapshot.value as Map<dynamic, dynamic>;
+        data.forEach((key, value) {
+          groupsWithPin.add(GroupModel.fromMap(value));
+        });
+      }
+    } catch (error) {
+      print("Failed to load groups: $error");
+    }
+
+    return groupsWithPin;
+  }
+
+
   Future<void> sendMessage(MessageModel messageModel, String groupId, BuildContext context,
       Function() onComplete, Function(dynamic p0) onError) async {
     String? key = FirebaseDatabase.instance.ref(groups).push().key;
@@ -60,8 +80,6 @@ class GroupsRepository {
       onCatchError: onError
     );
   }
-
-
 
   Stream<Map<String, GroupModel>> getGroupsStream(
       {required String businessKey}) {
@@ -79,4 +97,20 @@ class GroupsRepository {
           MapEntry(key, GroupModel.fromMap(Map<String, dynamic>.from(value))));
     });
   }
+  Stream<GroupModel?> getGroupStreamById({required String groupId}) {
+    final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+    return dbRef
+        .child(groups)
+        .child(groupId)
+        .onValue
+        .map((event) {
+      if (event.snapshot.exists) {
+        final data = event.snapshot.value as Map;
+        return GroupModel.fromMap(Map<String, dynamic>.from(data));
+      } else {
+        return null;
+      }
+    });
+  }
+
 }

@@ -1,6 +1,6 @@
 class AppUser {
   String? uid, firstName, surName, email, country, dob, phone,
-      selectedCountry, userType, about, profileUrl;
+      selectedCountry, userType, about, profileUrl, joinedGroupId;
   int? joinedOn;
   bool? joined, admin;
   List<String?>? deviceTokens;
@@ -12,6 +12,7 @@ class AppUser {
     this.country,
     this.dob,
     this.phone,
+    this.joinedGroupId,
     this.selectedCountry,
     this.userType,
     this.about,
@@ -28,6 +29,7 @@ class AppUser {
       'surName': this.surName,
       'email': this.email,
       'country': this.country,
+      'joinedGroupId': joinedGroupId,
       'dob': this.dob,
       'phone': this.phone,
       'selectedCountry': this.selectedCountry,
@@ -47,6 +49,7 @@ class AppUser {
         : map['joinedOn'] as int;
     return AppUser(
       uid: map.containsKey('uid') && map['uid'] != null ? map["uid"] : null,
+      joinedGroupId: map.containsKey('joinedGroupId') && map['joinedGroupId'] != null ? map["joinedGroupId"] : null,
       firstName: map.containsKey('firstName') && map['firstName'] != null ? map["firstName"] : null,
       surName: map.containsKey('surName') && map['surName'] != null ? map["surName"] : null,
       email: map.containsKey('email') && map['email'] != null ? map["email"] : null,
