@@ -10,6 +10,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:groupchat/component_library/dialogs/select_group_categories_dialog.dart';
 import 'package:groupchat/component_library/text_widgets/medium_bold_text.dart';
+import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/data/group_model.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/repositories/groups_repository.dart';
@@ -122,7 +123,7 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
                             ),
                           ),
                         ):Container(),
-                        isEdit == false && appUserPro.currentUser?.admin == true
+                        isEdit == false && (appUserPro.currentUser?.admin == true || appUserPro.currentUser?.userType == coordinator)
                             ? InkWell(
                                 onTap: () {
                                   isEdit = true;
@@ -407,7 +408,6 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
     isLoading = true;
     updateState();
     Map<String, dynamic> map ={
-      // 'groupImage': imageUrl,
       'name': nameController.text,
       'pincode': pincodeController.text
     };
