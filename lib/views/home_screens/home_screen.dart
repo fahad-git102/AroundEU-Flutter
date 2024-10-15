@@ -6,12 +6,16 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/component_library/buttons/custom_icon_button.dart';
 import 'package:groupchat/component_library/drawers/home_drawer.dart';
+import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/permissions_manager.dart';
+import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
+import 'package:groupchat/providers/business_list_provider.dart';
 import 'package:groupchat/providers/companies_provider.dart';
 import 'package:groupchat/views/categories_screens/categories_screen.dart';
+import 'package:groupchat/views/chat_screens/select_business_screen.dart';
 import 'package:groupchat/views/companies_screens/companies_screen.dart';
 import 'package:groupchat/views/news_screens/news_screen.dart';
 import 'package:groupchat/views/profile_screens/profile_home_screen.dart';
@@ -35,30 +39,50 @@ class HomeScreen extends StatefulWidget{
 
 class _HomeScreenState extends State<HomeScreen>{
   bool? dialogShown = false;
+  bool? isCoordinator = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  updateState(){
+    setState(() {
+
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     PermissionsManager().checkPermissions();
     return Consumer(builder: (ctx, ref, child){
       var appUserPro = ref.watch(appUserProvider);
-      if(context.mounted){
-        if(appUserPro.currentUser?.selectedCountry==null||appUserPro.currentUser?.selectedCountry?.isEmpty==true){
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            if(dialogShown == false){
-              dialogShown = true;
-              showDialog(context: context, barrierDismissible: false, builder: (ctx) => SelectCountryDialog(
-                title: 'Select Country'.tr(),
-                showCancel: false,
-                onItemSelect: (countryModel){
-                  Navigator.pop(context);
-                  updateUserCountry(appUserPro, countryModel?.countryName);
-                },
-              ));
-            }
-          });
+      if (context.mounted) {
+        if (appUserPro.currentUser?.userType == coordinator) {
+          isCoordinator = true;
+          if(appUserPro.coordinatorsCountryModel==null){
+            appUserPro.getCoordinatorsCountry();
+          }
+        } else {
+          if (appUserPro.currentUser?.selectedCountry == null || appUserPro.currentUser?.selectedCountry?.isEmpty == true) {
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              if (dialogShown == false) {
+                dialogShown = true;
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (ctx) => SelectCountryDialog(
+                    title: 'Select Country'.tr(),
+                    showCancel: false,
+                    onItemSelect: (countryModel) {
+                      Navigator.pop(context);
+                      updateUserCountry(appUserPro, countryModel?.countryName);
+                    },
+                  ),
+                );
+              }
+            });
+          }
         }
       }
+
       appUserPro.listenToCountries();
       appUserPro.listenToAdmins();
       return Scaffold(
@@ -88,6 +112,43 @@ class _HomeScreenState extends State<HomeScreen>{
                           width: 220.0.sp,
                           fit: BoxFit.fill,
                         ),
+                        InkWell(
+                          onTap: (){
+                            showDialog(
+                              context: context,
+                              barrierDismissible: true,
+                              builder: (ctx) => SelectCountryDialog(
+                                title: 'Select Country'.tr(),
+                                showCancel: false,
+                                onItemSelect: (countryModel) async {
+                                  Navigator.pop(context);
+                                  await Utilities().saveMap(coordinatorsCountry, countryModel?.toMap() ?? {});
+                                  appUserPro.coordinatorsCountryModel = null;
+                                  updateState();
+                                },
+                              ),
+                            );
+                          },
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SmallLightText(
+                                  title: 'Coordinator\'s Country: '.tr(),
+                                  textColor: AppColors.lightBlack,
+                                  fontSize: 10.sp,
+                                ),
+                                SizedBox(width: 4.sp,),
+                                SmallLightText(
+                                  title: appUserPro.coordinatorsCountryModel?.countryName??'',
+                                  textColor: AppColors.lightBlack,
+                                  fontSize: 13.sp,
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
                         Row(
                           children: [
                             Expanded(
@@ -104,7 +165,10 @@ class _HomeScreenState extends State<HomeScreen>{
                                 icon: Images.chatIcon,
                                 title: 'Chat'.tr(),
                                 onTap: (){
-                              print(appUserPro.currentUser?.uid);
+                                  if(appUserPro.currentUser?.userType == coordinator){
+                                    ref.watch(businessListProvider).filteredBusinessList = null;
+                                    Navigator.pushNamed(context, SelectBusinessScreen.route);
+                                  }
                                 },
                               ),
                             ),

@@ -6,7 +6,7 @@ import 'package:groupchat/repositories/business_list_repository.dart';
 final businessListProvider = ChangeNotifierProvider((ref) => BusinessListProvider());
 
 class BusinessListProvider extends ChangeNotifier{
-  List<BusinessList>? businessLists;
+  List<BusinessList>? businessLists, filteredBusinessList;
 
   listenToBusinessList(){
     if(businessLists!=null){
@@ -18,5 +18,16 @@ class BusinessListProvider extends ChangeNotifier{
       businessLists?.sort((a, b) => b.timeStamp!.compareTo(a.timeStamp!));
       notifyListeners();
     });
+  }
+
+  filterBusinessListByCountry(String countryId){
+    print('hahahahahahahahah');
+    print(countryId);
+    filteredBusinessList ??= [];
+    for(BusinessList item in businessLists??[]){
+      if(item.countryId == countryId){
+        filteredBusinessList?.add(item);
+      }
+    }
   }
 }

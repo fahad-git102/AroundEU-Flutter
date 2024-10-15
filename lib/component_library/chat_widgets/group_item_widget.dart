@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:groupchat/component_library/chat_widgets/first_letter_widget.dart';
@@ -13,6 +14,8 @@ import '../image_widgets/circle_image_avatar.dart';
 class GroupItem extends StatelessWidget {
   String? imageUrl, title, subTile;
   int messagesCount;
+  bool? showJoinButton;
+  Function()? onJoinTap;
   int? lastMsgTime;
 
   @override
@@ -74,6 +77,24 @@ class GroupItem extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              showJoinButton == true?InkWell(
+                onTap: onJoinTap,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.sp),
+                  height: 21.sp,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(3.sp)),
+                    border: Border.all(color: AppColors.mainColorDark, width: 0.4.sp),
+                  ),
+                  child: Center(
+                    child: SmallLightText(
+                      fontSize: 9.sp,
+                      textColor: AppColors.mainColorDark,
+                      title: "Join".tr(),
+                    ),
+                  ),
+                ),
+              ):Container(),
               messagesCount > 0
                   ? Container(
                       height: 17.sp,
@@ -115,6 +136,8 @@ class GroupItem extends StatelessWidget {
     this.imageUrl,
     this.messagesCount = 0,
     this.title,
+    this.onJoinTap,
+    this.showJoinButton = false,
     this.lastMsgTime,
     this.subTile,
   });

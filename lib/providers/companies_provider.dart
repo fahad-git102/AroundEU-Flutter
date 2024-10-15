@@ -86,11 +86,16 @@ class CompaniesProvider extends ChangeNotifier {
   }
 
   listenToMyCompanyTimeScheduled() async {
+    if(myCompanyTimeScheduled != null && myCompany != null){
+      return;
+    }
     CompanyRepository().getMyCompanyStream().listen((event) {
-      myCompanyTimeScheduled = event.values.first;
-      myCompanyTimeScheduled?.id = event.keys.first;
-      getMyCompany(myCompanyTimeScheduled?.companyId);
-      notifyListeners();
+      if(event.entries.isNotEmpty){
+        myCompanyTimeScheduled = event.values.first;
+        myCompanyTimeScheduled?.id = event.keys.first;
+        getMyCompany(myCompanyTimeScheduled?.companyId);
+        notifyListeners();
+      }
     });
   }
 

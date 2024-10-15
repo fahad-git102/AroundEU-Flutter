@@ -45,7 +45,14 @@ class _ReceiverMessageState extends State<ReceiverMessageWidget> {
             padding: EdgeInsets.all(5.sp),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(7.sp)),
-                color: AppColors.mainColor.withOpacity(0.3)),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.lightFadedTextColor.withOpacity(0.5),
+                    offset: const Offset(0, 0.5),
+                    blurRadius: 1.0,
+                  ),
+                ],
+                color: AppColors.white.withOpacity(0.7)),
             child: IntrinsicWidth(
               child: Align(
                 alignment: Alignment.centerLeft,

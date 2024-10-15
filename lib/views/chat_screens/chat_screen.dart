@@ -72,35 +72,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void dispose() {
     audioRecorder.closeRecorder();
-    // _scrollController.dispose();
     super.dispose();
   }
-
-  // void _scrollToBottom() {
-  //   if (_scrollController.hasClients) {
-  //     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-  //   }
-  // }
-
-  // void _animateToBottom() {
-  //   if (_scrollController.hasClients) {
-  //     _scrollController.animateTo(
-  //       _scrollController.position.maxScrollExtent,
-  //       duration: const Duration(milliseconds: 300),
-  //       curve: Curves.easeInOut,
-  //     );
-  //   }
-  // }
 
   @override
   void initState() {
     _initRecorder();
-    // GroupsRepository().readAllMessages(groupId??'');
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (mounted) {
-    //     _scrollToBottom();
-    //   }
-    // });
     super.initState();
   }
 
@@ -204,57 +181,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         ),
                       ),
                     ),
-                    // Expanded(
-                    //   child: ListView.builder(
-                    //     controller: _scrollController,
-                    //     reverse: true,
-                    //     itemCount: groupsPro.currentBLGroupsList
-                    //             ?.firstWhere(
-                    //                 (element) => element.key == groupId)
-                    //             .messages
-                    //             ?.length ??
-                    //         0,
-                    //     padding: EdgeInsets.symmetric(horizontal: 13.sp),
-                    //     physics: const BouncingScrollPhysics(),
-                    //     itemBuilder: (BuildContext context, int index) {
-                    //       MessageModel? messageModel = groupsPro
-                    //           .currentBLGroupsList
-                    //           ?.firstWhere((element) => element.key == groupId)
-                    //           .messages?[index];
-                    //       return GestureDetector(
-                    //         onLongPress: (){
-                    //           showDeleteMessageBottomSheet(context, messageModel!);
-                    //         },
-                    //         child: groupsPro.currentBLGroupsList
-                    //                     ?.firstWhere(
-                    //                         (element) => element.key == groupId)
-                    //                     .messages?[index]
-                    //                     .uid ==
-                    //                 Auth().currentUser?.uid
-                    //             ? SenderMessageWidget(
-                    //                 messageModel: groupsPro.currentBLGroupsList
-                    //                     ?.firstWhere(
-                    //                         (element) => element.key == groupId)
-                    //                     .messages?[index],
-                    //               )
-                    //             : FutureBuilder<AppUser?>(
-                    //                 future: fetchUser(messageModel?.uid ?? ''),
-                    //                 builder: (context, snapshot) {
-                    //                   var senderName = '';
-                    //                   if (snapshot.hasData) {
-                    //                     senderName =
-                    //                         '${snapshot.data!.firstName ?? ''} ${snapshot.data!.surName ?? ''}';
-                    //                   }
-                    //                   return ReceiverMessageWidget(
-                    //                     senderName: senderName,
-                    //                     messageModel: messageModel,
-                    //                   );
-                    //                 },
-                    //               ),
-                    //       );
-                    //     },
-                    //   ),
-                    // ),
                     Expanded(
                       child: ListView.builder(
                         reverse: true,

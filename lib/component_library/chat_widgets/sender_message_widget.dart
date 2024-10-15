@@ -39,14 +39,7 @@ class _SenderMessageState extends State<SenderMessageWidget> {
         margin: EdgeInsets.only(bottom: 10.sp),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(7.sp)),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.lightFadedTextColor.withOpacity(0.5),
-                offset: const Offset(0, 0.5),
-                blurRadius: 1.0,
-              ),
-            ],
-            color: AppColors.white.withOpacity(0.8)),
+            color: AppColors.mainColor.withOpacity(0.5)),
         child: IntrinsicWidth(
           child: Align(
             alignment: Alignment.centerRight,

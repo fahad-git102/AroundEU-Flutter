@@ -16,6 +16,7 @@ import 'package:groupchat/views/auth/splash_screen.dart';
 import 'package:groupchat/views/categories_screens/categories_screen.dart';
 import 'package:groupchat/views/categories_screens/pdf_view_screen.dart';
 import 'package:groupchat/views/chat_screens/chat_screen.dart';
+import 'package:groupchat/views/chat_screens/select_business_screen.dart';
 import 'package:groupchat/views/companies_screens/companies_screen.dart';
 import 'package:groupchat/views/companies_screens/company_detail_screen.dart';
 import 'package:groupchat/views/companies_screens/company_settings_screen.dart';
@@ -74,6 +75,7 @@ getRoutes(){
     AllTeachersScreen.route: (context) => AllTeachersScreen(),
     AddNewGroupScreen.route: (context) => AddNewGroupScreen(),
     GroupsScreen.route: (context) => GroupsScreen(),
-    ChatScreen.route: (context) => const ChatScreen()
+    ChatScreen.route: (context) => const ChatScreen(),
+    SelectBusinessScreen.route: (context) => const SelectBusinessScreen()
   };
 }

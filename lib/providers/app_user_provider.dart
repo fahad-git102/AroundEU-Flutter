@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/data/country_model.dart';
 import 'package:groupchat/data/users_model.dart';
 import 'package:groupchat/repositories/users_repository.dart';
@@ -14,6 +15,7 @@ final appUserProvider = ChangeNotifierProvider((ref) => AppUserProvider());
 class AppUserProvider extends ChangeNotifier{
 
   AppUser? currentUser;
+  CountryModel? coordinatorsCountryModel;
   List<CountryModel>? countriesList;
   List<AppUser>? allTeachersList, filteredTeachersList, usersCache, allAdminsList;
 
@@ -23,6 +25,18 @@ class AppUserProvider extends ChangeNotifier{
     notifyListeners();
   }
 
+  getCoordinatorsCountry() async {
+    var map = await Utilities().getMap(coordinatorsCountry);
+    if(map!=null && map.isNotEmpty){
+      coordinatorsCountryModel = CountryModel.fromMap(map);
+      notifyListeners();
+    }else{
+      listenToCountries();
+      coordinatorsCountryModel = countriesList?[0];
+      notifyListeners();
+    }
+  }
+  
   void listenToCountries() {
     if(countriesList!=null){
       return;
