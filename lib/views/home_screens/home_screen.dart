@@ -14,6 +14,7 @@ import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/business_list_provider.dart';
 import 'package:groupchat/providers/companies_provider.dart';
+import 'package:groupchat/providers/groups_provider.dart';
 import 'package:groupchat/repositories/groups_repository.dart';
 import 'package:groupchat/repositories/users_repository.dart';
 import 'package:groupchat/views/categories_screens/categories_screen.dart';
@@ -58,7 +59,11 @@ class _HomeScreenState extends State<HomeScreen>{
     PermissionsManager().checkPermissions();
     return Consumer(builder: (ctx, ref, child){
       var appUserPro = ref.watch(appUserProvider);
+      var groupsPro = ref.watch(groupsProvider);
       if (context.mounted) {
+        if(appUserPro.currentUser?.joinedGroupId!=null && appUserPro.currentUser?.joinedGroupId?.isNotEmpty==true){
+          groupsPro.listenToGroupById(appUserPro.currentUser?.joinedGroupId??'');
+        }
         if (appUserPro.currentUser?.userType == coordinator) {
           isCoordinator = true;
           if(appUserPro.coordinatorsCountryModel==null){
@@ -171,7 +176,6 @@ class _HomeScreenState extends State<HomeScreen>{
                                 onTap: (){
                                   if(appUserPro.currentUser?.userType == student){
                                     if(appUserPro.currentUser?.joinedGroupId!=null && appUserPro.currentUser?.joinedGroupId?.isNotEmpty==true){
-                                      print('group id is ----- ${appUserPro.currentUser?.joinedGroupId}');
                                       Navigator.pushNamed(
                                           context, ChatScreen.route, arguments: {
                                         'groupId': appUserPro.currentUser?.joinedGroupId

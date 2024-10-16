@@ -225,8 +225,8 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                       }
                     },
                     onEmojiSelected: (category, emoji) {
-                      widget.showSendButton = true;
-                      updateState();
+                      // widget.showSendButton = true;
+                      // updateState();
                     },
                     config: Config(
                       columns: 9,

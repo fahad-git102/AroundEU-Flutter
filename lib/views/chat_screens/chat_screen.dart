@@ -7,6 +7,7 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:groupchat/component_library/bottomsheets/delete_message_bottomsheet.dart';
 import 'package:groupchat/component_library/dialogs/group_members_dialog.dart';
 import 'package:groupchat/component_library/image_widgets/circle_image_avatar.dart';
+import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -48,6 +49,7 @@ class ChatScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
+  List<Map<String, dynamic>>? mentionsData;
   String? groupId;
   final ScrollController _scrollController = ScrollController();
   bool? pageStarted = true;
@@ -107,6 +109,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               Navigator.pop(context);
             });
       }
+    }
+    if(mentionsData==null){
+      fetchMentionsData();
     }
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -242,16 +247,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           showEmojis = false;
                           updateState();
                         },
-                        child: BottomWriteWidget(
+                        child: mentionsData!=null?BottomWriteWidget(
                           mentionsKey: key,
                           emojiPressed: () {
                             showEmojis = !showEmojis!;
+                            if(showEmojis == true){
+                              showSendButton = true;
+                            }
                             updateState();
                           },
                           isRecording: isRecording,
                           showEmojis: showEmojis,
                           showSendButton: showSendButton,
-                          mentionsData: [],
+                          mentionsData: mentionsData,
                           pointerDownEvent: (details) {
                             showEmojis = false;
                             isRecording = true;
@@ -267,12 +275,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             _stopRecording();
                           },
                           onTextFieldChanged: (val) {
-                            if (val.isNotEmpty && isRecording == false) {
-                              showSendButton = true;
-                              updateState();
-                            } else {
-                              showSendButton = false;
-                              updateState();
+                            if(showEmojis == false){
+                              if (val.isNotEmpty && isRecording == false) {
+                                setState(() {
+                                  showSendButton = true;
+                                });
+                              } else {
+                                setState(() {
+                                  showSendButton = false;
+                                });
+                              }
                             }
                           },
                           onCameraTap: () async {
@@ -315,7 +327,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           onSendTap: () {
                             sendTextMessage(groupId ?? '');
                           },
-                        ),
+                        ):Container()
                       ),
                     ),
                   ],
@@ -334,6 +346,32 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Future<AppUser?> fetchUser(String id) async {
     AppUser? user = await ref.watch(appUserProvider).getUserById(id);
     return user;
+  }
+
+  Future<List<Map<String, dynamic>>> setMentionsData() async {
+    var groupsPro = ref.watch(groupsProvider);
+    var appUserPro = ref.watch(appUserProvider);
+    List<AppUser?> usersList = await appUserPro.getUsersListByIds(groupsPro
+        .currentBLGroupsList
+        ?.firstWhere((element) => element.key == groupId).approvedMembers);
+    List<Map<String, dynamic>> mapList = [];
+    if(usersList.isNotEmpty==true){
+      for(int i = 0; i<usersList.length; i++){
+        Map<String, dynamic> map = {
+          'id': usersList[i]?.uid,
+          'display': '${usersList[i]?.firstName} ${usersList[i]?.surName}'
+        };
+        mapList.add(map);
+      }
+    }
+    return mapList;
+  }
+
+  void fetchMentionsData() async {
+    List<Map<String, dynamic>> data = await setMentionsData();
+    setState(() {
+      mentionsData = data;
+    });
   }
 
   sendTextMessage(String groupId) {

@@ -16,9 +16,15 @@ class GroupsProvider extends ChangeNotifier {
   List<AppUser>? usersCache;
 
   void listenToGroupById(String groupId){
+    if(currentBLGroupsList!=null){
+      int? existingIndex = currentBLGroupsList?.indexWhere((group) => group.key == groupId);
+      if(existingIndex!=null && existingIndex>=0){
+        return;
+      }
+    }
     GroupsRepository().getGroupStreamById(groupId: groupId).listen((groupModel){
       if(groupModel!=null){
-        int? existingIndex = currentBLGroupsList?.indexWhere((group) => group.key == groupModel?.key);
+        int? existingIndex = currentBLGroupsList?.indexWhere((group) => group.key == groupModel.key);
         groupModel.messages?.sort((a, b) => a.timeStamp??0.compareTo(b.timeStamp??0));
         if (existingIndex!=null&&existingIndex >= 0) {
           currentBLGroupsList?[existingIndex] = groupModel;
