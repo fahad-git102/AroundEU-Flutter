@@ -107,174 +107,174 @@ class _HomeScreenState extends State<HomeScreen>{
                 fit: BoxFit.cover,
               ),
             ),
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 13.0.sp),
-                child: Stack(
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(height: 10.0.sp,),
-                        Image.asset(
-                          Images.logoAroundEU,
-                          height: 220.0.sp,
-                          width: 220.0.sp,
-                          fit: BoxFit.fill,
-                        ),
-                        appUserPro.currentUser?.userType==coordinator?InkWell(
-                          onTap: (){
-                            showDialog(
-                              context: context,
-                              barrierDismissible: true,
-                              builder: (ctx) => SelectCountryDialog(
-                                title: 'Select Country'.tr(),
-                                showCancel: false,
-                                onItemSelect: (countryModel) async {
-                                  Navigator.pop(context);
-                                  await Utilities().saveMap(coordinatorsCountry, countryModel?.toMap() ?? {});
-                                  appUserPro.coordinatorsCountryModel = null;
-                                  updateState();
-                                },
+            child: Stack(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 13.sp),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(height: 10.0.sp,),
+                      Image.asset(
+                        Images.logoAroundEU,
+                        height: 220.0.sp,
+                        width: 220.0.sp,
+                        fit: BoxFit.fill,
+                      ),
+                      appUserPro.currentUser?.userType==coordinator?InkWell(
+                        onTap: (){
+                          showDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (ctx) => SelectCountryDialog(
+                              title: 'Select Country'.tr(),
+                              showCancel: false,
+                              onItemSelect: (countryModel) async {
+                                Navigator.pop(context);
+                                await Utilities().saveMap(coordinatorsCountry, countryModel?.toMap() ?? {});
+                                appUserPro.coordinatorsCountryModel = null;
+                                updateState();
+                              },
+                            ),
+                          );
+                        },
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SmallLightText(
+                                title: 'Coordinator\'s Country: '.tr(),
+                                textColor: AppColors.lightBlack,
+                                fontSize: 10.sp,
                               ),
-                            );
-                          },
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SmallLightText(
-                                  title: 'Coordinator\'s Country: '.tr(),
-                                  textColor: AppColors.lightBlack,
-                                  fontSize: 10.sp,
-                                ),
-                                SizedBox(width: 4.sp,),
-                                SmallLightText(
-                                  title: appUserPro.coordinatorsCountryModel?.countryName??'',
-                                  textColor: AppColors.lightBlack,
-                                  fontSize: 13.sp,
-                                )
-                              ],
+                              SizedBox(width: 4.sp,),
+                              SmallLightText(
+                                title: appUserPro.coordinatorsCountryModel?.countryName??'',
+                                textColor: AppColors.lightBlack,
+                                fontSize: 13.sp,
+                              )
+                            ],
+                          ),
+                        ),
+                      ):Container(),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: HomeGridWidget(
+                              icon: Images.profileIcon,
+                              title: 'Profile Details'.tr(),
+                              onTap: (){
+                                Navigator.pushNamed(context, ProfileHomeScreen.route);
+                              },
                             ),
                           ),
-                        ):Container(),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: HomeGridWidget(
-                                icon: Images.profileIcon,
-                                title: 'Profile Details'.tr(),
-                                onTap: (){
-                                  Navigator.pushNamed(context, ProfileHomeScreen.route);
-                                },
-                              ),
+                          Expanded(
+                            child: HomeGridWidget(
+                              icon: Images.chatIcon,
+                              title: 'Chat'.tr(),
+                              onTap: (){
+                                if(appUserPro.currentUser?.userType == student || appUserPro.currentUser?.userType == teacher){
+                                  if(appUserPro.currentUser?.joinedGroupId!=null && appUserPro.currentUser?.joinedGroupId?.isNotEmpty==true){
+                                    Navigator.pushNamed(
+                                        context, ChatScreen.route, arguments: {
+                                      'groupId': appUserPro.currentUser?.joinedGroupId
+                                    });
+                                  }else{
+                                    showPinInputStudentsBottomSheet(context, ref);
+                                  }
+                                }else if(appUserPro.currentUser?.userType == coordinator){
+                                  ref.watch(businessListProvider).filteredBusinessList = null;
+                                  Navigator.pushNamed(context, SelectBusinessScreen.route);
+                                }
+                              },
                             ),
-                            Expanded(
-                              child: HomeGridWidget(
-                                icon: Images.chatIcon,
-                                title: 'Chat'.tr(),
+                          ),
+                          Expanded(
+                            child: HomeGridWidget(
+                              icon: Images.newsIcon,
+                              title: 'News'.tr(),
+                              onTap: (){
+                                Navigator.pushNamed(context, NewsScreen.route);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: HomeGridWidget(
+                              icon: Images.placesIcon,
+                              title: 'Places'.tr(),
+                              onTap: (){
+                                Navigator.pushNamed(context, PlacesScreen.route);
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: Consumer(builder: (ctx, ref, child){
+                              var companiesPro = ref.watch(companiesProvider);
+                              if(companiesPro.myCompanyTimeScheduled==null||companiesPro.myCompany==null){
+                                companiesPro.listenToMyCompanyTimeScheduled();
+                              }
+                              return HomeGridWidget(
+                                icon: Images.myCompanyIcon,
+                                title: 'My Company'.tr(),
                                 onTap: (){
-                                  if(appUserPro.currentUser?.userType == student){
-                                    if(appUserPro.currentUser?.joinedGroupId!=null && appUserPro.currentUser?.joinedGroupId?.isNotEmpty==true){
-                                      Navigator.pushNamed(
-                                          context, ChatScreen.route, arguments: {
-                                        'groupId': appUserPro.currentUser?.joinedGroupId
-                                      });
-                                    }else{
-                                      showPinInputBottomSheet(context);
-                                    }
-                                  }else if(appUserPro.currentUser?.userType == coordinator){
-                                    ref.watch(businessListProvider).filteredBusinessList = null;
-                                    Navigator.pushNamed(context, SelectBusinessScreen.route);
+                                  if(companiesPro.myCompanyTimeScheduled!=null && companiesPro.myCompany!=null){
+                                    Navigator.pushNamed(context, CompanyDetailScreen.route, arguments: {
+                                      'company': companiesPro.myCompany?.toMap(),
+                                      'fromHome': true
+                                    });
+                                  }else{
+                                    Navigator.pushNamed(context, CompaniesScreen.route);
                                   }
                                 },
-                              ),
-                            ),
-                            Expanded(
-                              child: HomeGridWidget(
-                                icon: Images.newsIcon,
-                                title: 'News'.tr(),
-                                onTap: (){
-                                  Navigator.pushNamed(context, NewsScreen.route);
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: HomeGridWidget(
-                                icon: Images.placesIcon,
-                                title: 'Places'.tr(),
-                                onTap: (){
-                                  Navigator.pushNamed(context, PlacesScreen.route);
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: Consumer(builder: (ctx, ref, child){
-                                var companiesPro = ref.watch(companiesProvider);
-                                if(companiesPro.myCompanyTimeScheduled==null||companiesPro.myCompany==null){
-                                  companiesPro.listenToMyCompanyTimeScheduled();
-                                }
-                                return HomeGridWidget(
-                                  icon: Images.myCompanyIcon,
-                                  title: 'My Company'.tr(),
-                                  onTap: (){
-                                    if(companiesPro.myCompanyTimeScheduled!=null && companiesPro.myCompany!=null){
-                                      Navigator.pushNamed(context, CompanyDetailScreen.route, arguments: {
-                                        'company': companiesPro.myCompany?.toMap(),
-                                        'fromHome': true
-                                      });
-                                    }else{
-                                      Navigator.pushNamed(context, CompaniesScreen.route);
-                                    }
-                                  },
-                                );
-                              },),
-                            ),
-                            Expanded(
-                              child: HomeGridWidget(
-                                icon: Images.categoriesIcon,
-                                title: 'Categories'.tr(),
-                                onTap: (){
-                                  Navigator.pushNamed(context, CategoriesScreen.route);
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 2.0.sp,),
-                        Padding(
-                          padding: EdgeInsets.only(bottom: 10.0.sp),
-                          child: Center(
-                            child: SmallLightText(
-                              title: 'Powered by Eprojectconsult',
-                              textColor: AppColors.fadedTextColor,
+                              );
+                            },),
+                          ),
+                          Expanded(
+                            child: HomeGridWidget(
+                              icon: Images.categoriesIcon,
+                              title: 'Categories'.tr(),
+                              onTap: (){
+                                Navigator.pushNamed(context, CategoriesScreen.route);
+                              },
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 15.0.sp),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: CustomIconPngButton(
-                          icon: Images.menuIcon,
-                          size: 36.0.sp,
-                          onTap: (){
-                            _scaffoldKey.currentState!.openDrawer();
-                          },
+                        ],
+                      ),
+                      SizedBox(height: 2.0.sp,),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 10.0.sp),
+                        child: Center(
+                          child: SmallLightText(
+                            title: 'Powered by Eprojectconsult',
+                            textColor: AppColors.fadedTextColor,
+                          ),
                         ),
                       ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 15.0.sp, left: 13.sp),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: CustomIconPngButton(
+                      icon: Images.menuIcon,
+                      size: 36.0.sp,
+                      onTap: (){
+                        _scaffoldKey.currentState!.openDrawer();
+                      },
                     ),
-                    FullScreenLoader(
-                      loading: isLoading,
-                    )
-                  ],
+                  ),
+                ),
+                FullScreenLoader(
+                  loading: isLoading,
                 )
+              ],
             ),
           ),
         ),
@@ -296,12 +296,31 @@ class _HomeScreenState extends State<HomeScreen>{
     });
   }
 
-  void showPinInputBottomSheet(BuildContext context) async {
+  // void showPinInputTeachersBottomsheet(BuildContext context, WidgetRef ref) async{
+  //   var appUserPro = ref.watch(appUserProvider);
+  //   CountryModel? usersCountry = appUserPro.countriesList?.firstWhere((element) => element.countryName == appUserPro.currentUser?.selectedCountry);
+  //   if(usersCountry!=null){
+  //     final pin = await showModalBottomSheet(context: context,
+  //         isScrollControlled: true,
+  //         backgroundColor: Colors.transparent,
+  //         builder: (context) => PinInputBottomSheet(title: 'Enter the pincode of your Country'.tr(),));
+  //     if(pin!=null){
+  //       if(pin == usersCountry.pincode){
+  //         Navigator.pushNamed(context, SelectBusinessScreen.route);
+  //       }else{
+  //         Utilities().showCustomToast(message: 'Pincode not matched with your country.'.tr(), isError: true);
+  //       }
+  //     }
+  //   }
+  // }
+
+  void showPinInputStudentsBottomSheet(BuildContext context, WidgetRef ref) async {
+    var appUserPro = ref.watch(appUserProvider);
     final pin = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => const PinInputBottomSheet(),
+      builder: (context) => PinInputBottomSheet(title: "Enter 5-Digit PIN".tr(),),
     );
     if (pin != null) {
       isLoading = true;
@@ -318,9 +337,9 @@ class _HomeScreenState extends State<HomeScreen>{
               'joinedGroupId': group.key
             };
             UsersRepository().updateUser(joinedMap, Auth().currentUser?.uid??'', context, (){
+              appUserPro.getCurrentUser();
               isLoading = false;
               updateState();
-              print('group id is ----- ${group.toMap()}');
               Navigator.pushNamed(
                   context, ChatScreen.route,
                   arguments: {
@@ -331,6 +350,24 @@ class _HomeScreenState extends State<HomeScreen>{
               updateState();
               Utilities().showCustomToast(message: p0.toString(), isError: true);
             });
+          }, (p0){
+            isLoading = false;
+            updateState();
+            Utilities().showCustomToast(message: p0.toString(), isError: true);
+          });
+        }else{
+          Map<String, dynamic> joinedMap = {
+            'joinedGroupId': group.key
+          };
+          UsersRepository().updateUser(joinedMap, Auth().currentUser?.uid??'', context, (){
+            appUserPro.getCurrentUser();
+            isLoading = false;
+            updateState();
+            Navigator.pushNamed(
+                context, ChatScreen.route,
+                arguments: {
+                  'groupId': group.key
+                });
           }, (p0){
             isLoading = false;
             updateState();

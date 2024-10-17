@@ -44,6 +44,18 @@ class CompanyRepository {
             Utilities().showCustomToast(isError: true, message: error.toString()));
   }
 
+  Future<void> updateMyCompanySchedule(
+      Map<String, dynamic> map, String id, BuildContext context,
+      Function() onComplete,
+      Function(dynamic p0) onError) async{
+    FirebaseCrud().updateData(
+        key: "$companyTimeScheduled/$id",
+        context: context,
+        data: map,
+        onComplete: onComplete,
+        onCatchError: onError);
+  }
+
   Future<void> addMyCompanyTimeScheduled(
       CompanyTimeScheduled companyTScheduled,
       BuildContext context,

@@ -19,6 +19,13 @@ class AppUserProvider extends ChangeNotifier{
   List<CountryModel>? countriesList;
   List<AppUser>? allTeachersList, filteredTeachersList, usersCache, allAdminsList;
 
+  getCurrentUserStream() async {
+    UsersRepository().streamCurrentUser().listen((userData) {
+      currentUser = userData;
+      notifyListeners();
+    });
+  }
+
   getCurrentUser() async {
     var map = await UsersRepository().getCurrentUser();
     currentUser = AppUser.fromMap(map);

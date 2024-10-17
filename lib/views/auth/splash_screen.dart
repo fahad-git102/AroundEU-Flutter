@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
-import 'package:groupchat/providers/companies_provider.dart';
 import 'package:groupchat/views/admin_screens/admin_home_screen.dart';
 import 'package:groupchat/views/home_screens/home_screen.dart';
 import 'package:sizer/sizer.dart';
@@ -36,11 +35,7 @@ class _SplasScreenState extends State<SplashScreen> {
         if (appUserPro.currentUser?.admin == true) {
           navigate(AdminHomeScreen.route);
         } else {
-          if (appUserPro.currentUser?.userType == teacher) {
-            navigate(TeachersHomeScreen.route);
-          } else {
-            navigate(HomeScreen.route);
-          }
+          navigate(HomeScreen.route);
         }
       }else{
         Auth().signOut();

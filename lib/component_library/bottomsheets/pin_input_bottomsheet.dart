@@ -8,9 +8,9 @@ import 'package:groupchat/core/utilities_class.dart';
 import 'package:sizer/sizer.dart';
 
 class PinInputBottomSheet extends StatefulWidget {
-  final Function(String? pin)? onComplete;
+  final String? title;
 
-  const PinInputBottomSheet({super.key, this.onComplete});
+  const PinInputBottomSheet({super.key, this.title});
 
   @override
   State<PinInputBottomSheet> createState() => _PinInputBottomSheetState();
@@ -135,7 +135,7 @@ class _PinInputBottomSheetState extends State<PinInputBottomSheet> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 13.sp),
             child: ExtraLargeMediumBoldText(
-              title: "Enter 5-Digit PIN".tr(),
+              title: widget.title??"Enter 5-Digit PIN".tr(),
               textColor: AppColors.lightBlack,
             ),
           ),

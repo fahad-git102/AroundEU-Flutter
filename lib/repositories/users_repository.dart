@@ -85,6 +85,16 @@ class UsersRepository{
     return downloadUrl;
   }
 
+  Stream<AppUser> streamCurrentUser() {
+    var dfRef = FirebaseDatabase.instance.ref();
+    return dfRef.child(users).child(Auth().currentUser?.uid??'').onValue.map((event) {
+      final data = event.snapshot.value != null
+          ? Map<String, dynamic>.from(event.snapshot.value as Map)
+          : {};
+      return AppUser.fromMap(data);
+    });
+  }
+
   Future<Map<dynamic, dynamic>> getCurrentUser() async {
     var obj = await FirebaseCrud().getDateOnce(key: '$users/${Auth().currentUser!.uid}')
     as Map<dynamic, dynamic>;

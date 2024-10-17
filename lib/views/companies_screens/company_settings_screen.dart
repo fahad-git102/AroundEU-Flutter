@@ -51,6 +51,7 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
   bool? isLoading = false;
   TimeOfDay? todMorningFrom, todMorningTo, todNoonFrom, todNoonTo;
   bool? isEdit = true;
+  bool? pageStarted = true;
 
   updateState(){
     setState(() {
@@ -69,6 +70,18 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
     myCompanyTimeScheduled ??=
       args!['myCompanyTimeScheduled'] != null ? CompanyTimeScheduled.fromMap(args['myCompanyTimeScheduled']) : null;
     isEdit = args!['edit'] != null ? args['edit'] as bool : false;
+
+    if(pageStarted== true&&myCompanyTimeScheduled!=null){
+      morningFrom = myCompanyTimeScheduled?.morningFrom;
+      morningTo = myCompanyTimeScheduled?.morningTo;
+      noonFrom = myCompanyTimeScheduled?.noonFrom;
+      noonTo = myCompanyTimeScheduled?.noonTo;
+      descriptionController.text = myCompanyTimeScheduled?.description??'';
+      for(var item in myCompanyTimeScheduled?.selectedDays??[]){
+        selectedDays.add(replaceHalfWord(item));
+      }
+      pageStarted = false;
+    }
 
     todMorningFrom ??= TimeOfDay.now();
     todMorningTo ??= TimeOfDay.now();
@@ -108,7 +121,7 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 13.0.sp),
                             child: ExtraLargeMediumBoldText(
-                              title: 'Add Working Details'.tr(),
+                              title: isEdit==true?'Update Working Details'.tr():'Add Working Details'.tr(),
                               textColor: AppColors.lightBlack,
                             ),
                           ),
@@ -309,7 +322,11 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
                                       Utilities().showErrorMessage(context, message: 'Please fill your complete timings'.tr());
                                       return;
                                     }
-                                    saveMyCompanyTimeSchedule(ref);
+                                    if(isEdit==true){
+                                      updateMyCompanyTimeSchedule();
+                                    }else{
+                                      saveMyCompanyTimeSchedule(ref);
+                                    }
                                   }
                                 },
                               );
@@ -329,6 +346,36 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
           )),
     );
   }
+
+  updateMyCompanyTimeSchedule(){
+    CompanyTimeScheduled companyTimeScheduled = CompanyTimeScheduled(
+      selectedDays: selectedDays,
+      id: myCompanyTimeScheduled?.id,
+      morningFrom: morningFrom,
+      morningTo: morningTo,
+      companyId: myCompanyTimeScheduled?.companyId,
+      noonFrom: noonFrom,
+      noonTo: noonTo,
+      description: descriptionController.text,
+      uid: myCompanyTimeScheduled?.uid
+    );
+    setState(() {
+      isLoading = true;
+    });
+    CompanyRepository().updateMyCompanySchedule(companyTimeScheduled.toMap(), myCompanyTimeScheduled?.id??'',
+        context, (){
+      setState(() {
+        isLoading = false;
+      });
+      Utilities().showCustomToast(message: 'Working details uploaded successfully'.tr(), isError: false);
+        }, (p0){
+          setState(() {
+            isLoading = false;
+          });
+          Utilities().showCustomToast(message: p0.toString(), isError: true);
+        });
+  }
+
   saveMyCompanyTimeSchedule(WidgetRef ref){
     var companiesPro = ref.watch(companiesProvider);
     if(selectedDays.isNotEmpty){
@@ -349,7 +396,10 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
       await companiesPro.listenToMyCompanyTimeScheduled();
       isLoading = false;
       updateState();
-      Utilities().showSuccessDialog(context, message: 'Working details uploaded successfully'.tr());
+      Utilities().showSuccessDialog(context, message: 'Working details uploaded successfully'.tr(), onBtnTap: (){
+        Navigator.of(context);
+        Navigator.of(context);
+      });
     }, (p0) {
       isLoading = false;
       updateState();
@@ -375,4 +425,24 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
       }
     }
   }
+
+  replaceHalfWord(String day){
+    if(day == 'MONDAY'.tr()){
+      day = 'MON';
+    }else if(day == 'TUESDAY'.tr()){
+      day = 'TUE';
+    }else if(day == 'WEDNESDAY'.tr()){
+      day = 'WED';
+    }else if(day == 'THURSDAY'.tr()){
+      day = 'THURS';
+    }else if(day == 'FRIDAY'.tr()){
+      day = 'FRI';
+    }else if(day == 'SATURDAY'.tr()){
+      day = 'SAT';
+    }else if(day == 'SUNDAY'.tr()){
+      day = 'SUN';
+    }
+    return day;
+  }
+
 }

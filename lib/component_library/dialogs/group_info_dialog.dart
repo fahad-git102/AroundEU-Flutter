@@ -26,6 +26,7 @@ import '../../core/size_config.dart';
 import '../../core/utilities_class.dart';
 import '../../core/validation.dart';
 import '../../firebase/firebase_crud.dart';
+import '../../views/categories_screens/pdf_view_screen.dart';
 import '../buttons/button.dart';
 import '../image_widgets/circle_image_avatar.dart';
 import '../text_fields/white_back_textfield.dart';
@@ -263,130 +264,142 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
                     SizedBox(
                       height: 7.sp,
                     ),
-                    // InkWell(
-                    //   onTap: () async {
-                    //     if (isEdit == true) {
-                    //       final result = await showDialog(
-                    //           context: context,
-                    //           builder: (context) => SelectGroupCategoriesDialog(
-                    //                 categories: categories,
-                    //                 isSelected: isSelectedCategories,
-                    //               ));
-                    //       if (result != null) {
-                    //         selectedCategories = result as List<String>;
-                    //         updateState();
-                    //       }
-                    //     }
-                    //   },
-                    //   child: Container(
-                    //     width: SizeConfig.screenWidth,
-                    //     padding: EdgeInsets.all(10.sp),
-                    //     decoration: BoxDecoration(
-                    //         color: Colors.white,
-                    //         border: Border.all(
-                    //             color: AppColors.lightFadedTextColor,
-                    //             width: 0.4.sp),
-                    //         borderRadius:
-                    //             BorderRadius.all(Radius.circular(4.sp))),
-                    //     child: SmallLightText(
-                    //       fontSize: 11.5.sp,
-                    //       title: selectedCategories?.isNotEmpty == true
-                    //           ? selectedCategories?.join(', ')
-                    //               : 'Select Categories'.tr(),
-                    //       textColor: selectedCategories?.isNotEmpty == true
-                    //           ? AppColors.lightBlack
-                    //           : AppColors.extraLightGrey,
-                    //     ),
-                    //   ),
-                    // ),
-                    // SizedBox(
-                    //   height: 7.sp,
-                    // ),
-                    // selectedCategories?.isNotEmpty == true
-                    //     ? Container(
-                    //         padding: EdgeInsets.symmetric(
-                    //             vertical: 7.0.sp, horizontal: 10.0.sp),
-                    //         decoration: BoxDecoration(
-                    //             color: Colors.white,
-                    //             border: Border.all(
-                    //                 color: AppColors.lightFadedTextColor,
-                    //                 width: 0.4.sp),
-                    //             borderRadius:
-                    //                 BorderRadius.all(Radius.circular(4.sp))),
-                    //         child: Column(
-                    //           crossAxisAlignment: CrossAxisAlignment.start,
-                    //           children: [
-                    //             SmallLightText(
-                    //               title:
-                    //                   isEdit == false?'Files for selected categories'.tr():'Pick files for selected categories'.tr(),
-                    //               textColor: AppColors.lightFadedTextColor,
-                    //               fontSize: 10.sp,
-                    //             ),
-                    //             isEdit == true?SizedBox(
-                    //               height: 3.sp,
-                    //             ):Container(),
-                    //             isEdit == true && selectedCategories!.length>pickedFilesNames!.length?InkWell(
-                    //               onTap: () {
-                    //                 pickFiles();
-                    //               },
-                    //               child: Container(
-                    //                 width: SizeConfig.screenWidth,
-                    //                 padding:
-                    //                     EdgeInsets.symmetric(vertical: 8.sp),
-                    //                 decoration: BoxDecoration(
-                    //                     border: Border.all(
-                    //                         color: AppColors.mainColorDark,
-                    //                         width: 0.5.sp),
-                    //                     borderRadius: BorderRadius.all(
-                    //                         Radius.circular(4.sp)),
-                    //                     color: AppColors.white),
-                    //                 child: Center(
-                    //                     child: SvgPicture.asset(
-                    //                   Images.pickFileIcon,
-                    //                   height: 17.sp,
-                    //                   width: 17.sp,
-                    //                   color: AppColors.mainColorDark,
-                    //                 )),
-                    //               ),
-                    //             ):Container(),
-                    //             SizedBox(height: 10.sp),
-                    //             if (pickedFilesNames?.isNotEmpty == true)
-                    //               SizedBox(
-                    //                 height: 25.sp,
-                    //                 child: ListView.builder(
-                    //                   scrollDirection: Axis.horizontal,
-                    //                   itemCount: pickedFilesNames?.length,
-                    //                   itemBuilder: (context, index) {
-                    //                     return Container(
-                    //                       margin: EdgeInsets.only(right: 7.sp),
-                    //                       padding: EdgeInsets.symmetric(
-                    //                           horizontal: 5.sp),
-                    //                       decoration: BoxDecoration(
-                    //                         border: Border.all(
-                    //                             color: AppColors.blue),
-                    //                         borderRadius:
-                    //                             BorderRadius.circular(8.0),
-                    //                       ),
-                    //                       child: Center(
-                    //                         child: SmallLightText(
-                    //                           fontSize: 8.sp,
-                    //                           title: Utilities().getFileNameFromStorageUrl(pickedFilesNames?[index]??''),
-                    //                           textColor: AppColors.lightBlack,
-                    //                           overflow: TextOverflow.ellipsis,
-                    //                         ),
-                    //                       ),
-                    //                     );
-                    //                   },
-                    //                 ),
-                    //               ),
-                    //             SizedBox(height: 5.sp,)
-                    //           ],
-                    //         ),
-                    //       )
-                    //     : Container(),
-                    // SizedBox(
-                    //   height: 12.sp,
-                    // ),
+                    isEdit == false?InkWell(
+                      onTap: () async {
+                        if (isEdit == true) {
+                          final result = await showDialog(
+                              context: context,
+                              builder: (context) => SelectGroupCategoriesDialog(
+                                    categories: categories,
+                                    isSelected: isSelectedCategories,
+                                  ));
+                          if (result != null) {
+                            selectedCategories = result as List<String>;
+                            updateState();
+                          }
+                        }
+                      },
+                      child: Container(
+                        width: SizeConfig.screenWidth,
+                        padding: EdgeInsets.all(10.sp),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                                color: AppColors.lightFadedTextColor,
+                                width: 0.4.sp),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(4.sp))),
+                        child: SmallLightText(
+                          fontSize: 11.5.sp,
+                          title: selectedCategories?.isNotEmpty == true
+                              ? selectedCategories?.join(', ')
+                                  : 'Select Categories'.tr(),
+                          textColor: selectedCategories?.isNotEmpty == true
+                              ? AppColors.lightBlack
+                              : AppColors.extraLightGrey,
+                        ),
+                      ),
+                    ):Container(),
+                    isEdit == false?SizedBox(
+                      height: 7.sp,
+                    ):Container(),
+                    isEdit == false?selectedCategories?.isNotEmpty == true
+                        ? Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 7.0.sp, horizontal: 10.0.sp),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                    color: AppColors.lightFadedTextColor,
+                                    width: 0.4.sp),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(4.sp))),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SmallLightText(
+                                  title:
+                                      isEdit == false?'Files for selected categories'.tr():'Pick files for selected categories'.tr(),
+                                  textColor: AppColors.lightFadedTextColor,
+                                  fontSize: 10.sp,
+                                ),
+                                isEdit == true?SizedBox(
+                                  height: 3.sp,
+                                ):Container(),
+                                isEdit == true && selectedCategories!.length>pickedFilesNames!.length?InkWell(
+                                  onTap: () {
+                                    pickFiles();
+                                  },
+                                  child: Container(
+                                    width: SizeConfig.screenWidth,
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 8.sp),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: AppColors.mainColorDark,
+                                            width: 0.5.sp),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(4.sp)),
+                                        color: AppColors.white),
+                                    child: Center(
+                                        child: SvgPicture.asset(
+                                      Images.pickFileIcon,
+                                      height: 17.sp,
+                                      width: 17.sp,
+                                      color: AppColors.mainColorDark,
+                                    )),
+                                  ),
+                                ):Container(),
+                                SizedBox(height: 10.sp),
+                                if (pickedFilesNames?.isNotEmpty == true)
+                                  SizedBox(
+                                    height: 25.sp,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: pickedFilesNames?.length,
+                                      itemBuilder: (context, index) {
+                                        return InkWell(
+                                          onTap: (){
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) => PdfViewScreen(
+                                                    title: Utilities().getFileNameFromStorageUrl(pickedFilesNames?[index]??''),
+                                                    url: pickedFilesNames?[index]??'',
+                                                  )),
+                                            );
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(right: 7.sp),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 5.sp),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: AppColors.blue),
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                            ),
+                                            child: Center(
+                                              child: SmallLightText(
+                                                fontSize: 8.sp,
+                                                title: Utilities().getFileNameFromStorageUrl(pickedFilesNames?[index]??''),
+                                                textColor: AppColors.lightBlack,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                SizedBox(height: 5.sp,)
+                              ],
+                            ),
+                          )
+                        : Container():Container(),
+                    SizedBox(
+                      height: 12.sp,
+                    ),
                     isEdit == true ? isLoading == true
                         ? SpinKitPulse(
                       color: AppColors.mainColorDark,

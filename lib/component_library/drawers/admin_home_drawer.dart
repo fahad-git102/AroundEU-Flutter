@@ -1,21 +1,34 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/core/assets_names.dart';
 import 'package:groupchat/data/social_media_links.dart';
+import 'package:groupchat/providers/app_user_provider.dart';
+import 'package:groupchat/providers/categories_provider.dart';
 import 'package:groupchat/views/admin_screens/add_new_company_screen.dart';
-import 'package:groupchat/views/admin_screens/admin_home_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_colors.dart';
+import '../../firebase/auth.dart';
+import '../../views/admin_screens/add_coordinator_screen.dart';
+import '../../views/admin_screens/add_emergency_number_screen.dart';
+import '../../views/admin_screens/add_new_country_screen.dart';
+import '../../views/admin_screens/add_new_group_screen.dart';
+import '../../views/admin_screens/add_news_screen.dart';
+import '../../views/admin_screens/manage_business_list_screen.dart';
+import '../../views/admin_screens/manage_places_screen.dart';
+import '../../views/auth/login_screen.dart';
+import '../../views/categories_screens/categories_screen.dart';
 import '../buttons/tile_item.dart';
+import '../dialogs/sign_out_dialog.dart';
 
-class AdminHomeDrawer extends StatefulWidget {
+class AdminHomeDrawer extends ConsumerStatefulWidget {
   @override
-  State<StatefulWidget> createState() => _AdminHomeDrawer();
+  ConsumerState<AdminHomeDrawer> createState() => _AdminHomeDrawer();
 }
 
-class _AdminHomeDrawer extends State<AdminHomeDrawer> {
+class _AdminHomeDrawer extends ConsumerState<AdminHomeDrawer> {
   final List<SocialMediaLink> list = [
     SocialMediaLink(
         index: 1,
@@ -69,24 +82,47 @@ class _AdminHomeDrawer extends State<AdminHomeDrawer> {
                 onTap: () async {
                   switch (list[index].index) {
                     case 1:
+                      Navigator.pushNamed(context, ManageBusinessListScreen.route);
                       break;
                     case 2:
+                      Navigator.pushNamed(context, ManagePlacesScreen.route);
                       break;
                     case 3:
+                      Navigator.pushNamed(context, AddNewCountryScreen.route);
                       break;
                     case 4:
+                      Navigator.pushNamed(context, AddNewsScreen.route);
                       break;
                     case 5:
+                      Navigator.pushNamed(context, AddNewGroupScreen.route);
                       break;
                     case 6:
+                      Navigator.pushNamed(context, AddNewCompanyScreen.route);
                       break;
                     case 7:
+                      Navigator.pushNamed(context, CategoriesScreen.route);
                       break;
                     case 8:
+                      Navigator.pushNamed(context, AddCoordinatorsScreen.route);
                       break;
                     case 9:
+                      Navigator.pushNamed(context, AddEmergencyNumbersScreen.route);
                       break;
                     case 10:
+                      var appUserPro = ref.watch(appUserProvider);
+                      var categoriesPro = ref.watch(categoriesProvider);
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (ctx) => SignOutDialog(
+                            onLogout: () {
+                              appUserPro.clearPro();
+                              categoriesPro.clearPro();
+                              Auth().signOut();
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context, LoginScreen.route, (route) => false);
+                            },
+                          ));
                       break;
                   }
                 },

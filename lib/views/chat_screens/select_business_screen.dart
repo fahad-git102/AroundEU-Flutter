@@ -34,7 +34,6 @@ class _SelectBusinessState extends ConsumerState<SelectBusinessScreen> {
   Widget build(BuildContext context) {
     var businessListPro = ref.watch(businessListProvider);
     var appUserPro = ref.read(appUserProvider);
-    print('jahajahjahajaha ${appUserPro.coordinatorsCountryModel?.toMap()}');
     businessListPro.filterBusinessListByCountry(appUserPro.coordinatorsCountryModel?.id??appUserPro.countriesList?[0].id??'');
     return Scaffold(
       body: SafeArea(
