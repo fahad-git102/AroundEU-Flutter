@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>942050510362-2hmvq0bqt6nmeffjga7jr7c35tv53lsu.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.942050510362-2hmvq0bqt6nmeffjga7jr7c35tv53lsu</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAg1a7xFmHpIWdaQ4S6FARVRoecjOekCTQ</string>
 	<key>GCM_SENDER_ID</key>
@@ -9,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.fahadandroid.groupchat</string>
+	<string>xyz.Coder.GroupChat</string>
 	<key>PROJECT_ID</key>
 	<string>eprojectconsult-9d70e</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,7 +29,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:942050510362:ios:0279b1a445513a1b48f3a3</string>
+	<string>1:942050510362:ios:58bb36051a45ecc948f3a3</string>
 	<key>DATABASE_URL</key>
 	<string>https://eprojectconsult-9d70e-default-rtdb.firebaseio.com</string>
 </dict>
