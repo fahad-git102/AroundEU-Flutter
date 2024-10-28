@@ -104,39 +104,44 @@ class _GroupMembersDialog extends ConsumerState<GroupMembersDialog> {
                 padding: EdgeInsets.symmetric(horizontal: 7.sp),
                 physics: const BouncingScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    width: SizeConfig.screenWidth,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10.sp, vertical: 7.sp),
-                    margin: EdgeInsets.all(4.sp),
-                    decoration: BoxDecoration(
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(7.sp)),
-                        color: AppColors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black87.withOpacity(0.34),
-                            blurRadius: 2,
-                            offset: const Offset(1, 0.5), // Shadow position
+                  return InkWell(
+                    onTap: (){
+                      print(groupMembers?[index]?.uid);
+                    },
+                    child: Container(
+                      width: SizeConfig.screenWidth,
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 10.sp, vertical: 7.sp),
+                      margin: EdgeInsets.all(4.sp),
+                      decoration: BoxDecoration(
+                          borderRadius:
+                          BorderRadius.all(Radius.circular(7.sp)),
+                          color: AppColors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black87.withOpacity(0.34),
+                              blurRadius: 2,
+                              offset: const Offset(1, 0.5), // Shadow position
+                            ),
+                          ]),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleImageAvatar(
+                            imagePath: groupMembers?[index]
+                                ?.profileUrl ??
+                                '',
+                            size: 34.sp,
                           ),
-                        ]),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircleImageAvatar(
-                          imagePath: groupMembers?[index]
-                              ?.profileUrl ??
-                              '',
-                          size: 34.sp,
-                        ),
-                        SizedBox(width: 8.sp),
-                        Expanded(
-                            child: SmallLightText(
-                              textColor: AppColors.lightBlack,
-                              title:
-                              '${groupMembers?[index]?.firstName ?? ''} ${groupMembers?[index]?.surName ?? ''}',
-                            ))
-                      ],
+                          SizedBox(width: 8.sp),
+                          Expanded(
+                              child: SmallLightText(
+                                textColor: AppColors.lightBlack,
+                                title:
+                                '${groupMembers?[index]?.firstName ?? ''} ${groupMembers?[index]?.surName ?? ''}',
+                              ))
+                        ],
+                      ),
                     ),
                   );
                 },

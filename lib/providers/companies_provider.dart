@@ -102,7 +102,7 @@ class CompaniesProvider extends ChangeNotifier {
   getMyCompany(String? id) async {
     if (id != null) {
       var map = await CompanyRepository().getMyCompany(id);
-      myCompany = CompanyModel.fromMap(map);
+      myCompany = CompanyModel.fromMap(map??{});
       notifyListeners();
     }
   }

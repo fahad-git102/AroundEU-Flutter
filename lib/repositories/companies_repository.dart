@@ -100,9 +100,14 @@ class CompanyRepository {
     });
   }
 
-  Future<Map<dynamic, dynamic>> getMyCompany(String id) async {
-    var obj = await FirebaseCrud().getDateOnce(key: '$companies/$id')
-        as Map<dynamic, dynamic>;
-    return obj;
+  Future<Map<dynamic, dynamic>?> getMyCompany(String id) async {
+    var result = await FirebaseCrud().getDateOnce(key: '$companies/$id');
+
+    if (result == null) {
+      print("Error: No data found for id $id");
+      return null; // or return an empty map {} if that's more appropriate
+    }
+
+    return result as Map<dynamic, dynamic>;
   }
 }

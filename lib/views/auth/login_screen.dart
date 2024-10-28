@@ -8,6 +8,7 @@ import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
 import 'package:groupchat/core/size_config.dart';
 import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/core/utilities_class.dart';
+import 'package:groupchat/firebase/fcm_service.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/views/auth/forgot_password_screen.dart';
 import 'package:groupchat/views/auth/register_screen.dart';
@@ -241,6 +242,7 @@ class _LoginScreenState extends State<LoginScreen>{
       await usersPro.getCurrentUser();
       isLoading = false;
       updateState();
+      FcmService().updateTokenOnLogin();
       if (usersPro.currentUser != null) {
         if (usersPro.currentUser?.admin == true) {
           navigate(AdminHomeScreen.route);
