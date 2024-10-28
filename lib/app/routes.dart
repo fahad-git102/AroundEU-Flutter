@@ -28,6 +28,7 @@ import 'package:groupchat/views/home_screens/privacy_policy_screen.dart';
 import 'package:groupchat/views/home_screens/teachers_home_screen.dart';
 import 'package:groupchat/views/news_screens/news_details_screen.dart';
 import 'package:groupchat/views/news_screens/news_screen.dart';
+import 'package:groupchat/views/notifications_test_screen.dart';
 import 'package:groupchat/views/profile_screens/my_documents_screen.dart';
 import 'package:groupchat/views/profile_screens/personal_info_screen.dart';
 import 'package:groupchat/views/profile_screens/settings_list_screen.dart';
@@ -76,6 +77,7 @@ getRoutes(){
     AddNewGroupScreen.route: (context) => AddNewGroupScreen(),
     GroupsScreen.route: (context) => GroupsScreen(),
     ChatScreen.route: (context) => const ChatScreen(),
-    SelectBusinessScreen.route: (context) => const SelectBusinessScreen()
+    SelectBusinessScreen.route: (context) => const SelectBusinessScreen(),
+    NotificationsTestScreen.route: (context) => NotificationsTestScreen()
   };
 }

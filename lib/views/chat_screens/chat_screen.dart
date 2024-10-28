@@ -7,7 +7,8 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:groupchat/component_library/bottomsheets/delete_message_bottomsheet.dart';
 import 'package:groupchat/component_library/dialogs/group_members_dialog.dart';
 import 'package:groupchat/component_library/image_widgets/circle_image_avatar.dart';
-import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
+import 'package:groupchat/data/group_model.dart';
+import 'package:groupchat/firebase/notification_service.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -61,6 +62,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool? showEmojis = false;
   FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
   String? filePath;
+  double dragExtent = 0.0;
+  double threshold = 0.5;
+  List<AppUser?>? groupMembers;
 
   updateState() {
     setState(() {});
@@ -348,18 +352,34 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return user;
   }
 
+  manageNotification() async {
+    List<AppUser?> usersList = [];
+    var groupsPro = ref.watch(groupsProvider);
+    var appUserPro = ref.watch(appUserProvider);
+    GroupModel? group = groupsPro
+        .currentBLGroupsList
+        ?.firstWhere((element) => element.key == groupId);
+    groupMembers ??= await appUserPro.getUsersListByIds(groupsPro
+        .currentBLGroupsList
+        ?.firstWhere((element) => element.key == groupId).approvedMembers);
+    await appUserPro.listenToAdmins();
+    usersList.addAll(groupMembers??[]);
+    usersList.addAll(appUserPro.allAdminsList??[]);
+    NotificationService().sendNotification(group?.key??'', usersList, group?.name??'', appUserPro.currentUser?.firstName??'');
+  }
+
   Future<List<Map<String, dynamic>>> setMentionsData() async {
     var groupsPro = ref.watch(groupsProvider);
     var appUserPro = ref.watch(appUserProvider);
-    List<AppUser?> usersList = await appUserPro.getUsersListByIds(groupsPro
+    groupMembers = await appUserPro.getUsersListByIds(groupsPro
         .currentBLGroupsList
         ?.firstWhere((element) => element.key == groupId).approvedMembers);
     List<Map<String, dynamic>> mapList = [];
-    if(usersList.isNotEmpty==true){
-      for(int i = 0; i<usersList.length; i++){
+    if(groupMembers?.isNotEmpty==true){
+      for(int i = 0; i<groupMembers!.length; i++){
         Map<String, dynamic> map = {
-          'id': usersList[i]?.uid,
-          'display': '${usersList[i]?.firstName} ${usersList[i]?.surName}'
+          'id': groupMembers?[i]?.uid,
+          'display': '${groupMembers?[i]?.firstName} ${groupMembers?[i]?.surName}'
         };
         mapList.add(map);
       }
@@ -383,6 +403,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           uid: Auth().currentUser?.uid,
           timeStamp: DateTime.now().millisecondsSinceEpoch);
       GroupsRepository().sendMessage(messageModel, groupId, context, () {
+        manageNotification();
         key.currentState?.controller?.clear();
         groupsPro.incrementUnreadCountsForGroup(context, groupsPro.currentBLGroupsList
         !.firstWhere((element) => element.key == groupId), appUserPro.allAdminsList??[]);
@@ -417,6 +438,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       messageModel.documentName = documentName ?? '';
     }
     GroupsRepository().sendMessage(messageModel, groupId, context, () {
+      manageNotification();
       isLoading = false;
       updateState();
       key.currentState?.controller?.clear();
@@ -575,6 +597,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           uid: Auth().currentUser?.uid,
           timeStamp: DateTime.now().millisecondsSinceEpoch);
       GroupsRepository().sendMessage(messageModel, groupId ?? '', context, () {
+        manageNotification();
         isLoading = false;
         updateState();
         key.currentState?.controller?.clear();

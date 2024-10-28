@@ -6,11 +6,13 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/app/routes.dart';
 import 'package:groupchat/core/app_colors.dart';
-import 'package:groupchat/views/auth/login_screen.dart';
+import 'package:groupchat/firebase/fcm_messaging.dart';
+import 'package:groupchat/firebase/fcm_service.dart';
 import 'package:groupchat/views/auth/splash_screen.dart';
-import 'package:groupchat/views/chat_screens/chat_screen.dart';
 import 'package:sizer/sizer.dart';
 import 'package:toastification/toastification.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +29,7 @@ Future<void> main() async {
   }else{
     await Firebase.initializeApp();
   }
-
+  await FcmService().initNotifications();
   runApp(const ProviderScope(child: Portal(child: MyApp())));
 }
 
@@ -41,6 +43,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
+          navigatorKey: navigatorKey,
           theme: ThemeData(
             primarySwatch: createMaterialColor(AppColors.mainColor),
             colorScheme: ColorScheme.fromSeed(seedColor: AppColors.mainColor),

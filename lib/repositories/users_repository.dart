@@ -58,6 +58,29 @@ class UsersRepository{
     );
   }
 
+  Future<void> updateUserToken(String newToken,
+       Function() onComplete, Function(dynamic error) onError) async {
+    final userRef = FirebaseDatabase.instance.ref('$users/${Auth().currentUser?.uid}');
+
+    try {
+      DataSnapshot snapshot = await userRef.child(deviceTokens).get();
+      List<dynamic> tokens = [];
+      if (snapshot.exists) {
+        tokens = List<String>.from(snapshot.value as List);
+      }
+      if (!tokens.contains(newToken)) {
+        tokens.add(newToken);
+      }
+      await userRef.update({
+        deviceTokens: tokens,
+      });
+      onComplete();
+    } catch (error) {
+      onError(error);
+    }
+  }
+
+
   Future<String> uploadProfileImage({
     required BuildContext context,
     required File file}) async {

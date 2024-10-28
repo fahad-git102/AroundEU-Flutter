@@ -12,6 +12,7 @@ const String companyTimeScheduled = "companyTimeScheduled";
 const String coordinators = "coordinators";
 const String emergency = "emergencyContacts";
 const String office = "office";
+const String deviceTokens = "deviceTokens";
 const String groups = "groups";
 const String messages = "messages";
 const String businessLists = "businessList";
