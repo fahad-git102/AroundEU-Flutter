@@ -41,6 +41,13 @@ class _AddCoordinatorsScreenState extends State<AddCoordinatorsScreen> {
   }
 
   @override
+  void dispose() {
+    detailsController.dispose();
+    numberController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
 

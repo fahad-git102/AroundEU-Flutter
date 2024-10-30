@@ -23,6 +23,14 @@ class _NewCountryDialogState extends State<NewCountryDialog>{
   TextEditingController nameController = TextEditingController();
   TextEditingController pinController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    pinController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(

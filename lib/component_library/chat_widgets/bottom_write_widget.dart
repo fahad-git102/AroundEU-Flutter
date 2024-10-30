@@ -22,7 +22,6 @@ class BottomWriteWidget extends StatefulWidget {
   Function(PointerDownEvent)? pointerDownEvent;
   Function()? onCameraTap;
   Function()? onSendTap;
-  Function()? onTextFieldTap;
   Function(String val)? onTextFieldChanged;
   GlobalKey<FlutterMentionsState>? mentionsKey;
 
@@ -34,7 +33,6 @@ class BottomWriteWidget extends StatefulWidget {
     this.isRecording,
     this.showEmojis,
     this.focusNode,
-    this.onTextFieldTap,
     this.pointerUpEvent,
     this.pointerDownEvent,
     this.showSendButton,
@@ -89,7 +87,6 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                       focusNode: widget.focusNode,
                       minLines: 1,
                       textInputAction: TextInputAction.done,
-                      onTap: widget.onTextFieldTap,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: widget.isRecording == true
                               ? AppColors.green
@@ -229,7 +226,7 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                       // updateState();
                     },
                     config: Config(
-                      columns: 9,
+                      columns: 7,
                       emojiSizeMax: SizeConfig.screenWidth! / 20,
                       verticalSpacing: 0,
                       horizontalSpacing: 0,

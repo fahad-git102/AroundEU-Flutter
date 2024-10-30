@@ -8,51 +8,56 @@ import 'package:sizer/sizer.dart';
 import '../../core/app_colors.dart';
 import '../text_widgets/small_light_text.dart';
 
-class ClassMediaBottomSheet extends StatelessWidget{
+import 'package:open_filex/open_filex.dart';
 
-  List<FileWithType>? pickedFiles;
-  Function()? onSendTap;
+class ClassMediaBottomSheet extends StatelessWidget {
+  final List<FileWithType>? pickedFiles;
+  final Function()? onSendTap;
+
+  ClassMediaBottomSheet({super.key, this.pickedFiles, this.onSendTap});
 
   @override
   Widget build(BuildContext context) {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter setModalState) {
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0.sp),
           child: Column(
-            mainAxisSize: MainAxisSize.min, // Adjusts the height based on content
+            mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(height: 10.sp,),
+              SizedBox(height: 10.sp),
               Flexible(
                 child: ListView.builder(
-                  shrinkWrap: true, // Makes sure the list takes only necessary height
-                  itemCount: pickedFiles?.length??0,
+                  shrinkWrap: true,
+                  itemCount: pickedFiles?.length ?? 0,
                   itemBuilder: (context, index) {
                     File? file = pickedFiles?[index].file;
                     MessageType? fileType = pickedFiles?[index].fileType;
 
                     return ListTile(
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(7.sp)),
-                        child: fileType == MessageType.image
-                            ? Image.file(file!, width: 50, height: 50, fit: BoxFit.cover) : fileType == MessageType.document ?
-                            Icon(Icons.file_copy_outlined, size: 50, color: AppColors.mainColorDark,)
-                            : Icon(Icons.video_library, size: 50, color: AppColors.mainColorDark),
+                      leading: GestureDetector(
+                        onTap: () {
+                          if (file != null) {
+                            OpenFilex.open(file.path);
+                          }
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(7.sp)),
+                          child: fileType == MessageType.image
+                              ? Image.file(file!, width: 50, height: 50, fit: BoxFit.cover)
+                              : fileType == MessageType.document
+                              ? Icon(Icons.file_copy_outlined, size: 50, color: AppColors.mainColorDark)
+                              : Icon(Icons.video_library, size: 50, color: AppColors.mainColorDark),
+                        ),
                       ),
-                      title: ExtraMediumText(
-                        title: file!.path.split('/').last,
-                        textColor: AppColors.lightBlack,
-                      ),
-                      subtitle: SmallLightText(
-                        title: fileType?.name,
-                        textColor: AppColors.extraLightBlack,
-                      ),
+                      title: Text(file!.path.split('/').last),
+                      subtitle: Text(fileType?.name ?? ''),
                       trailing: IconButton(
                         icon: const Icon(Icons.clear, color: Colors.red),
                         onPressed: () {
                           setModalState(() {
                             pickedFiles?.removeAt(index);
-                            if(pickedFiles?.isEmpty==true){
+                            if (pickedFiles?.isEmpty == true) {
                               Navigator.pop(context);
                             }
                           });
@@ -62,17 +67,17 @@ class ClassMediaBottomSheet extends StatelessWidget{
                   },
                 ),
               ),
-              Padding(padding: EdgeInsets.symmetric(vertical: 5.sp), child: const Divider(),),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 5.sp),
+                child: const Divider(),
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 13.sp),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SmallLightText(
-                      title: '${pickedFiles?.length} files',
-                      textColor: AppColors.lightBlack,
-                    ),
+                    SmallLightText(title: '${pickedFiles?.length ?? 0} files'),
                     Container(
                       height: 36.sp,
                       width: 36.sp,
@@ -98,16 +103,11 @@ class ClassMediaBottomSheet extends StatelessWidget{
                     )
                   ],
                 ),
-              )
+              ),
             ],
           ),
         );
       },
     );
   }
-
-  ClassMediaBottomSheet({super.key,
-    this.pickedFiles,
-    this.onSendTap,
-  });
 }

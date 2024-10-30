@@ -33,6 +33,12 @@ class _PlacesScreenState extends State<PlacesScreen>{
     "Experience".tr()
   ];
 
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   updateState(){
     setState(() {
 

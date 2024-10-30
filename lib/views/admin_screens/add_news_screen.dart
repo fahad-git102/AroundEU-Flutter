@@ -42,6 +42,13 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
   NewsModel? newsToEdit;
   bool? pageStarted = true;
 
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
   updateState() {
     setState(() {});
   }

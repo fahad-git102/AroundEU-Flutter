@@ -24,6 +24,7 @@ class GroupsProvider extends ChangeNotifier {
     }
     GroupsRepository().getGroupStreamById(groupId: groupId).listen((groupModel){
       if(groupModel!=null){
+        groupModel.approvedMembers = groupModel.approvedMembers?.toSet().toList();
         int? existingIndex = currentBLGroupsList?.indexWhere((group) => group.key == groupModel.key);
         groupModel.messages?.sort((a, b) => a.timeStamp??0.compareTo(b.timeStamp??0));
         if (existingIndex!=null&&existingIndex >= 0) {

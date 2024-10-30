@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:groupchat/component_library/app_bars/custom_app_bar.dart';
 import 'package:groupchat/core/utilities_class.dart';
 import 'package:http/http.dart' as http;
@@ -32,15 +32,44 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
   bool pdfReady = false;
   PDFViewController? _pdfViewController;
   bool loaded = false;
+  double downloadProgress = 0.0;
 
   Future<File> getFileFromUrl(String url, {String? name}) async {
     var fileName = name ?? 'testonline';
     try {
-      var data = await http.get(Uri.parse(url));
-      var bytes = data.bodyBytes;
       var dir = await getApplicationDocumentsDirectory();
       File file = File("${dir.path}/$fileName.pdf");
-      return await file.writeAsBytes(bytes);
+
+      if (await file.exists()) {
+        setState(() {
+          urlPDFPath = file.path;
+          loaded = true;
+          exists = true;
+        });
+        return file;
+      } else {
+        var response = await http.Client().send(http.Request('GET', Uri.parse(url)));
+        var bytes = <int>[];
+        var totalBytes = response.contentLength ?? 0;
+        var receivedBytes = 0;
+
+        response.stream.listen((chunk) {
+          setState(() {
+            bytes.addAll(chunk);
+            receivedBytes += chunk.length;
+            downloadProgress = receivedBytes / totalBytes;
+          });
+        }).onDone(() async {
+          await file.writeAsBytes(bytes);
+          setState(() {
+            urlPDFPath = file.path;
+            loaded = true;
+            exists = true;
+          });
+        });
+
+        return file;
+      }
     } catch (e) {
       throw Exception("Error opening url file: $e");
     }
@@ -49,13 +78,7 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
   @override
   void initState() {
     super.initState();
-    getFileFromUrl(widget.url ?? '').then((file) {
-      setState(() {
-        urlPDFPath = file.path;
-        loaded = true;
-        exists = true;
-      });
-    }).catchError((error) {
+    getFileFromUrl(widget.url ?? '', name: widget.title??'').catchError((error) {
       print("Error downloading file: $error");
       setState(() {
         exists = false;
@@ -69,75 +92,79 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
     return Scaffold(
       body: SafeArea(
         child: SizedBox(
-            height: SizeConfig.screenHeight,
-            width: SizeConfig.screenWidth,
-            child: Column(
-              children: [
-                CustomAppBar(
-                  title: widget.title ?? '',
-                  trailingWidget: InkWell(
-                    onTap: () async {
-                      Utilities().showCustomToast(isError: false, message: '...', title: 'Downloading started'.tr());
-                      await Utilities().downloadFile(await getFileFromUrl(widget.url??'', name: widget.title??''),
-                          widget.title??'', extension: '.pdf', context);
-                    },
-                    child: Padding(
-                        padding: EdgeInsets.all(5.0.sp),
-                        child: Icon(
-                          Icons.save_alt_rounded,
-                          color: AppColors.lightBlack,
-                          size: 20.0.sp,
-                        )),
-                  ),
-                ),
-                loaded && exists
-                    ? Expanded(
-                  child: PDFView(
-                    filePath: urlPDFPath,
-                    autoSpacing: true,
-                    enableSwipe: true,
-                    pageSnap: true,
-                    preventLinkNavigation: false,
-                    swipeHorizontal: false,
-                    nightMode: false,
-                    onError: (e) {
-                      print("PDF View Error: $e");
-                      // Show some error message or UI
-                    },
-                    onRender: (pages) {
-                      setState(() {
-                        _totalPages = pages!;
-                        pdfReady = true;
-                      });
-                    },
-                    onViewCreated: (PDFViewController vc) {
-                      setState(() {
-                        _pdfViewController = vc;
-                      });
-                    },
-                    onPageChanged: (page, total) {
-                      setState(() {
-                        _currentPage = page!;
-                      });
-                    },
-                    onPageError: (page, e) {
-                      print("Page Error: $e");
-                    },
-                  ),
-                )
-                    : Expanded(
-                  child: SizedBox(
-                    height: SizeConfig.screenHeight,
-                    width: SizeConfig.screenWidth,
-                    child: Center(
-                      child: SpinKitPulse(
-                        color: AppColors.mainColorDark,
-                      ),
+          height: SizeConfig.screenHeight,
+          width: SizeConfig.screenWidth,
+          child: Column(
+            children: [
+              CustomAppBar(
+                title: widget.title ?? '',
+                trailingWidget: InkWell(
+                  onTap: () async {
+                    Utilities().showCustomToast(isError: false, message: '...', title: 'Downloading started'.tr());
+                    await Utilities().downloadFile(await getFileFromUrl(widget.url ?? '', name: widget.title ?? ''),
+                        widget.title ?? '', extension: '.pdf', context);
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(5.0.sp),
+                    child: Icon(
+                      Icons.save_alt_rounded,
+                      color: AppColors.lightBlack,
+                      size: 20.0.sp,
                     ),
                   ),
                 ),
-              ],
-            )),
+              ),
+              loaded && exists
+                  ? Expanded(
+                child: PDFView(
+                  filePath: urlPDFPath,
+                  autoSpacing: true,
+                  enableSwipe: true,
+                  pageSnap: true,
+                  preventLinkNavigation: false,
+                  swipeHorizontal: false,
+                  nightMode: false,
+                  onError: (e) {
+                    print("PDF View Error: $e");
+                  },
+                  onRender: (pages) {
+                    setState(() {
+                      _totalPages = pages!;
+                      pdfReady = true;
+                    });
+                  },
+                  onViewCreated: (PDFViewController vc) {
+                    setState(() {
+                      _pdfViewController = vc;
+                    });
+                  },
+                  onPageChanged: (page, total) {
+                    setState(() {
+                      _currentPage = page!;
+                    });
+                  },
+                  onPageError: (page, e) {
+                    print("Page Error: $e");
+                  },
+                ),
+              )
+                  : Expanded(
+                child: Center(
+                  child: CircularPercentIndicator(
+                    radius: 60.0,
+                    lineWidth: 8.0,
+                    percent: downloadProgress,
+                    center: Text(
+                      "${(downloadProgress * 100).toInt()}%",
+                      style: TextStyle(color: AppColors.mainColorDark),
+                    ),
+                    progressColor: AppColors.mainColorDark,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

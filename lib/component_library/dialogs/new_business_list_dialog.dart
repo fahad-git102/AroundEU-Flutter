@@ -35,6 +35,12 @@ class _AddBusinessListDialogState extends State<AddBusinessListDialog>{
   CountryModel? selectedCountry;
   final _formKey = GlobalKey<FormState>();
 
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
   updateState(){
     setState(() {
 

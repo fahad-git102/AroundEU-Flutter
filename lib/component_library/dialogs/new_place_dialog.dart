@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/buttons/button.dart';
 import 'package:groupchat/component_library/drop_downs/countries_dropdown.dart';
-import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
 import 'package:groupchat/component_library/text_fields/simple_text_field.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/assets_names.dart';
@@ -48,6 +47,13 @@ class _NewPlaceDialogState extends State<NewPlaceDialog> {
   CountryModel? selectedCountry;
   TextEditingController locationController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+
+  @override
+  void dispose() {
+    locationController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
 
   updateState() {
     setState(() {});

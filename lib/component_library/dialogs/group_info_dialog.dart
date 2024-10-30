@@ -14,10 +14,7 @@ import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/data/group_model.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/repositories/groups_repository.dart';
-import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mime/mime.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_colors.dart';
@@ -60,6 +57,13 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
   bool? isLoading = false;
   List<bool> isSelectedCategories = List.generate(4, (index) => false);
   List<String?>? fileUrls = [];
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    pincodeController.dispose();
+    super.dispose();
+  }
 
   updateState() {
     setState(() {});

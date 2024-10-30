@@ -41,6 +41,12 @@ class _AddCategoryPdfDialogState extends State<AddCategoryPdfDialog> {
 
   File? pickedFile;
 
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
+  }
+
   Future<void> pickPdfFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,

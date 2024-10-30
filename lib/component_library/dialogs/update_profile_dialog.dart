@@ -47,6 +47,14 @@ class _UpdateProfileDialogState extends State<UpdateProfileDialog> {
   }
 
   @override
+  void dispose() {
+    firstNameController.dispose();
+    surnameController.dispose();
+    aboutController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     firstNameController.text = widget.firstName ?? '';
     surnameController.text = widget.surName ?? '';

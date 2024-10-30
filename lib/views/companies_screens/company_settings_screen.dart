@@ -60,6 +60,12 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
   }
 
   @override
+  void dispose() {
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     final args = ModalRoute.of(context)!.settings.arguments != null

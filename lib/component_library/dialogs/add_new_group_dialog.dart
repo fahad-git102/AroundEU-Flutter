@@ -51,6 +51,13 @@ class _AddNewGroupDialog extends State<AddNewGroupDialog> {
   bool? isLoading = false;
   final _formKey = GlobalKey<FormState>();
 
+  @override
+  void dispose() {
+    nameController.dispose();
+    pincodeController.dispose();
+    super.dispose();
+  }
+
   updateState() {
     setState(() {});
   }

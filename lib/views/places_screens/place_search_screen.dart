@@ -18,6 +18,12 @@ class _PlaceSearchScreenState extends State<PlaceSearchScreen> {
   TextEditingController controller = TextEditingController();
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(

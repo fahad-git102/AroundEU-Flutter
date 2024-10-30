@@ -39,6 +39,13 @@ class _AddEmergencyNumberState extends State<AddEmergencyNumbersScreen>{
   }
 
   @override
+  void dispose() {
+    nameController.dispose();
+    numberController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(

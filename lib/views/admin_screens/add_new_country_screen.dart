@@ -53,7 +53,7 @@ class _AddCountryState extends State<AddNewCountryScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomAppBar(
-                title: 'Countries'.tr(),
+                title: 'Cities'.tr(),
               ),
               SizedBox(
                 height: 20.sp,

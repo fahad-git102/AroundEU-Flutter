@@ -154,9 +154,9 @@ class Utilities {
     if (date.isAfter(today)) {
       return DateFormat('hh:mm aa').format(date);
     } else if (date.isAfter(yesterday)) {
-      return 'Yesterday';
+      return 'Yesterday ${DateFormat('hh:mm aa').format(date)}';
     } else {
-      return DateFormat('MMM d').format(date);
+      return DateFormat('MMM d hh:mm aa').format(date);
     }
   }
 

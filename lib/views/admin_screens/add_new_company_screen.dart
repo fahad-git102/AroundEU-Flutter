@@ -59,6 +59,24 @@ class _AddNewCompanyScreenState extends State<AddNewCompanyScreen> {
   }
 
   @override
+  void dispose() {
+    fullNameController?.dispose();
+    legalAddressController?.dispose();
+    postalCodeController?.dispose();
+    cityController?.dispose();
+    countryController?.dispose();
+    phoneController?.dispose();
+    emailController?.dispose();
+    contactPersonController?.dispose();
+    websiteController?.dispose();
+    companyDescriptionController?.dispose();
+    companyResponsibilityController?.dispose();
+    tasksOfStudentsController?.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
 

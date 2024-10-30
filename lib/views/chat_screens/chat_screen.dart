@@ -78,6 +78,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void dispose() {
     audioRecorder.closeRecorder();
+    key.currentState?.controller?.dispose();
     super.dispose();
   }
 
@@ -361,7 +362,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ?.firstWhere((element) => element.key == groupId);
     groupMembers ??= await appUserPro.getUsersListByIds(groupsPro
         .currentBLGroupsList
-        ?.firstWhere((element) => element.key == groupId).approvedMembers);
+        ?.firstWhere((element) => element.key == groupId).approvedMembers?.toSet().toList());
     await appUserPro.listenToAdmins();
     usersList.addAll(groupMembers??[]);
     usersList.addAll(appUserPro.allAdminsList??[]);
@@ -373,7 +374,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     var appUserPro = ref.watch(appUserProvider);
     groupMembers = await appUserPro.getUsersListByIds(groupsPro
         .currentBLGroupsList
-        ?.firstWhere((element) => element.key == groupId).approvedMembers);
+        ?.firstWhere((element) => element.key == groupId).approvedMembers?.toSet().toList());
     List<Map<String, dynamic>> mapList = [];
     if(groupMembers?.isNotEmpty==true){
       for(int i = 0; i<groupMembers!.length; i++){

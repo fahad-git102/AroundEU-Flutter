@@ -1,35 +1,38 @@
 import 'package:permission_handler/permission_handler.dart';
 
-class PermissionsManager{
+class PermissionsManager {
+  bool _isRequesting = false;
+
   Future<Map<String, PermissionStatus>> requestPermissions() async {
-    // Request permissions for location, storage, and microphone
-    Map<Permission, PermissionStatus> permissions = await [
-      Permission.location,
-      Permission.storage,
-      // Permission.microphone,
-    ].request();
+    if (_isRequesting) {
+      return {};
+    }
 
-    // Check each permission's status
-    PermissionStatus locationStatus = permissions[Permission.location] ?? PermissionStatus.denied;
-    PermissionStatus storageStatus = permissions[Permission.storage] ?? PermissionStatus.denied;
-    // PermissionStatus microphoneStatus = permissions[Permission.microphone] ?? PermissionStatus.denied;
+    _isRequesting = true;
 
-    return {
-      'location': locationStatus,
-      'storage': storageStatus,
-      // 'microphone': microphoneStatus,
-    };
+    try {
+      Map<Permission, PermissionStatus> permissions = await [
+        Permission.location,
+        Permission.storage,
+      ].request();
+
+      PermissionStatus locationStatus = permissions[Permission.location] ?? PermissionStatus.denied;
+      PermissionStatus storageStatus = permissions[Permission.storage] ?? PermissionStatus.denied;
+      return {
+        'location': locationStatus,
+        'storage': storageStatus,
+      };
+    } finally {
+      _isRequesting = false;
+    }
   }
 
   void checkPermissions() async {
     Map<String, PermissionStatus> permissions = await requestPermissions();
 
-    if (permissions['location']!.isGranted &&
-        permissions['storage']!.isGranted) {
-        // permissions['microphone']!.isGranted) {
+    if (permissions['location']?.isGranted == true &&
+        permissions['storage']?.isGranted == true) {
     } else {
-      // You can also guide the user to the app settings to manually grant permissions if needed
     }
   }
-
 }
