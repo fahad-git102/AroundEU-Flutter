@@ -7,8 +7,11 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:groupchat/component_library/bottomsheets/delete_message_bottomsheet.dart';
 import 'package:groupchat/component_library/dialogs/group_members_dialog.dart';
 import 'package:groupchat/component_library/image_widgets/circle_image_avatar.dart';
+import 'package:groupchat/data/business_list_model.dart';
 import 'package:groupchat/data/group_model.dart';
 import 'package:groupchat/firebase/notification_service.dart';
+import 'package:groupchat/providers/business_list_provider.dart';
+import 'package:groupchat/repositories/business_list_repository.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -29,6 +32,7 @@ import 'package:groupchat/repositories/groups_repository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/buttons/back_button.dart';
@@ -65,12 +69,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   double dragExtent = 0.0;
   double threshold = 0.5;
   List<AppUser?>? groupMembers;
+  BusinessList? currentBusinessList;
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+
+  MessageModel? replyMessage;
+  FocusNode? focusNode = FocusNode();
 
   updateState() {
     setState(() {});
   }
 
   Future<void> _initRecorder() async {
+    print('requesting for microphone');
     await Permission.microphone.request();
     await audioRecorder.openRecorder();
   }
@@ -100,6 +111,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       groupId = args['groupId'] ?? '';
       GroupsRepository().readAllMessages(groupId??'');
       ref.watch(appUserProvider).listenToAdmins();
+      ref.watch(appUserProvider).listenToCoordinators();
     }
     if(groupsPro.currentBLGroupsList==null || groupsPro.currentBLGroupsList?.isEmpty==true){
       groupsPro.listenToGroupById(groupId??'');
@@ -117,6 +129,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
     if(mentionsData==null){
       fetchMentionsData();
+    }
+    if(currentBusinessList==null){
+      if(groupsPro.currentBLGroupsList
+          ?.firstWhere((element) => element.key == groupId) !=
+          null){
+        GroupModel? groupModel = groupsPro.currentBLGroupsList
+            ?.firstWhere((element) => element.key == groupId);
+        var businessPro = ref.watch(businessListProvider);
+        businessPro.listenToBusinessList();
+        for(BusinessList item in businessPro.businessLists??[]){
+          if(item.key == groupModel?.businessKey){
+            currentBusinessList = item;
+          }
+        }
+        BusinessListRepository().resetFlagForMe(context, currentBusinessList);
+      }
     }
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -196,9 +224,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ),
                     ),
                     Expanded(
-                      child: ListView.builder(
+                      child: ScrollablePositionedList.builder(
                         reverse: true,
-                        controller: _scrollController,
+                        // controller: _scrollController,
+                        itemScrollController: itemScrollController,
+                        itemPositionsListener: itemPositionsListener,
                         itemCount: groupsPro.currentBLGroupsList
                             ?.firstWhere((element) => element.key == groupId)
                             .messages
@@ -224,6 +254,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             child: messageModel?.uid == Auth().currentUser?.uid
                                 ? SenderMessageWidget(
                               messageModel: messageModel,
+                              replyMessage: messageModel?.replyId!=null ? reversedMessages
+                                  ?.where((message) => message.key == messageModel?.replyId)
+                                  .isNotEmpty == true
+                                  ? reversedMessages?.firstWhere((message) => message.key == messageModel?.replyId)
+                                  : null:null,
+                              onSwipeMessage: (message){
+                                replyToMessage(message);
+                              },
+                              replyWidgetTap: (){
+                                if(messageModel?.replyId!=null){
+                                  scrollToReplyMessage(messageModel?.replyId??'', reversedMessages??[]);
+                                }
+                              },
                             )
                                 : FutureBuilder<AppUser?>(
                               future: fetchUser(messageModel?.uid ?? ''),
@@ -236,6 +279,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                 return ReceiverMessageWidget(
                                   senderName: senderName,
                                   messageModel: messageModel,
+                                  replyMessage: messageModel?.replyId!=null ? reversedMessages
+                                      ?.where((message) => message.key == messageModel?.replyId)
+                                      .isNotEmpty == true
+                                      ? reversedMessages?.firstWhere((message) => message.key == messageModel?.replyId)
+                                      : null:null,
+                                  onSwipeMessage: (message){
+                                    replyToMessage(message);
+                                  },
+                                  replyWidgetTap: (){
+                                    if(messageModel?.replyId!=null){
+                                      scrollToReplyMessage(messageModel?.replyId??'', reversedMessages??[]);
+                                    }
+                                  },
                                 );
                               },
                             ),
@@ -250,14 +306,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       child: GestureDetector(
                         onTap: () {
                           showEmojis = false;
+                          showSendButton = false;
                           updateState();
                         },
                         child: mentionsData!=null?BottomWriteWidget(
                           mentionsKey: key,
+                          onReplyCancel: (){
+                            setState(() {
+                              replyMessage = null;
+                            });
+                          },
+                          focusNode: focusNode,
+                          replyMessage: replyMessage,
                           emojiPressed: () {
                             showEmojis = !showEmojis!;
                             if(showEmojis == true){
                               showSendButton = true;
+                            }else{
+                              showSendButton = false;
                             }
                             updateState();
                           },
@@ -402,15 +468,31 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       MessageModel messageModel = MessageModel(
           message: key.currentState?.controller?.text,
           uid: Auth().currentUser?.uid,
+          replyId: replyMessage?.key,
           timeStamp: DateTime.now().millisecondsSinceEpoch);
+      replyMessage = null;
       GroupsRepository().sendMessage(messageModel, groupId, context, () {
         manageNotification();
         key.currentState?.controller?.clear();
         groupsPro.incrementUnreadCountsForGroup(context, groupsPro.currentBLGroupsList
         !.firstWhere((element) => element.key == groupId), appUserPro.allAdminsList??[]);
+        manageBusinessListFlags(groupsPro, appUserPro);
       }, (p0) {
         Utilities().showErrorMessage(context, message: p0.toString());
       });
+    }
+  }
+
+  manageBusinessListFlags(GroupsProvider groupsPro, AppUserProvider appUserPro) async {
+    var businessPro = ref.read(businessListProvider);
+    await businessPro.listenToBusinessList();
+    List<String>? admins = appUserPro.allAdminsList?.map((user) => user.uid!).toList();
+    List<String>? coordinators = appUserPro.allCoordinatorsList?.map((user) => user.uid!).toList();
+    if(businessPro.businessLists!=null){
+      BusinessListRepository().incrementUnreadFlagsForCountries(context, groupsPro.currentBLGroupsList
+      !.firstWhere((element) => element.key == groupId), context, admins??[], coordinators??[],
+          businessPro.businessLists!.firstWhere((element)=> element.key == groupsPro.currentBLGroupsList
+          !.firstWhere((element) => element.key == groupId).businessKey), (){}, (p0){});
     }
   }
 
@@ -427,6 +509,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         : null;
     MessageModel messageModel = MessageModel(
         uid: Auth().currentUser?.uid,
+        replyId: replyMessage?.key,
         timeStamp: DateTime.now().millisecondsSinceEpoch);
     if (fileWithType.fileType == MessageType.image) {
       messageModel.image = fileUrl;
@@ -438,6 +521,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       messageModel.document = fileUrl;
       messageModel.documentName = documentName ?? '';
     }
+    replyMessage = null;
     GroupsRepository().sendMessage(messageModel, groupId, context, () {
       manageNotification();
       isLoading = false;
@@ -445,6 +529,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       key.currentState?.controller?.clear();
       groupsPro.incrementUnreadCountsForGroup(context, groupsPro.currentBLGroupsList
           !.firstWhere((element) => element.key == groupId), appUserPro.allAdminsList??[]);
+      manageBusinessListFlags(groupsPro, appUserPro);
     }, (p0) {
       isLoading = false;
       updateState();
@@ -482,6 +567,40 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             message: 'You can pick upto 10 images maximum'.tr());
       }
     }
+  }
+
+  void scrollToReplyMessage(String replyId, List<MessageModel> messages) {
+    int replyIndex = messages.indexWhere((msg) => msg.key == replyId);
+    if (replyIndex != -1) {
+      itemScrollController.scrollTo(
+        index: replyIndex,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+  //
+  // void scrollToReplyMessage(String replyId, List<MessageModel> messages) {
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     int replyIndex = messages.indexWhere((msg) => msg.key == replyId);
+  //     if (replyIndex != -1) {
+  //       final targetKey = messages[replyIndex].globalKey;
+  //       if (targetKey.currentContext != null) {
+  //         Scrollable.ensureVisible(
+  //           targetKey.currentContext!,
+  //           duration: const Duration(milliseconds: 300),
+  //           curve: Curves.easeInOut,
+  //         );
+  //       }
+  //     }
+  //   });
+  // }
+
+  replyToMessage(MessageModel message){
+    setState(() {
+      replyMessage = message;
+    });
+    focusNode?.requestFocus();
   }
 
   void showDeleteMessageBottomSheet(BuildContext context, MessageModel item) {
@@ -576,6 +695,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       return Future.error('Location services are disabled.');
     }
 
+    print('requesting for location permission');
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -595,8 +715,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       MessageModel messageModel = MessageModel(
           latitude: position.latitude,
           longitude: position.longitude,
+          replyId: replyMessage?.key,
           uid: Auth().currentUser?.uid,
           timeStamp: DateTime.now().millisecondsSinceEpoch);
+      replyMessage = null;
       GroupsRepository().sendMessage(messageModel, groupId ?? '', context, () {
         manageNotification();
         isLoading = false;
@@ -604,6 +726,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         key.currentState?.controller?.clear();
         groupsPro.incrementUnreadCountsForGroup(context, groupsPro.currentBLGroupsList
         !.firstWhere((element) => element.key == groupId), appUserPro.allAdminsList??[]);
+        manageBusinessListFlags(groupsPro, appUserPro);
         // _animateToBottom();
       }, (p0) {
         isLoading = false;

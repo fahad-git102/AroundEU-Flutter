@@ -17,7 +17,7 @@ class AppUserProvider extends ChangeNotifier{
   AppUser? currentUser;
   CountryModel? coordinatorsCountryModel;
   List<CountryModel>? countriesList;
-  List<AppUser>? allTeachersList, filteredTeachersList, usersCache, allAdminsList;
+  List<AppUser>? allTeachersList, filteredTeachersList, usersCache, allAdminsList, allCoordinatorsList;
 
   getCurrentUserStream() async {
     UsersRepository().streamCurrentUser().listen((userData) {
@@ -90,6 +90,22 @@ class AppUserProvider extends ChangeNotifier{
         notifyListeners();
       }else{
         allTeachersList = [];
+        notifyListeners();
+      }
+    });
+  }
+
+  void listenToCoordinators() {
+    if(allCoordinatorsList!=null){
+      return;
+    }
+    UsersRepository().getAllCoordinatorsStream().listen((usersData) {
+      if(usersData.isNotEmpty){
+        allCoordinatorsList = usersData.values.toList();
+        allCoordinatorsList?.sort((a, b) => a.firstName!.compareTo(b.firstName??''));
+        notifyListeners();
+      }else{
+        allCoordinatorsList = [];
         notifyListeners();
       }
     });

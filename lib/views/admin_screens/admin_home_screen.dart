@@ -46,6 +46,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         var categoriesPro = ref.watch(categoriesProvider);
         appUserPro.listenToCountries();
         appUserPro.listenToAdmins();
+        appUserPro.listenToCoordinators();
         return Container(
           height: SizeConfig.screenHeight,
           padding: EdgeInsets.only(top: 15.0.sp, left: 13.0.sp, right: 13.0.sp),

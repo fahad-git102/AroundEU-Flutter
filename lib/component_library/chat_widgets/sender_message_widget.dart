@@ -5,6 +5,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/chat_widgets/document_message_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/location_message_widget.dart';
+import 'package:groupchat/component_library/chat_widgets/reply_message_widget.dart';
 import 'package:groupchat/component_library/chat_widgets/video_message_widget.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
@@ -13,12 +14,16 @@ import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/data/message_model.dart';
 import 'package:groupchat/views/profile_screens/full_image_screen.dart';
 import 'package:sizer/sizer.dart';
+import 'package:swipe_to/swipe_to.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../views/chat_screens/full_video_screen.dart';
 import 'audio_message_widget.dart';
 
 class SenderMessageWidget extends StatefulWidget {
   MessageModel? messageModel;
+  ValueChanged<MessageModel>? onSwipeMessage;
+  MessageModel? replyMessage;
+  Function()? replyWidgetTap;
 
   @override
   State<StatefulWidget> createState() => _SenderMessageState();
@@ -26,24 +31,27 @@ class SenderMessageWidget extends StatefulWidget {
   SenderMessageWidget({
     super.key,
     this.messageModel,
+    this.onSwipeMessage,
+    this.replyMessage,
+    this.replyWidgetTap
   });
 }
 
 class _SenderMessageState extends State<SenderMessageWidget> {
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Container(
-        padding: EdgeInsets.all(5.sp),
-        margin: EdgeInsets.only(bottom: 10.sp),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(7.sp)),
-            color: AppColors.mainColor.withOpacity(0.5)),
-        child: IntrinsicWidth(
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: manageMessageView(widget.messageModel!),
+    return SwipeTo(
+      onRightSwipe: (details) => widget.onSwipeMessage!(widget.messageModel!),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          padding: EdgeInsets.all(5.sp),
+          margin: EdgeInsets.only(bottom: 10.sp),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(7.sp)),
+              color: AppColors.mainColor.withOpacity(0.5)),
+          child: IntrinsicWidth(
+            child: manageMessageView(widget.messageModel!)??Container(),
           ),
         ),
       ),
@@ -58,96 +66,110 @@ class _SenderMessageState extends State<SenderMessageWidget> {
     final isMessage = message.message != null;
     final isLocation = message.latitude != null && message.longitude != null;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        isImage == true
-            ? InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => FullImageScreen(
-                        imageUrl: message.image ?? '',
+        message.replyId !=null ? InkWell(
+          onTap: widget.replyWidgetTap,
+          child: ReplyMessageWidget(
+            uid: widget.replyMessage?.uid,
+            small: true,
+            message: widget.replyMessage?.message?? widget.replyMessage?.documentName ??'Document'.tr(),
+          ),
+        ):Container(),
+        Align(
+          alignment: Alignment.centerRight,
+          child: isImage == true
+              ? InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FullImageScreen(
+                          imageUrl: message.image ?? '',
+                        ),
                       ),
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(7.sp)),
+                    child: CachedNetworkImage(
+                      height: 140.sp,
+                      width: 140.sp,
+                      imageUrl: message.image ?? '',
+                      placeholder: (context, url) => SpinKitPulse(
+                        color: AppColors.mainColorDark,
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                      fit: BoxFit.cover,
                     ),
-                  );
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(7.sp)),
-                  child: CachedNetworkImage(
-                    height: 140.sp,
-                    width: 140.sp,
-                    imageUrl: message.image ?? '',
-                    placeholder: (context, url) => SpinKitPulse(
-                      color: AppColors.mainColorDark,
-                    ),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                    fit: BoxFit.cover,
                   ),
-                ),
-              )
-            : isAudio == true
-                ? AudioMessageWidget(audioUrl: message.audio ?? '')
-                : isVideo
-                    ? InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (ctx) => VideoPlayerScreen(
-                                      videoUrl: message.video ?? '')));
-                        },
-                        child:
-                            VideoMessageWidget(videoUrl: message.video ?? ''))
-                    : isDocument
-                        ? InkWell(
-                            onTap: () {
-                              DownloadManager().downloadFile(message.document??'', message.documentName??'document.pdf');
-                            },
-                            child: DocumentMessageWidget(
-                              messageId: message.key,
-                              documentName:
-                                  message.documentName ?? 'Document'.tr(),
-                              documentUrl: message.document ?? '',
-                            ),
-                          )
-                        : isMessage
-                            ? Padding(
-                                padding: EdgeInsets.only(
-                                    left: 7.sp, right: 7.sp, top: 7.sp),
-                                child: Linkify(
-                                  onOpen: (link) async {
-                                    if (!await launchUrl(Uri.parse(link.url))) {
-                                      throw Exception(
-                                          'Could not launch ${link.url}');
-                                    }
-                                  },
-                                  textAlign: TextAlign.start,
-                                  text: Utilities().parseHtmlToPlainText(
-                                      widget.messageModel?.message ?? ''),
-                                  style: TextStyle(
-                                      color: AppColors.lightBlack,
-                                      fontSize: 12.3.sp),
-                                  linkStyle: TextStyle(
-                                      color: AppColors.hyperLinkColor),
-                                ),
-                              )
-                            : isLocation
-                                ? LocationMessageWidget(
-                                    latitude: message.latitude,
-                                    longitude: message.longitude,
-                                  )
-                                : Container(),
+                )
+              : isAudio == true
+                  ? AudioMessageWidget(audioUrl: message.audio ?? '')
+                  : isVideo
+                      ? InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (ctx) => VideoPlayerScreen(
+                                        videoUrl: message.video ?? '')));
+                          },
+                          child:
+                              VideoMessageWidget(videoUrl: message.video ?? ''))
+                      : isDocument
+                          ? InkWell(
+                              onTap: () {
+                                DownloadManager().downloadFile(message.document??'', message.documentName??'document.pdf');
+                              },
+                              child: DocumentMessageWidget(
+                                messageId: message.key,
+                                documentName:
+                                    message.documentName ?? 'Document'.tr(),
+                                documentUrl: message.document ?? '',
+                              ),
+                            )
+                          : isMessage
+                              ? Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 7.sp, right: 7.sp, top: 7.sp),
+                                  child: Linkify(
+                                    onOpen: (link) async {
+                                      if (!await launchUrl(Uri.parse(link.url))) {
+                                        throw Exception(
+                                            'Could not launch ${link.url}');
+                                      }
+                                    },
+                                    textAlign: TextAlign.start,
+                                    text: Utilities().parseHtmlToPlainText(
+                                        widget.messageModel?.message ?? ''),
+                                    style: TextStyle(
+                                        color: AppColors.lightBlack,
+                                        fontSize: 12.3.sp),
+                                    linkStyle: TextStyle(
+                                        color: AppColors.hyperLinkColor),
+                                  ),
+                                )
+                              : isLocation
+                                  ? LocationMessageWidget(
+                                      latitude: message.latitude,
+                                      longitude: message.longitude,
+                                    )
+                                  : Container(),
+        ),
         SizedBox(
           height: 3.sp,
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 7.0.sp),
-          child: SmallLightText(
-            title: Utilities().formatTimestamp(message.timeStamp ?? 0),
-            textColor: AppColors.lightFadedTextColor,
-            fontSize: 9.sp,
+        Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 7.0.sp),
+            child: SmallLightText(
+              title: Utilities().formatTimestamp(message.timeStamp ?? 0),
+              textColor: AppColors.lightFadedTextColor,
+              fontSize: 9.sp,
+            ),
           ),
         )
       ],

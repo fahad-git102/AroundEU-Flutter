@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class MessageModel{
   String? message, uid, image, video, audio, key, replyId, document, documentName;
   double? latitude, longitude;

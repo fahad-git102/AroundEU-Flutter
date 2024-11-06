@@ -60,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen>{
     return Consumer(builder: (ctx, ref, child){
       var appUserPro = ref.watch(appUserProvider);
       var groupsPro = ref.watch(groupsProvider);
+      var businessPro = ref.watch(businessListProvider);
       if (context.mounted) {
         if(appUserPro.currentUser?.joinedGroupId!=null && appUserPro.currentUser?.joinedGroupId?.isNotEmpty==true){
           groupsPro.listenToGroupById(appUserPro.currentUser?.joinedGroupId??'');
@@ -94,6 +95,8 @@ class _HomeScreenState extends State<HomeScreen>{
 
       appUserPro.listenToCountries();
       appUserPro.listenToAdmins();
+      appUserPro.listenToCoordinators();
+      businessPro.listenToBusinessList();
       return Scaffold(
         key: _scaffoldKey,
         drawer: HomeDrawer(),

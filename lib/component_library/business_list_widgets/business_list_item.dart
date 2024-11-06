@@ -10,6 +10,7 @@ class BusinessListItem extends StatelessWidget{
   String? title, country;
   Function(int val)? onOptionSelected;
   bool? showMenuButton;
+  bool? showDot;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +42,15 @@ class BusinessListItem extends StatelessWidget{
               fontSize: 9.sp,
               textColor: AppColors.hyperLinkColor,
             ),
+            showDot==true?Container(
+              height: 15.sp,
+              width: 15.sp,
+              margin: EdgeInsets.only(left: 4.sp),
+              decoration: BoxDecoration(
+                  color: AppColors.red,
+                  shape: BoxShape.circle
+              ),
+            ):Container(),
             showMenuButton==true?PopupMenuButton<int>(
               onSelected: onOptionSelected,
               itemBuilder: (BuildContext context) =>
@@ -71,6 +81,7 @@ class BusinessListItem extends StatelessWidget{
   BusinessListItem({
     this.title,
     this.country,
+    this.showDot = false,
     this.onOptionSelected,
     this.showMenuButton = true
   });

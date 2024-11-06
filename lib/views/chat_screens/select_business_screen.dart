@@ -68,6 +68,7 @@ class _SelectBusinessState extends ConsumerState<SelectBusinessScreen> {
                           });
                         },
                         child: BusinessListItem(
+                          showDot: businessListPro.businessLists?[index].showDot,
                           showMenuButton: false,
                           title: businessListPro.filteredBusinessList?[index].name,
                           country: appUserPro

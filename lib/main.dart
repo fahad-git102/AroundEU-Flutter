@@ -6,7 +6,6 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:groupchat/app/routes.dart';
 import 'package:groupchat/core/app_colors.dart';
-import 'package:groupchat/firebase/fcm_messaging.dart';
 import 'package:groupchat/firebase/fcm_service.dart';
 import 'package:groupchat/views/auth/splash_screen.dart';
 import 'package:sizer/sizer.dart';

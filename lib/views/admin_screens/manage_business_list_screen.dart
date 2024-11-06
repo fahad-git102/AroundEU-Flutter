@@ -76,6 +76,7 @@ class _ManageBLState extends State<ManageBusinessListScreen> {
                           title: businessPro.businessLists?[index].name,
                           country: appUserPro.getCountryById(businessPro
                               .businessLists?[index].countryId??'')?.countryName??'',
+                          showDot: businessPro.businessLists?[index].showDot,
                           onOptionSelected: (value){
                             if (value == 0) {
                               showEditBusinessListDialog(businessPro.businessLists![index]);

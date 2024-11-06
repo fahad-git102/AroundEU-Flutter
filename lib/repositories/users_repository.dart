@@ -162,6 +162,18 @@ class UsersRepository{
     });
   }
 
+  Stream<Map<String, AppUser>> getAllCoordinatorsStream() {
+    final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+    return dbRef.child(users)
+        .orderByChild('userType').equalTo(coordinator)
+        .onValue.map((event) {
+      final data = event.snapshot.value != null
+          ? Map<String, dynamic>.from(event.snapshot.value as Map)
+          : {};
+      return data.map((key, value) => MapEntry(key, AppUser.fromMap(Map<String, dynamic>.from(value))));
+    });
+  }
+
   Stream<Map<String, AppUser>> getAllAdminsStream() {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
     return dbRef.child(users)
