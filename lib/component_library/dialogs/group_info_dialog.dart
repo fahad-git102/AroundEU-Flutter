@@ -52,7 +52,7 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
   List<String> categories = ['Accommodation', 'Food', 'Classes', 'Others'];
   List<String?>? selectedCategories = [];
   List<String?>? pickedFilesNames;
-  List<PlatformFile>? pickedFiles;
+  List<PlatformFile>? pickedFiles=[];
   String? selectedCategoriesText;
   bool? isLoading = false;
   List<bool> isSelectedCategories = List.generate(4, (index) => false);
@@ -268,7 +268,7 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
                     SizedBox(
                       height: 7.sp,
                     ),
-                    isEdit == false?InkWell(
+                    InkWell(
                       onTap: () async {
                         if (isEdit == true) {
                           final result = await showDialog(
@@ -303,11 +303,11 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
                               : AppColors.extraLightGrey,
                         ),
                       ),
-                    ):Container(),
-                    isEdit == false?SizedBox(
+                    ),
+                    SizedBox(
                       height: 7.sp,
-                    ):Container(),
-                    isEdit == false?selectedCategories?.isNotEmpty == true
+                    ),
+                    selectedCategories?.isNotEmpty == true
                         ? Container(
                             padding: EdgeInsets.symmetric(
                                 vertical: 7.0.sp, horizontal: 10.0.sp),
@@ -330,7 +330,7 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
                                 isEdit == true?SizedBox(
                                   height: 3.sp,
                                 ):Container(),
-                                isEdit == true && selectedCategories!.length>pickedFilesNames!.length?InkWell(
+                                isEdit == true && selectedCategories!.length>(pickedFilesNames!.length+pickedFiles!.length)?InkWell(
                                   onTap: () {
                                     pickFiles();
                                   },
@@ -384,11 +384,70 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
                                                   BorderRadius.circular(8.0),
                                             ),
                                             child: Center(
-                                              child: SmallLightText(
-                                                fontSize: 8.sp,
-                                                title: Utilities().getFileNameFromStorageUrl(pickedFilesNames?[index]??''),
-                                                textColor: AppColors.lightBlack,
-                                                overflow: TextOverflow.ellipsis,
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  SmallLightText(
+                                                    fontSize: 8.sp,
+                                                    title: Utilities().getFileNameFromStorageUrl(pickedFilesNames?[index]??''),
+                                                    textColor: AppColors.lightBlack,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                  SizedBox(width: 7.sp,),
+                                                  isEdit == true?InkWell(
+                                                    onTap: (){
+                                                      pickedFilesNames?.removeAt(index);
+                                                      updateState();
+                                                    },
+                                                      child: SvgPicture.asset(Images.closeNormal, height: 9.sp, width: 9.sp,)):Container()
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                SizedBox(height: 10.sp),
+                                if (pickedFiles?.isNotEmpty == true)
+                                  SizedBox(
+                                    height: 25.sp,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: pickedFiles?.length,
+                                      itemBuilder: (context, index) {
+                                        return InkWell(
+                                          onTap: (){
+
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(right: 7.sp),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 5.sp),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: AppColors.blue),
+                                              borderRadius:
+                                              BorderRadius.circular(8.0),
+                                            ),
+                                            child: Center(
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  SmallLightText(
+                                                    fontSize: 8.sp,
+                                                    title: pickedFiles?[index].name,
+                                                    textColor: AppColors.lightBlack,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                  SizedBox(width: 7.sp,),
+                                                  isEdit==true?InkWell(
+                                                      onTap: (){
+                                                        pickedFiles?.removeAt(index);
+                                                        updateState();
+                                                      },
+                                                      child: SvgPicture.asset(Images.closeNormal, height: 9.sp, width: 9.sp,)):Container()
+                                                ],
                                               ),
                                             ),
                                           ),
@@ -400,7 +459,7 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
                               ],
                             ),
                           )
-                        : Container():Container(),
+                        : Container(),
                     SizedBox(
                       height: 12.sp,
                     ),
@@ -422,6 +481,10 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
   }
 
   updateGroupData() async {
+    if(selectedCategories?.length!=(pickedFilesNames!.length+pickedFiles!.length)){
+      Utilities().showCustomToast(message: 'Please pick files for each category'.tr(), isError: true);
+      return;
+    }
     isLoading = true;
     updateState();
     Map<String, dynamic> map ={
@@ -432,6 +495,25 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
       String? imageUrl = await FirebaseCrud()
           .uploadImage(context: context, file: File(pickedImage!.path));
       map['groupImage']= imageUrl;
+    }
+    if(selectedCategories!=null&&selectedCategories?.isNotEmpty==true){
+      map['categoryList']= selectedCategories;
+      map['category']= selectedCategories?.join(', ');
+    }
+    if (pickedFiles != null && pickedFiles?.isNotEmpty==true) {
+      List<String> fileUrls = [];
+      fileUrls = await Future.wait(
+        pickedFiles!.map((file) async {
+          String? fileUrl = await FirebaseCrud().uploadImage(context: context, file: File(file.path ?? ''));
+          return fileUrl ?? '';
+        }).toList(),
+      );
+      pickedFilesNames?.forEach((item) {
+        fileUrls.add(item ?? '');
+      });
+      map['fileUrls'] = fileUrls;
+    } else if (pickedFilesNames?.length != widget.groupModel?.fileUrls?.length) {
+      map['fileUrls'] = pickedFilesNames;
     }
 
     GroupsRepository().updateGroup(map, widget.groupModel?.key??'', context, (){
@@ -455,7 +537,7 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
 
     if (result != null) {
       pickedFiles ??= [];
-      pickedFilesNames ??= [];
+      // pickedFilesNames ??= [];
       if ((pickedFiles?.length ?? 0) + result.files.length >
           selectedCategories!.length) {
         String? maxLength = selectedCategories?.length.toString();
@@ -465,9 +547,9 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
         return;
       }
       pickedFiles?.addAll(result.files);
-      for (var item in result.files){
-        pickedFilesNames?.add(item.name);
-      }
+      // for (var item in result.files){
+      //   pickedFilesNames?.add(item.name);
+      // }
       updateState();
     } else {
       print("No file selected");

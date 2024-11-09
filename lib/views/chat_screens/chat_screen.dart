@@ -201,6 +201,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             ),
                             InkWell(
                               onTap: (){
+                                print(groupsPro.currentBLGroupsList
+                                    ?.firstWhere((element) => element.key == groupId).key);
                                 showDialog(context: context, builder: (ctx) => GroupInfoDialog(
                                   groupModel: groupsPro.currentBLGroupsList
                                       ?.firstWhere((element) => element.key == groupId),
