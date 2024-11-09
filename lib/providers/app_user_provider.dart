@@ -17,7 +17,7 @@ class AppUserProvider extends ChangeNotifier{
   AppUser? currentUser;
   CountryModel? coordinatorsCountryModel;
   List<CountryModel>? countriesList;
-  List<AppUser>? allTeachersList, filteredTeachersList, usersCache, allAdminsList, allCoordinatorsList;
+  List<AppUser>? allTeachersList, filteredTeachersList, usersCache, allAdminsList, allCoordinatorsList, filteredCoordinatorsList;
 
   getCurrentUserStream() async {
     UsersRepository().streamCurrentUser().listen((userData) {
@@ -97,6 +97,7 @@ class AppUserProvider extends ChangeNotifier{
 
   void listenToCoordinators() {
     if(allCoordinatorsList!=null){
+      filterCoordinators('');
       return;
     }
     UsersRepository().getAllCoordinatorsStream().listen((usersData) {
@@ -109,6 +110,23 @@ class AppUserProvider extends ChangeNotifier{
         notifyListeners();
       }
     });
+  }
+
+  void filterCoordinators(String query) {
+    filteredCoordinatorsList = null;
+    if(allCoordinatorsList!=null){
+      if (query.isEmpty) {
+        filteredCoordinatorsList = List.from(allCoordinatorsList!); // Reset to full list if query is empty
+      } else {
+        filteredCoordinatorsList = allCoordinatorsList!.where((teacher) {
+          String fullName = "${teacher.firstName} ${teacher.surName}".toLowerCase();
+          return fullName.contains(query.toLowerCase());
+        }).toList();
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        notifyListeners();
+      });
+    }
   }
 
   void filterTeachers(String query) {

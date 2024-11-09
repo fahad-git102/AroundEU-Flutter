@@ -28,28 +28,34 @@ class PlacesProvider extends ChangeNotifier{
     placesList?.clear();
     filteredPlacesList?.clear();
     PlacesRepository().getPlacesStream(myCountry: myCountry).listen((placesData) {
-      placesList ??= [];
-      filteredPlacesList = [];
-      placesList = placesData.entries.map((entry) {
-        return EUPlace(
-          key: entry.key,
-          description: entry.value.description,
-          uid: entry.value.uid,
-          imageUrl: entry.value.imageUrl,
-          category: entry.value.category,
-          status: entry.value.status,
-          country: entry.value.country,
-          creatorName: entry.value.creatorName,
-          timeStamp: entry.value.timeStamp,
-          location: entry.value.location
-        );
-      }).toList();
-      placesList?.removeWhere((element) => element.status == null || element.status != 'approved');
-      placesList?.sort((a, b) => b.timeStamp!.compareTo(a.timeStamp!));
-      filteredPlacesList?.addAll(placesList!);
-      _fetchUser(filteredPlacesList!);
-      _fetchUser(placesList!);
-      notifyListeners();
+      if(placesData.isNotEmpty){
+        placesList ??= [];
+        filteredPlacesList = [];
+        placesList = placesData.entries.map((entry) {
+          return EUPlace(
+              key: entry.key,
+              description: entry.value.description,
+              uid: entry.value.uid,
+              imageUrl: entry.value.imageUrl,
+              category: entry.value.category,
+              status: entry.value.status,
+              country: entry.value.country,
+              creatorName: entry.value.creatorName,
+              timeStamp: entry.value.timeStamp,
+              location: entry.value.location
+          );
+        }).toList();
+        placesList?.removeWhere((element) => element.status == null || element.status != 'approved');
+        placesList?.sort((a, b) => b.timeStamp!.compareTo(a.timeStamp!));
+        filteredPlacesList?.addAll(placesList!);
+        _fetchUser(filteredPlacesList!);
+        _fetchUser(placesList!);
+        notifyListeners();
+      }else{
+        placesList = [];
+        filteredPlacesList = [];
+        notifyListeners();
+      }
     });
   }
 

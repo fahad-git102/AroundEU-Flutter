@@ -12,10 +12,12 @@ class NotificationService {
       String currentUserName) async {
     final uniqueTokens =
         _collectDeviceTokens(userModelList, Auth().currentUser?.uid ?? '');
-    final notificationData = _prepareNotificationData(
-        uniqueTokens, chatId, groupName, currentUserName);
+    for(String item in uniqueTokens){
+      final notificationData = _prepareNotificationData(
+          item, chatId, groupName, currentUserName);
 
-    await _sendCloudMessageNotification(notificationData);
+      await _sendCloudMessageNotification(notificationData);
+    }
   }
 
   List<String> _collectDeviceTokens(
@@ -40,7 +42,7 @@ class NotificationService {
   }
 
   Map<String, dynamic> _prepareNotificationData(
-      List<String> tokens, String chatId, String title, String senderName) {
+      String token, String chatId, String title, String senderName) {
     final Map<String, dynamic> notificationMap = {
       "title": title,
       "message": "$senderName sent a message in your group",
@@ -49,21 +51,54 @@ class NotificationService {
         "message": "$senderName sent a message in your group",
         "dataUid": chatId,
       },
-      "tokens": tokens,
+      "token": token,
     };
 
     return notificationMap;
   }
 
+  // Map<String, dynamic> _prepareNotificationData(
+  //     List<String> tokens, String chatId, String title, String senderName) {
+  //   final Map<String, dynamic> notificationMap = {
+  //     "title": title,
+  //     "message": "$senderName sent a message in your group",
+  //     "data": {
+  //       "title": title,
+  //       "message": "$senderName sent a message in your group",
+  //       "dataUid": chatId,
+  //     },
+  //     "tokens": tokens,
+  //   };
+  //
+  //   return notificationMap;
+  // }
+
   Future<void> _sendCloudMessageNotification(Map<String, dynamic> data) async {
     print('sending data $data');
+    // try {
+    //   final HttpsCallable callable =
+    //       _functions.httpsCallable('sendNotificationToIndividual');
+    //   final response = await callable.call(data);
+    //   print('Notification sent: ${response.data}');
+    // } catch (error) {
+    //   print('Error sending notification: $error');
+    // }
+    //
+
     try {
-      final HttpsCallable callable =
-          _functions.httpsCallable('sendNotificationToList');
+      final HttpsCallable callable = _functions.httpsCallable('sendNotificationToIndividual');
       final response = await callable.call(data);
       print('Notification sent: ${response.data}');
+    } on FirebaseFunctionsException catch (error) {
+      if (error.code == 'unauthenticated') {
+        print('User is unauthenticated. Please log in again.');
+        // Handle re-authentication or show an error to the user
+      } else {
+        print('Error sending notification: $error');
+      }
     } catch (error) {
-      print('Error sending notification: $error');
+      print('Unexpected error: $error');
     }
+
   }
 }

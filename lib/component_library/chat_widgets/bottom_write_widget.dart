@@ -1,21 +1,17 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/chat_widgets/reply_message_widget.dart';
 import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
-import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/data/message_model.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_colors.dart';
-import '../../core/size_config.dart';
 
 class BottomWriteWidget extends StatefulWidget {
-  Function()? emojiPressed;
+  // Function()? emojiPressed;
   bool? isRecording;
-  bool? showEmojis;
+  // bool? showEmojis;
   MessageModel? replyMessage;
   bool? showSendButton;
   FocusNode? focusNode;
@@ -33,9 +29,9 @@ class BottomWriteWidget extends StatefulWidget {
   State<StatefulWidget> createState() => _BottomWriteWidgetState();
 
   BottomWriteWidget({
-    this.emojiPressed,
+    // this.emojiPressed,
     this.isRecording,
-    this.showEmojis,
+    // this.showEmojis,
     this.focusNode,
     this.pointerUpEvent,
     this.pointerDownEvent,
@@ -98,10 +94,10 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                               SizedBox(
                                 width: 4.0.sp,
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.emoji_emotions_outlined),
-                                onPressed: widget.emojiPressed,
-                              ),
+                              // IconButton(
+                              //   icon: const Icon(Icons.emoji_emotions_outlined),
+                              //   onPressed: widget.emojiPressed,
+                              // ),
                               Expanded(
                                 child: FlutterMentions(
                                   key: widget.mentionsKey,
@@ -140,7 +136,7 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                                       data: widget.mentionsData ?? [],
                                       suggestionBuilder: (p0) {
                                         return Container(
-                                          margin: EdgeInsets.only(left: 30.0.sp),
+                                          margin: EdgeInsets.only(left: 50.0.sp),
                                           color: AppColors.backGroundDarkWhite,
                                           child: Padding(
                                             padding: EdgeInsets.symmetric(
@@ -182,8 +178,6 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                 ],
               ),
             ),
-            ///horizontal spacer
-            ///
             widget.showSendButton == true
                 ? InkWell(
               onTap: widget.onSendTap,
@@ -227,57 +221,57 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
             ),
           ],
         ),
-        Offstage(
-          offstage: widget.showEmojis == false,
-          child: SizedBox(
-              height: 250,
-              child: EmojiPicker(
-                  textEditingController:
-                  widget.mentionsKey?.currentState?.controller,
-                  onBackspacePressed: () {
-                    widget.mentionsKey?.currentState?.controller
-                      ?..text = widget.mentionsKey!.currentState!.controller!
-                          .text.characters
-                          .toString()
-                      ..selection = TextSelection.fromPosition(TextPosition(
-                          offset: widget.mentionsKey!.currentState!
-                              .controller!.text.length));
-                  },
-                  onEmojiSelected: (category, emoji) {
-                    // widget.showSendButton = true;
-                    // updateState();
-                  },
-                  config: Config(
-                    columns: 7,
-                    emojiSizeMax: SizeConfig.screenWidth! / 20,
-                    verticalSpacing: 0,
-                    horizontalSpacing: 0,
-                    gridPadding: EdgeInsets.zero,
-                    initCategory: Category.RECENT,
-                    bgColor: AppColors.white,
-                    indicatorColor: Colors.blue,
-                    iconColor: Colors.grey,
-                    iconColorSelected: Colors.blue,
-                    backspaceColor: Colors.blue,
-                    skinToneDialogBgColor: Colors.white,
-                    skinToneIndicatorColor: Colors.grey,
-                    enableSkinTones: true,
-                    recentTabBehavior: RecentTabBehavior.RECENT,
-                    recentsLimit: 28,
-                    replaceEmojiOnLimitExceed: false,
-                    noRecents: SmallLightText(
-                      title: 'No Recents'.tr(),
-                      textAlign: TextAlign.center,
-                    ),
-                    loadingIndicator: SpinKitPulse(
-                      color: AppColors.mainColorDark,
-                    ),
-                    tabIndicatorAnimDuration: kTabScrollDuration,
-                    categoryIcons: const CategoryIcons(),
-                    buttonMode: ButtonMode.MATERIAL,
-                    checkPlatformCompatibility: true,
-                  ))),
-        ),
+        // Offstage(
+        //   offstage: widget.showEmojis == false,
+        //   child: SizedBox(
+        //       height: 250,
+        //       child: EmojiPicker(
+        //           textEditingController:
+        //           widget.mentionsKey?.currentState?.controller,
+        //           onBackspacePressed: () {
+        //             widget.mentionsKey?.currentState?.controller
+        //               ?..text = widget.mentionsKey!.currentState!.controller!
+        //                   .text.characters
+        //                   .toString()
+        //               ..selection = TextSelection.fromPosition(TextPosition(
+        //                   offset: widget.mentionsKey!.currentState!
+        //                       .controller!.text.length));
+        //           },
+        //           onEmojiSelected: (category, emoji) {
+        //             // widget.showSendButton = true;
+        //             // updateState();
+        //           },
+        //           config: Config(
+        //             columns: 7,
+        //             emojiSizeMax: SizeConfig.screenWidth! / 20,
+        //             verticalSpacing: 0,
+        //             horizontalSpacing: 0,
+        //             gridPadding: EdgeInsets.zero,
+        //             initCategory: Category.RECENT,
+        //             bgColor: AppColors.white,
+        //             indicatorColor: Colors.blue,
+        //             iconColor: Colors.grey,
+        //             iconColorSelected: Colors.blue,
+        //             backspaceColor: Colors.blue,
+        //             skinToneDialogBgColor: Colors.white,
+        //             skinToneIndicatorColor: Colors.grey,
+        //             enableSkinTones: true,
+        //             recentTabBehavior: RecentTabBehavior.RECENT,
+        //             recentsLimit: 28,
+        //             replaceEmojiOnLimitExceed: false,
+        //             noRecents: SmallLightText(
+        //               title: 'No Recents'.tr(),
+        //               textAlign: TextAlign.center,
+        //             ),
+        //             loadingIndicator: SpinKitPulse(
+        //               color: AppColors.mainColorDark,
+        //             ),
+        //             tabIndicatorAnimDuration: kTabScrollDuration,
+        //             categoryIcons: const CategoryIcons(),
+        //             buttonMode: ButtonMode.MATERIAL,
+        //             checkPlatformCompatibility: true,
+        //           ))),
+        // ),
       ],
     );
   }

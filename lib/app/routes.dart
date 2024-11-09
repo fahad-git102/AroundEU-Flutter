@@ -7,6 +7,7 @@ import 'package:groupchat/views/admin_screens/add_news_screen.dart';
 import 'package:groupchat/views/admin_screens/all_news_screen.dart';
 import 'package:groupchat/views/admin_screens/all_places_screen.dart';
 import 'package:groupchat/views/admin_screens/all_teachers_screen.dart';
+import 'package:groupchat/views/admin_screens/converted_coordinators_screen.dart';
 import 'package:groupchat/views/admin_screens/groups_screen.dart';
 import 'package:groupchat/views/admin_screens/manage_business_list_screen.dart';
 import 'package:groupchat/views/admin_screens/manage_places_screen.dart';
@@ -78,6 +79,7 @@ getRoutes(){
     GroupsScreen.route: (context) => GroupsScreen(),
     ChatScreen.route: (context) => const ChatScreen(),
     SelectBusinessScreen.route: (context) => const SelectBusinessScreen(),
-    NotificationsTestScreen.route: (context) => NotificationsTestScreen()
+    NotificationsTestScreen.route: (context) => NotificationsTestScreen(),
+    ConvertedCoordinatorsScreen.route: (context) => ConvertedCoordinatorsScreen()
   };
 }

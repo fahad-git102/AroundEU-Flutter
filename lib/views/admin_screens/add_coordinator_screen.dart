@@ -7,6 +7,7 @@ import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/data/coordinators_contact_model.dart';
 import 'package:groupchat/repositories/contacts_repository.dart';
 import 'package:groupchat/views/admin_screens/all_teachers_screen.dart';
+import 'package:groupchat/views/admin_screens/converted_coordinators_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/buttons/back_button.dart';
@@ -208,6 +209,14 @@ class _AddCoordinatorsScreenState extends State<AddCoordinatorsScreen> {
                                 text: 'View All Teachers'.tr(),
                                 tapAction: () {
                                   Navigator.pushNamed(context, AllTeachersScreen.route);
+                                }),
+                          ):Container(),
+                          isEdit==false?Padding(
+                            padding: EdgeInsets.only(left: 13.sp, right: 13.sp, top: 10.sp),
+                            child: Button(
+                                text: 'Converted Coordinators'.tr(),
+                                tapAction: () {
+                                  Navigator.pushNamed(context, ConvertedCoordinatorsScreen.route);
                                 }),
                           ):Container(),
                         ],

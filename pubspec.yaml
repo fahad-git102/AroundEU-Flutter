@@ -72,7 +72,7 @@ dependencies:
   flutter_sound: ^9.16.2
   toastification: ^2.2.0
   html: ^0.15.4
-  emoji_picker_flutter: ^1.6.3
+#  emoji_picker_flutter: ^1.6.3
   video_player: ^2.9.2
   chewie: ^1.6.0
   flutter_mentions: ^2.0.1

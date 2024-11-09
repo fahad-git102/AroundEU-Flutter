@@ -95,7 +95,9 @@ class _HomeScreenState extends State<HomeScreen>{
 
       appUserPro.listenToCountries();
       appUserPro.listenToAdmins();
-      appUserPro.listenToCoordinators();
+      if(appUserPro.allCoordinatorsList==null){
+        appUserPro.listenToCoordinators();
+      }
       businessPro.listenToBusinessList();
       return Scaffold(
         key: _scaffoldKey,

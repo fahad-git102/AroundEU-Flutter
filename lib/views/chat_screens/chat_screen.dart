@@ -305,7 +305,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ),
                       child: GestureDetector(
                         onTap: () {
-                          showEmojis = false;
+                          // showEmojis = false;
                           showSendButton = false;
                           updateState();
                         },
@@ -318,17 +318,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           },
                           focusNode: focusNode,
                           replyMessage: replyMessage,
-                          emojiPressed: () {
-                            showEmojis = !showEmojis!;
-                            if(showEmojis == true){
-                              showSendButton = true;
-                            }else{
-                              showSendButton = false;
-                            }
-                            updateState();
-                          },
+                          // emojiPressed: () {
+                          //   showEmojis = !showEmojis!;
+                          //   if(showEmojis == true){
+                          //     showSendButton = true;
+                          //   }else{
+                          //     showSendButton = false;
+                          //   }
+                          //   updateState();
+                          // },
                           isRecording: isRecording,
-                          showEmojis: showEmojis,
+                          // showEmojis: showEmojis,
                           showSendButton: showSendButton,
                           mentionsData: mentionsData,
                           pointerDownEvent: (details) {
