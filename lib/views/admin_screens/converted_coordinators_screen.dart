@@ -6,6 +6,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/app_bars/custom_app_bar.dart';
+import '../../component_library/dialogs/custom_dialog.dart';
 import '../../component_library/image_widgets/circle_image_avatar.dart';
 import '../../component_library/image_widgets/no_data_widget.dart';
 import '../../component_library/text_fields/white_back_textfield.dart';
@@ -13,7 +14,10 @@ import '../../component_library/text_widgets/extra_medium_text.dart';
 import '../../core/app_colors.dart';
 import '../../core/assets_names.dart';
 import '../../core/size_config.dart';
+import '../../core/static_keys.dart';
+import '../../core/utilities_class.dart';
 import '../../providers/app_user_provider.dart';
+import '../../repositories/users_repository.dart';
 
 class ConvertedCoordinatorsScreen extends StatefulWidget {
   static const route = 'ConvertedCoordinatorsScreen';
@@ -45,6 +49,7 @@ class _ConvertedCoordinatorsScreenState extends State<ConvertedCoordinatorsScree
             if(appUserPro.allCoordinatorsList==null){
               appUserPro.listenToCoordinators();
             }
+            appUserPro.filterCoordinators('');
             pageStarted = false;
           }
           return Container(
@@ -73,7 +78,7 @@ class _ConvertedCoordinatorsScreenState extends State<ConvertedCoordinatorsScree
                             hintText: 'Search coordinators here...'.tr(),
                             controller: searchController,
                             onChanged: (val){
-                              appUserPro.filterTeachers(val.toString());
+                              appUserPro.filterCoordinators(val.toString());
                             },
                           ),
                         ),
@@ -119,7 +124,8 @@ class _ConvertedCoordinatorsScreenState extends State<ConvertedCoordinatorsScree
                                     textColor: AppColors.lightBlack,
                                   ),
                                   onTap: () {
-                                    print(appUserPro.filteredCoordinatorsList?[index]);
+                                    removeCoordinatorDialog(appUserPro.filteredCoordinatorsList?[index].uid??'',
+                                        '${appUserPro.filteredCoordinatorsList?[index].firstName} ${appUserPro.filteredCoordinatorsList?[index].surName}');
                                   },
                                 );
                               },
@@ -139,5 +145,43 @@ class _ConvertedCoordinatorsScreenState extends State<ConvertedCoordinatorsScree
         })),
       ),
     );
+  }
+
+  removeCoordinatorDialog(String uid, String name){
+    showDialog(context: context, builder: (context) => CustomDialog(
+      title2: "Are you sure you want to remove this coordinator ?".tr(args: [name]),
+      btn1Text:'Yes'.tr(),
+      btn2Text: 'No'.tr(),
+      btn1Outlined: true,
+      icon: Images.coordinatorsIcon,
+      iconColor: AppColors.red,
+      btn1Color: AppColors.mainColorDark,
+      onBtn2Tap: (){
+        Navigator.pop(context);
+      },
+      onBtn1Tap: (){
+        Navigator.pop(context);
+        makeTeacher(uid, name);
+      },
+    ));
+  }
+
+  makeTeacher(String userId, String name){
+    isLoading = true;
+    updateState();
+    Map<String, String> user = {
+      'userType': teacher
+    };
+    UsersRepository().updateUser(user, userId, context, (){
+      isLoading = false;
+      searchController.clear();
+      FocusScope.of(context).requestFocus(FocusNode());
+      updateState();
+      Utilities().showCustomToast(message: '$name is a teacher now'.tr(args: [name]), isError: false);
+    }, (p0){
+      isLoading = false;
+      updateState();
+      Utilities().showCustomToast(message: p0.toString(), isError: true);
+    });
   }
 }
