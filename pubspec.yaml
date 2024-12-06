@@ -89,6 +89,15 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+#  flutter_launcher_icons: ^0.14.1
+
+#flutter_icons:
+#  android: "launcher_icon"
+#  ios: true
+#  image_path: "assets/logos_backgrounds/logo_around.png"
+#  adaptive_icon_foreground: "assets/logos_backgrounds/logo_around.png"
+#  adaptive_icon_background: "#ffffff"
+#  min_sdk_android: 21
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -117,6 +126,7 @@ flutter:
     - assets/fonts/
     - assets/pdfs/
     - assets/drawer_icons/
+    - assets/icon/
 
 
   fonts:
@@ -132,11 +142,11 @@ flutter:
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
 
-flutter_launcher_icons:
-  android: "launcher_icon"
-  ios: true
-  image_path: "assets/logos_backgrounds/launcher_icon.png"
-  min_sdk_android: 23
+#flutter_launcher_icons:
+#  android: true
+#  ios: true
+#  image_path: "assets/icon/icon.png"
+#  min_sdk_android: 21
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

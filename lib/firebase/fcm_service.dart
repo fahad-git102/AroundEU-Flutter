@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:groupchat/core/static_keys.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
 import '../repositories/users_repository.dart';
@@ -18,7 +22,7 @@ class FcmService {
   String? _fcmToken;
 
   Future<void> initNotifications() async {
-    await firebaseMessaging.requestPermission(
+    NotificationSettings settings = await firebaseMessaging.requestPermission(
       alert: true,
       announcement: true,
       badge: true,
@@ -28,8 +32,16 @@ class FcmService {
       sound: true,
     );
 
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
+
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: DarwinInitializationSettings());
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) {
@@ -37,8 +49,8 @@ class FcmService {
       },
     );
 
-    _fcmToken = await firebaseMessaging.getToken();
-    print('FCM token is = $_fcmToken');
+    _fcmToken = Platform.isAndroid?await firebaseMessaging.getToken(): Platform.isIOS? await firebaseMessaging.getAPNSToken():'';
+    print('FCM token is 1 = $_fcmToken');
     _saveTokenIfLoggedIn();
     FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
       _fcmToken = token;
@@ -64,9 +76,11 @@ class FcmService {
     return Auth().currentUser!=null;
   }
 
-  void _saveToken() {
+  Future<void> _saveToken() async {
     if (_fcmToken != null) {
       UsersRepository().updateUserToken(_fcmToken!, () {}, (error) {});
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(fcmToken, _fcmToken!);
     }
   }
 
@@ -74,8 +88,8 @@ class FcmService {
     if (_fcmToken != null) {
       _saveToken();
     }else{
-      _fcmToken = await firebaseMessaging.getToken();
-      print('New FCM token is = $_fcmToken');
+      _fcmToken = Platform.isAndroid?await firebaseMessaging.getToken(): Platform.isIOS? await firebaseMessaging.getAPNSToken():'';
+      print('FCM token is 2 = $_fcmToken');
       _saveTokenIfLoggedIn();
       FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
         _fcmToken = token;

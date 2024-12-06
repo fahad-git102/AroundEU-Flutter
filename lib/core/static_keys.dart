@@ -14,6 +14,7 @@ const String emergency = "emergencyContacts";
 const String office = "office";
 const String deviceTokens = "deviceTokens";
 const String groups = "groups";
+const String fcmToken = "fcm_token";
 const String messages = "messages";
 const String businessLists = "businessList";
 const String coordinatorsCountry = "coordinatorsCountry";

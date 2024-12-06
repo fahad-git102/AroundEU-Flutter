@@ -58,6 +58,33 @@ class UsersRepository{
     );
   }
 
+  Future<void> removeUserToken(String tokenToRemove,
+      Function() onComplete, Function(dynamic error) onError) async {
+    final userRef = FirebaseDatabase.instance.ref('$users/${Auth().currentUser?.uid}');
+    try {
+      DataSnapshot snapshot = await userRef.child(deviceTokens).get();
+      if (snapshot.exists) {
+        List<dynamic> tokens = List<String>.from(snapshot.value as List);
+        if (tokens.contains(tokenToRemove)) {
+          print('token to remove : $tokenToRemove');
+          tokens.remove(tokenToRemove);
+          await userRef.update({
+            'deviceTokens': tokens,
+          });
+          print('Device token removed successfully.');
+        } else {
+          print('Token not found in the list.');
+        }
+      } else {
+        print('No device tokens found for the user.');
+      }
+      onComplete();
+    } catch (error) {
+      onError(error);
+    }
+  }
+
+
   Future<void> updateUserToken(String newToken,
        Function() onComplete, Function(dynamic error) onError) async {
     final userRef = FirebaseDatabase.instance.ref('$users/${Auth().currentUser?.uid}');

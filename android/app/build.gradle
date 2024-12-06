@@ -49,15 +49,21 @@ android {
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        versionCode 19
+        versionName "1.17"
+    }
+    signingConfigs {
+        release {
+            storeFile file('new-upload-key.jks')
+            storePassword 'admin123'
+            keyAlias 'upload'
+            keyPassword 'admin123'
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 }

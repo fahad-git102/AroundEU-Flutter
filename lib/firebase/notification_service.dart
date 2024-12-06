@@ -44,61 +44,31 @@ class NotificationService {
   Map<String, dynamic> _prepareNotificationData(
       String token, String chatId, String title, String senderName) {
     final Map<String, dynamic> notificationMap = {
-      "title": title,
+      "title": title.toString(),
       "message": "$senderName sent a message in your group",
       "data": {
-        "title": title,
-        "message": "$senderName sent a message in your group",
-        "dataUid": chatId,
+        "title": title.toString(),
+        "message": "$senderName sent a message in your group"
       },
-      "token": token,
+      "token": token.toString(),
     };
 
     return notificationMap;
   }
 
-  // Map<String, dynamic> _prepareNotificationData(
-  //     List<String> tokens, String chatId, String title, String senderName) {
-  //   final Map<String, dynamic> notificationMap = {
-  //     "title": title,
-  //     "message": "$senderName sent a message in your group",
-  //     "data": {
-  //       "title": title,
-  //       "message": "$senderName sent a message in your group",
-  //       "dataUid": chatId,
-  //     },
-  //     "tokens": tokens,
-  //   };
-  //
-  //   return notificationMap;
-  // }
 
   Future<void> _sendCloudMessageNotification(Map<String, dynamic> data) async {
     print('sending data $data');
-    // try {
-    //   final HttpsCallable callable =
-    //       _functions.httpsCallable('sendNotificationToIndividual');
-    //   final response = await callable.call(data);
-    //   print('Notification sent: ${response.data}');
-    // } catch (error) {
-    //   print('Error sending notification: $error');
-    // }
-    //
-
     try {
-      final HttpsCallable callable = _functions.httpsCallable('sendNotificationToIndividual');
-      final response = await callable.call(data);
-      print('Notification sent: ${response.data}');
-    } on FirebaseFunctionsException catch (error) {
-      if (error.code == 'unauthenticated') {
-        print('User is unauthenticated. Please log in again.');
-        // Handle re-authentication or show an error to the user
-      } else {
-        print('Error sending notification: $error');
-      }
-    } catch (error) {
-      print('Unexpected error: $error');
-    }
+      final Map<String, String> stringData = data.map((key, value) => MapEntry(key, value.toString()));
 
+      final HttpsCallable callable =
+      _functions.httpsCallable('sendNotificationToIndividual');
+      final response = await callable.call(stringData);
+      print('Notification sent: ${response.data}');
+    } catch (error) {
+      print('Error sending notification: $error');
+    }
   }
+
 }

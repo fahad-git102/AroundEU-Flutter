@@ -8,11 +8,15 @@ import 'package:groupchat/component_library/dialogs/sign_out_dialog.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/static_keys.dart';
+import 'package:groupchat/core/utilities_class.dart';
+import 'package:groupchat/firebase/fcm_service.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/categories_provider.dart';
+import 'package:groupchat/repositories/users_repository.dart';
 import 'package:groupchat/views/auth/login_screen.dart';
 import 'package:groupchat/views/home_screens/contacts_info_screen.dart';
 import 'package:groupchat/views/home_screens/privacy_policy_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -190,12 +194,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     context: context,
                     barrierDismissible: false,
                     builder: (ctx) => SignOutDialog(
-                          onLogout: () {
+                          onLogout: () async {
                             appUserPro.clearPro();
                             categoriesPro.clearPro();
-                            Auth().signOut();
-                            Navigator.pushNamedAndRemoveUntil(
-                                context, LoginScreen.route, (route) => false);
+                            await removeFcmToken();
                           },
                         ));
               },
@@ -208,6 +210,20 @@ class _HomeDrawerState extends State<HomeDrawer> {
       ),
     );
   }
+
+  Future<void> removeFcmToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString(fcmToken);
+    print(token);
+    UsersRepository().removeUserToken(token??'', (){
+      Auth().signOut();
+      Navigator.pushNamedAndRemoveUntil(
+          context, LoginScreen.route, (route) => false);
+    }, (p0){
+      Utilities().showCustomToast(message: p0, isError: true);
+    });
+  }
+
   void _openSocialMediaLink(SocialMediaLink link) async {
     Uri appUri = Uri.parse(link.appUrl??'');
     Uri webUri = Uri.parse(link.webUrl??'');
