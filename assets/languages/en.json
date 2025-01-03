@@ -250,5 +250,8 @@
   "Disapproved": "Disapproved",
   "Title required": "Title required",
   "Place deleted successfully": "Place deleted successfully",
-  "Choose image": "Choose image"
+  "Choose image": "Choose image",
+  "I agree to the ": "I agree to the ",
+  "Terms and Conditions": "Terms and Conditions",
+  "Please accept the terms and conditions first": "Please accept the terms and conditions first"
 }

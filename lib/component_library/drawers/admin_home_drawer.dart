@@ -65,69 +65,71 @@ class _AdminHomeDrawer extends ConsumerState<AdminHomeDrawer> {
             ),
             child: Center(
               child: Image.asset(
-                Images.logoAroundEU, // Replace with your image asset
+                Images.logoAroundEU,
                 width: 120.0.sp,
                 height: 120.0.sp,
               ),
             ),
           ),
-          ListView.builder(
-            itemCount: list.length,
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (BuildContext context, int index) {
-              return TileItem(
-                icon: list[index].icon,
-                title: list[index].name,
-                onTap: () async {
-                  switch (list[index].index) {
-                    case 1:
-                      Navigator.pushNamed(context, ManageBusinessListScreen.route);
-                      break;
-                    case 2:
-                      Navigator.pushNamed(context, ManagePlacesScreen.route);
-                      break;
-                    case 3:
-                      Navigator.pushNamed(context, AddNewCountryScreen.route);
-                      break;
-                    case 4:
-                      Navigator.pushNamed(context, AddNewsScreen.route);
-                      break;
-                    case 5:
-                      Navigator.pushNamed(context, AddNewGroupScreen.route);
-                      break;
-                    case 6:
-                      Navigator.pushNamed(context, AddNewCompanyScreen.route);
-                      break;
-                    case 7:
-                      Navigator.pushNamed(context, CategoriesScreen.route);
-                      break;
-                    case 8:
-                      Navigator.pushNamed(context, AddCoordinatorsScreen.route);
-                      break;
-                    case 9:
-                      Navigator.pushNamed(context, AddEmergencyNumbersScreen.route);
-                      break;
-                    case 10:
-                      var appUserPro = ref.watch(appUserProvider);
-                      var categoriesPro = ref.watch(categoriesProvider);
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (ctx) => SignOutDialog(
-                            onLogout: () {
-                              appUserPro.clearPro();
-                              categoriesPro.clearPro();
-                              Auth().signOut();
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context, LoginScreen.route, (route) => false);
-                            },
-                          ));
-                      break;
-                  }
-                },
-              );
-            },
+          Expanded(
+            child: ListView.builder(
+              itemCount: list.length,
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (BuildContext context, int index) {
+                return TileItem(
+                  icon: list[index].icon,
+                  title: list[index].name,
+                  onTap: () async {
+                    switch (list[index].index) {
+                      case 1:
+                        Navigator.pushNamed(context, ManageBusinessListScreen.route);
+                        break;
+                      case 2:
+                        Navigator.pushNamed(context, ManagePlacesScreen.route);
+                        break;
+                      case 3:
+                        Navigator.pushNamed(context, AddNewCountryScreen.route);
+                        break;
+                      case 4:
+                        Navigator.pushNamed(context, AddNewsScreen.route);
+                        break;
+                      case 5:
+                        Navigator.pushNamed(context, AddNewGroupScreen.route);
+                        break;
+                      case 6:
+                        Navigator.pushNamed(context, AddNewCompanyScreen.route);
+                        break;
+                      case 7:
+                        Navigator.pushNamed(context, CategoriesScreen.route);
+                        break;
+                      case 8:
+                        Navigator.pushNamed(context, AddCoordinatorsScreen.route);
+                        break;
+                      case 9:
+                        Navigator.pushNamed(context, AddEmergencyNumbersScreen.route);
+                        break;
+                      case 10:
+                        var appUserPro = ref.watch(appUserProvider);
+                        var categoriesPro = ref.watch(categoriesProvider);
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (ctx) => SignOutDialog(
+                              onLogout: () {
+                                appUserPro.clearPro();
+                                categoriesPro.clearPro();
+                                Auth().signOut();
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context, LoginScreen.route, (route) => false);
+                              },
+                            ));
+                        break;
+                    }
+                  },
+                );
+              },
+            ),
           )
         ],
       ),

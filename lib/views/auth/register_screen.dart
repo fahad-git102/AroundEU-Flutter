@@ -10,6 +10,7 @@ import 'package:groupchat/data/users_model.dart';
 import 'package:groupchat/repositories/users_repository.dart';
 import 'package:groupchat/views/auth/login_screen.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../component_library/buttons/back_button.dart';
 import '../../component_library/buttons/radio_button_with_text.dart';
@@ -43,6 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
   TextEditingController confirmPasswordController = TextEditingController();
   bool? isLoading = false;
   bool isTeacher = false;
+  bool _isTermsAccepted = false;
   String selectedCountryCode = '+39';
   final _formKey = GlobalKey<FormState>();
 
@@ -263,15 +265,56 @@ class _RegisterScreenState extends State<RegisterScreen>{
                           ],
                         ),
                         SizedBox(height: 25.0.sp,),
-                        Button(text: 'Sign Up'.tr(), tapAction: (){
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _isTermsAccepted,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isTermsAccepted = value!;
+                                });
+                              },
+                            ),
+                            Flexible(
+                              child: GestureDetector(
+                                onTap: _launchURL,
+                                child: Text.rich(
+                                  TextSpan(
+                                    text: 'I agree to the ',
+                                    children: [
+                                      TextSpan(
+                                        text: 'Terms and Conditions',
+                                        style: TextStyle(
+                                          fontSize: 11.sp,
+                                          color: AppColors.blue,
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: AppColors.blue, // Changes the underline color
+                                          decorationStyle: TextDecorationStyle.solid,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 25.0.sp,),
+                        Button(text: 'Sign Up'.tr(),
+                            tapAction: (){
                           if(_formKey.currentState!.validate()){
                             if(passwordController.text!=confirmPasswordController.text){
                               Utilities().showErrorMessage(context, message: 'Passwords didn\'t match'.tr());
                               return;
                             }
-                            isLoading = true;
-                            updateState();
-                            signUpUser();
+                            if(_isTermsAccepted==true){
+                              isLoading = true;
+                              updateState();
+                              signUpUser();
+                            }else{
+                              Utilities().showCustomToast(message: 'Please accept the terms and conditions first'.tr(), isError: true);
+                            }
+
                           }
                         }),
                         SizedBox(height: 50.0.sp,)
@@ -297,6 +340,15 @@ class _RegisterScreenState extends State<RegisterScreen>{
       dobController.text = pickedDate.day <10 ? "0${pickedDate.day.toString()} ${Utilities().getMonthShortName(pickedDate.month)}, ${pickedDate.year.toString()}" :
       "${pickedDate.day.toString()} ${Utilities().getMonthShortName(pickedDate.month)}, ${pickedDate.year.toString()}";
       updateState();
+    }
+  }
+
+  void _launchURL() async {
+    const url = 'https://www.termsfeed.com/live/60a5b8b9-d440-4eff-a25a-21a8e9617b5b'; // Replace with your URL
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not open the URL.';
     }
   }
 
