@@ -85,6 +85,7 @@ dependencies:
   swipe_to: ^1.0.6
   percent_indicator: ^4.2.3
   scrollable_positioned_list: ^0.3.8
+  sign_in_with_apple: ^6.1.4
 
 dev_dependencies:
   flutter_test:

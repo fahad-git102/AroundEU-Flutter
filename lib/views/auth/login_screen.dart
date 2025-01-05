@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
+import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
 import 'package:groupchat/core/size_config.dart';
 import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/core/utilities_class.dart';
@@ -14,6 +16,7 @@ import 'package:groupchat/views/auth/forgot_password_screen.dart';
 import 'package:groupchat/views/auth/register_screen.dart';
 import 'package:groupchat/views/admin_screens/admin_home_screen.dart';
 import 'package:groupchat/views/home_screens/home_screen.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/buttons/button.dart';
@@ -26,15 +29,14 @@ import '../../firebase/auth.dart';
 import '../../firebase/auth_exception_handling.dart';
 import '../home_screens/teachers_home_screen.dart';
 
-class LoginScreen extends StatefulWidget{
+class LoginScreen extends StatefulWidget {
   static const route = "LoginScreen";
+
   @override
   State<StatefulWidget> createState() => _LoginScreenState();
-
 }
 
-class _LoginScreenState extends State<LoginScreen>{
-
+class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
@@ -47,10 +49,32 @@ class _LoginScreenState extends State<LoginScreen>{
     super.dispose();
   }
 
-  updateState(){
-    setState(() {
+  updateState() {
+    setState(() {});
+  }
 
-    });
+  Future<void> signInWithApple() async {
+    try {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: credential.identityToken,
+        accessToken: credential.authorizationCode,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+      print(FirebaseAuth.instance.currentUser?.email);
+
+      print('User ID: ${credential.userIdentifier}');
+      print('Email: ${credential.email}');
+      print('Full Name: ${credential.givenName}');
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   @override
@@ -76,14 +100,11 @@ class _LoginScreenState extends State<LoginScreen>{
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          RegisterScreen()),
+                  MaterialPageRoute(builder: (context) => RegisterScreen()),
                 );
               },
               child: Padding(
-                padding:
-                EdgeInsets.symmetric(vertical: 5.0.sp),
+                padding: EdgeInsets.symmetric(vertical: 5.0.sp),
                 child: SmallLightText(
                   fontWeight: FontWeight.w800,
                   title: "Sign Up".tr(),
@@ -141,18 +162,19 @@ class _LoginScreenState extends State<LoginScreen>{
                         labelText: "Password".tr(),
                         obscureText: true,
                         validator: (value) {
-                          return Validation().validateEmptyField(value, message: 'Password required'.tr());
+                          return Validation().validateEmptyField(value,
+                              message: 'Password required'.tr());
                         },
                       ),
                       SizedBox(
                         height: 30.0.sp,
                       ),
-                      Consumer(builder: (ctx, ref, child){
+                      Consumer(builder: (ctx, ref, child) {
                         var usersPro = ref.watch(appUserProvider);
                         return Button(
                             text: "Log In".tr(),
                             tapAction: () {
-                              if(_formKey.currentState!.validate()){
+                              if (_formKey.currentState!.validate()) {
                                 isLoading = true;
                                 updateState();
                                 signInUserWithEmailAndPassword(usersPro);
@@ -174,64 +196,81 @@ class _LoginScreenState extends State<LoginScreen>{
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    ForgotPasswordScreen()),
+                                builder: (context) => ForgotPasswordScreen()),
                           );
                         },
                       ),
-
-                      SizedBox(height: 15.0.sp,),
-                      Row(
+                      SizedBox(
+                        height: 15.0.sp,
+                      ),
+                      Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Platform.isIOS ? InkWell(
-                            onTap: () async {
-                              signInWithApple();
-                            },
-                            child: SvgPicture.asset(
-                              Images.appleIcon,
-                              colorFilter: ColorFilter.mode(AppColors.mainColorDark, BlendMode.srcIn),
-                              height: 40.0.sp,
-                              width: 40.0.sp,
-                            ),
-                          ): Container(),
-                          Platform.isIOS ? SizedBox(width: 11.0.sp,) : Container(),
-                          InkWell(
-                            onTap: (){
-                              isLoading = true;
-                              updateState();
-                              facebookLogin();
-                            },
-                            child: SvgPicture.asset(
-                              Images.facebookIcon,
-                              colorFilter: ColorFilter.mode(AppColors.mainColorDark, BlendMode.srcIn),
-                              height: 40.0.sp,
-                              width: 40.0.sp,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  isLoading = true;
+                                  updateState();
+                                  facebookLogin();
+                                },
+                                child: SvgPicture.asset(
+                                  Images.facebookIcon,
+                                  colorFilter: ColorFilter.mode(
+                                      AppColors.mainColorDark, BlendMode.srcIn),
+                                  height: 40.0.sp,
+                                  width: 40.0.sp,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 11.0.sp,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  isLoading = true;
+                                  updateState();
+                                  googleSignIn();
+                                },
+                                child: SvgPicture.asset(
+                                  Images.googleIcon,
+                                  colorFilter: ColorFilter.mode(
+                                      AppColors.mainColorDark, BlendMode.srcIn),
+                                  height: 40.0.sp,
+                                  width: 40.0.sp,
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(width: 11.0.sp,),
-                          InkWell(
-                            onTap: (){
-                              isLoading = true;
-                              updateState();
-                              googleSignIn();
-                            },
-                            child: SvgPicture.asset(
-                              Images.googleIcon,
-                              colorFilter: ColorFilter.mode(AppColors.mainColorDark, BlendMode.srcIn),
-                              height: 40.0.sp,
-                              width: 40.0.sp,
-                            ),
+                          SizedBox(
+                            height: 13.sp,
                           ),
+                          Platform.isIOS
+                              ? ExtraMediumText(
+                                  title: 'OR'.tr(),
+                                  textColor: AppColors.lightBlack,
+                                )
+                              : Container(),
+                          SizedBox(
+                            height: 13.sp,
+                          ),
+                          Platform.isIOS
+                              ? Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10.sp),
+                                child: SignInWithAppleButton(
+                                    onPressed: signInWithApple),
+                              )
+                              : Container()
                         ],
                       ),
-
                     ],
                   ),
                 ),
               ),
             ),
-            FullScreenLoader(loading: isLoading,)
+            FullScreenLoader(
+              loading: isLoading,
+            )
           ],
         ),
       ),
@@ -256,9 +295,10 @@ class _LoginScreenState extends State<LoginScreen>{
         } else {
           navigate(HomeScreen.route);
         }
-      }else{
+      } else {
         Auth().signOut();
-        Utilities().showErrorMessage(context, message: 'User does not exists'.tr());
+        Utilities()
+            .showErrorMessage(context, message: 'User does not exists'.tr());
       }
     } else {
       isLoading = false;
@@ -268,21 +308,13 @@ class _LoginScreenState extends State<LoginScreen>{
     }
   }
 
-  navigate(String route){
+  navigate(String route) {
     isLoading = false;
     updateState();
     Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
   }
 
-  googleSignIn(){
+  googleSignIn() {}
 
-  }
-
-  facebookLogin(){
-
-  }
-
-  signInWithApple(){
-
-  }
+  facebookLogin() {}
 }
