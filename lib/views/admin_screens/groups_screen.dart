@@ -155,10 +155,14 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                                               ?.userType ==
                                           coordinator &&
                                       (groupsPro.currentBLGroupsList?[index]
-                                              .approvedMembers
-                                              ?.contains(
-                                                  Auth().currentUser?.uid) ==
-                                          false),
+                                                  .approvedMembers ==
+                                              null ||
+                                          groupsPro.currentBLGroupsList?[index]
+                                                  .approvedMembers
+                                                  ?.contains(Auth()
+                                                      .currentUser
+                                                      ?.uid) ==
+                                              false),
                                   title: groupsPro
                                       .currentBLGroupsList?[index].name,
                                   subTile: Utilities().parseHtmlToPlainText(
