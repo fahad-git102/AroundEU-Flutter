@@ -18,6 +18,7 @@ import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../component_library/buttons/button.dart';
+import '../../component_library/dialogs/report_content_dialog.dart';
 import '../../core/assets_names.dart';
 import '../../core/map_utils.dart';
 import '../../core/size_config.dart';
@@ -63,6 +64,9 @@ class _PlacesDetailScreenState extends State<PlacesDetailScreen> {
                 children: [
                   CustomAppBar(
                     title: 'Details'.tr(),
+                    trailingWidget: InkWell(onTap: (){
+                      showReportDialog(context, place?.key??'');
+                    },child: Icon(Icons.flag_outlined, color: AppColors.lightBlack, size: 17.sp,)),
                   ),
                   Expanded(
                     child: SingleChildScrollView(
@@ -290,6 +294,15 @@ class _PlacesDetailScreenState extends State<PlacesDetailScreen> {
         });
       },
     ));
+  }
+
+  void showReportDialog(BuildContext context, String contentId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ReportContentDialog(contentId: contentId, contentType: 'place',);
+      },
+    );
   }
 
 }

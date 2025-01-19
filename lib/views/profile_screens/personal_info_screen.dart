@@ -14,6 +14,7 @@ import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/disabled_focus_node.dart';
 import 'package:groupchat/core/size_config.dart';
 import 'package:groupchat/core/static_keys.dart';
+import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/companies_provider.dart';
 import 'package:sizer/sizer.dart';
@@ -94,12 +95,15 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                       textColor: AppColors.lightBlack,
                     ),
                     InkWell(
-                      onTap: (){
-                        showDialog(context: context, barrierDismissible: true, builder: (ctx) => UpdateProfileDialog(
-                          firstName: appUserPro.currentUser?.firstName,
-                          surName: appUserPro.currentUser?.surName,
-                          about: appUserPro.currentUser?.about,
-                        ));
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (ctx) => UpdateProfileDialog(
+                                  firstName: appUserPro.currentUser?.firstName,
+                                  surName: appUserPro.currentUser?.surName,
+                                  about: appUserPro.currentUser?.about,
+                                ));
                       },
                       child: Padding(
                           padding: EdgeInsets.all(4.0.sp),
@@ -111,7 +115,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                     )
                   ],
                 ),
-                SizedBox(height: 8.0.sp,),
+                SizedBox(
+                  height: 8.0.sp,
+                ),
                 Divider(
                   height: 0.5.sp,
                   color: AppColors.fadedTextColor2,
@@ -331,12 +337,14 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                                         children: [
                                           TimeWidget(
                                               title: 'From:'.tr(),
-                                              value: companyPro.myCompanyTimeScheduled
+                                              value: companyPro
+                                                      .myCompanyTimeScheduled
                                                       ?.morningFrom ??
                                                   ''),
                                           TimeWidget(
                                               title: 'To:'.tr(),
-                                              value: companyPro.myCompanyTimeScheduled
+                                              value: companyPro
+                                                      .myCompanyTimeScheduled
                                                       ?.morningTo ??
                                                   ''),
                                         ],
@@ -359,12 +367,14 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                                         children: [
                                           TimeWidget(
                                               title: 'From:'.tr(),
-                                              value: companyPro.myCompanyTimeScheduled
+                                              value: companyPro
+                                                      .myCompanyTimeScheduled
                                                       ?.noonFrom ??
                                                   ''),
                                           TimeWidget(
                                               title: 'To:'.tr(),
-                                              value: companyPro.myCompanyTimeScheduled
+                                              value: companyPro
+                                                      .myCompanyTimeScheduled
                                                       ?.noonTo ??
                                                   ''),
                                         ],
@@ -398,6 +408,22 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                               minLines: 4,
                               noBorder: true,
                               focusNode: AlwaysDisabledFocusNode(),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 18.0.sp,
+                          ),
+                          Center(
+                            child: InkWell(
+                              onTap: () {
+                                Utilities()
+                                    .showDeleteConfirmationDialog(context);
+                              },
+                              child: ExtraLargeMediumBoldText(
+                                title: 'Delete Account'.tr(),
+                                textColor: AppColors.red,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                           SizedBox(

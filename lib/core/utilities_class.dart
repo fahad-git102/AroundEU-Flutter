@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_saver/file_saver.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as text_direction;
+import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
+import 'package:groupchat/firebase/auth.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
@@ -61,6 +64,88 @@ class Utilities {
         return pickedDate;
       }
     });
+  }
+
+  void showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Account Deletion'.tr()),
+          content: Text('Are you sure you want to delete your account? This action cannot be undone.'.tr()),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(), // Cancel
+              child: Text('Cancel'.tr()),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                Auth().deleteAccount(context);
+              },
+              child: ExtraMediumText(
+                title: 'Delete'.tr(),
+                textColor: AppColors.red,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> showReauthenticateDialog(BuildContext context) async {
+    final TextEditingController passwordController = TextEditingController();
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null || user.email == null) {
+      Utilities().showCustomToast(message: 'No user is currently signed in.'.tr(), isError: true);
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Reauthenticate'.tr()),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Please enter your password to delete your account.'.tr()),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Password'.tr(),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(), // Close the dialog
+              child: Text('Cancel'.tr()),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final String password = passwordController.text.trim();
+                Navigator.of(context).pop(); // Close the dialog
+
+                if (password.isNotEmpty) {
+                  await Auth().reauthenticateUser(user.email!, password, context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Password cannot be empty.'.tr())),
+                  );
+                }
+              },
+              child: Text('Confirm'.tr()),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void showErrorMessage(BuildContext context,

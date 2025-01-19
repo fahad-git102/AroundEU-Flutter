@@ -1,5 +1,13 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:groupchat/component_library/app_bars/custom_app_bar.dart';
+import 'package:groupchat/core/utilities_class.dart';
+import 'package:groupchat/main.dart';
+import 'package:groupchat/views/auth/login_screen.dart';
 
+import '../component_library/text_widgets/extra_medium_text.dart';
 import 'auth_exception_handling.dart';
 
 class Auth{
@@ -20,6 +28,36 @@ class Auth{
     }
     return _status;
   }
+
+  Future<void> deleteAccount(BuildContext context) async{
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        await user.delete();
+        Utilities().showCustomToast(message: 'Your account has been deleted successfully', isError: false);
+        Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, LoginScreen.route, (route)=> false);
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        Utilities().showReauthenticateDialog(context);
+      } else {
+        Utilities().showCustomToast(message: 'Failed to delete account: ${e.message}', isError: true);
+      }
+    }
+  }
+
+  Future<void> reauthenticateUser(String email, String password, BuildContext context) async {
+    try {
+      AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
+      await FirebaseAuth.instance.currentUser!.reauthenticateWithCredential(credential);
+      Utilities().showCustomToast(message: 'Reauthentication successful! You can now delete your account.'.tr(), isError: false);
+      await deleteAccount(context);
+    } catch (e) {
+      Utilities().showCustomToast(message: 'Reauthentication failed: ${e.toString()}', isError: true);
+    }
+  }
+
 
   // //Google sign-in
   // Future<AuthStatus> signInWithGoogle() async {

@@ -27,7 +27,6 @@ import '../../core/assets_names.dart';
 import '../../core/validation.dart';
 import '../../firebase/auth.dart';
 import '../../firebase/auth_exception_handling.dart';
-import '../home_screens/teachers_home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   static const route = "LoginScreen";
@@ -67,11 +66,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-      print(FirebaseAuth.instance.currentUser?.email);
-
-      print('User ID: ${credential.userIdentifier}');
-      print('Email: ${credential.email}');
-      print('Full Name: ${credential.givenName}');
     } catch (e) {
       print('Error: $e');
     }

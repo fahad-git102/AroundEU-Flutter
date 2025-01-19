@@ -10,6 +10,7 @@ import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../component_library/app_bars/custom_app_bar.dart';
+import '../../component_library/dialogs/report_content_dialog.dart';
 import '../../component_library/text_widgets/extra_large_medium_bold_text.dart';
 import '../../core/app_colors.dart';
 import '../../core/assets_names.dart';
@@ -47,6 +48,9 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen>{
             children: [
               CustomAppBar(
                 title: newsModel?.title??'Details'.tr(),
+                trailingWidget: InkWell(onTap: (){
+                  showReportDialog(context, newsModel?.id??'');
+                },child: Icon(Icons.flag_outlined, color: AppColors.lightBlack, size: 17.sp,)),
               ),
               Expanded(child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -143,6 +147,15 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen>{
           ),
         ),
       ),
+    );
+  }
+
+  void showReportDialog(BuildContext context, String contentId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ReportContentDialog(contentId: contentId, contentType: 'news',);
+      },
     );
   }
 

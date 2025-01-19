@@ -26,7 +26,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.fahadandroid.groupchat"
-    compileSdk flutter.compileSdkVersion
+    compileSdk 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -46,8 +46,8 @@ android {
         applicationId "com.fahadandroid.groupchat"
         minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
-        versionCode 19
-        versionName "1.17"
+        versionCode 20
+        versionName "1.18"
     }
     signingConfigs {
         release {
