@@ -1,10 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
+import 'package:crypto/crypto.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:groupchat/component_library/dialogs/profile_data_dialog.dart';
 import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
 import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
 import 'package:groupchat/core/size_config.dart';
@@ -52,23 +57,118 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {});
   }
 
-  Future<void> signInWithApple() async {
+  // Future<void> signInWithApple() async {
+  //   try {
+  //     final credential = await SignInWithApple.getAppleIDCredential(
+  //       scopes: [
+  //         AppleIDAuthorizationScopes.email,
+  //         AppleIDAuthorizationScopes.fullName,
+  //       ],
+  //     );
+  //     final oauthCredential = OAuthProvider("apple.com").credential(
+  //       idToken: credential.identityToken,
+  //       accessToken: credential.authorizationCode,
+  //     );
+  //
+  //     await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+  //   } catch (e) {
+  //     print('Error: $e');
+  //   }
+  // }
+
+  Future<void> signInWithApple(AppUserProvider usersPro) async {
+    User? user;
+    final rawNonce = generateNonce();
+    final nonce = sha256ofString(rawNonce);
+
+    AuthorizationCredentialAppleID? appleCredential;
     try {
-      final credential = await SignInWithApple.getAppleIDCredential(
+      appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
           AppleIDAuthorizationScopes.fullName,
         ],
+        nonce: nonce,
       );
+    } catch (e) {
+      print('Error: ${e.toString()}');
+    }
+
+    if (appleCredential != null) {
       final oauthCredential = OAuthProvider("apple.com").credential(
-        idToken: credential.identityToken,
-        accessToken: credential.authorizationCode,
+        idToken: appleCredential.identityToken,
+        rawNonce: rawNonce,
+        accessToken: appleCredential.authorizationCode,
       );
 
-      await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-    } catch (e) {
-      print('Error: $e');
+      try {
+        user =
+            (await FirebaseAuth.instance.signInWithCredential(oauthCredential)).user;
+
+        checkUserExists(user, context, usersPro);
+
+      } on FirebaseAuthException catch (e) {
+        Utilities().showCustomToast(message: e.message, isError: true);
+      }
+      return null;
     }
+  }
+
+  Future<void> checkUserExists(User? user, BuildContext context, AppUserProvider usersPro) async {
+    if (user == null) {
+      Utilities().showCustomToast(message: "User not found!", isError: true);
+      return;
+    }
+    isLoading = true;
+    updateState();
+    String uid = user.uid;
+    final databaseReference = FirebaseDatabase.instance.ref();
+    try {
+      final userSnapshot = await databaseReference.child(users).child(uid).get();
+      isLoading = false;
+      updateState();
+      if (userSnapshot.exists) {
+        await usersPro.getCurrentUser();
+        isLoading = false;
+        updateState();
+        FcmService().updateTokenOnLogin();
+        if (usersPro.currentUser != null) {
+          if (usersPro.currentUser?.admin == true) {
+            navigate(AdminHomeScreen.route);
+          } else {
+            navigate(HomeScreen.route);
+          }
+        } else {
+          Auth().signOut();
+          Utilities()
+              .showErrorMessage(context, message: 'User does not exists'.tr());
+        }
+      } else {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => ProfileDataDialog(),
+        );
+      }
+    } catch (e) {
+      isLoading = false;
+      updateState();
+      Utilities().showCustomToast(message: "Error: $e", isError: true);
+    }
+  }
+
+  static String generateNonce([int length = 32]) {
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+        .join();
+  }
+
+  static String sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
   }
 
   @override
@@ -251,8 +351,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           Platform.isIOS
                               ? Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 10.sp),
-                                child: SignInWithAppleButton(
-                                    onPressed: signInWithApple),
+                                child: Consumer(
+                                  builder: (ctx, ref, child) {
+                                    var usersPro = ref.watch(appUserProvider);
+                                    return SignInWithAppleButton(
+                                        onPressed: (){
+                                          signInWithApple(usersPro);
+                                        }
+                                    );
+                                  }
+                                ),
                               )
                               : Container()
                         ],

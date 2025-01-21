@@ -79,7 +79,6 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
   void initState() {
     super.initState();
     getFileFromUrl(widget.url ?? '', name: widget.title??'').catchError((error) {
-      print("Error downloading file: $error");
       setState(() {
         exists = false;
       });
