@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
 import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/utilities_class.dart';
 import 'package:sizer/sizer.dart';
@@ -48,9 +49,29 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen>{
             children: [
               CustomAppBar(
                 title: newsModel?.title??'Details'.tr(),
-                trailingWidget: InkWell(onTap: (){
-                  showReportDialog(context, newsModel?.id??'');
-                },child: Icon(Icons.flag_outlined, color: AppColors.lightBlack, size: 17.sp,)),
+                trailingWidget: PopupMenuButton<String>(
+                  icon: Icon(Icons.more_vert, color: AppColors.black, size: 17.sp),
+                  onSelected: (String value) {
+                    if (value == 'report') {
+                      showReportDialog(context, newsModel?.id??'');
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                    PopupMenuItem<String>(
+                      value: 'report',
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, color: AppColors.lightBlack, size: 15.sp,),
+                          SizedBox(width: 8.sp),
+                          SmallLightText(
+                            title: 'Report Content'.tr(),
+                            textColor: AppColors.lightBlack,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Expanded(child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),

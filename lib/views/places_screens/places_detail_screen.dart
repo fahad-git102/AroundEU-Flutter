@@ -64,9 +64,29 @@ class _PlacesDetailScreenState extends State<PlacesDetailScreen> {
                 children: [
                   CustomAppBar(
                     title: 'Details'.tr(),
-                    trailingWidget: InkWell(onTap: (){
-                      showReportDialog(context, place?.key??'');
-                    },child: Icon(Icons.flag_outlined, color: AppColors.lightBlack, size: 17.sp,)),
+                    trailingWidget: PopupMenuButton<String>(
+                      icon: Icon(Icons.more_vert, color: AppColors.black, size: 17.sp),
+                      onSelected: (String value) {
+                        if (value == 'report') {
+                          showReportDialog(context, place?.key??'');
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                        PopupMenuItem<String>(
+                          value: 'report',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit, color: AppColors.lightBlack, size: 15.sp,),
+                              SizedBox(width: 8.sp),
+                              SmallLightText(
+                                title: 'Report Content'.tr(),
+                                textColor: AppColors.lightBlack,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   Expanded(
                     child: SingleChildScrollView(

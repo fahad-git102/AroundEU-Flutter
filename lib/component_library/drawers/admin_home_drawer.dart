@@ -10,6 +10,7 @@ import 'package:groupchat/views/admin_screens/add_new_company_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_colors.dart';
+import '../../core/utilities_class.dart';
 import '../../firebase/auth.dart';
 import '../../views/admin_screens/add_coordinator_screen.dart';
 import '../../views/admin_screens/add_emergency_number_screen.dart';
@@ -52,6 +53,7 @@ class _AdminHomeDrawer extends ConsumerState<AdminHomeDrawer> {
         name: 'Add Emergency Numbers'.tr(),
         icon: Images.emergencyContactIcon),
     SocialMediaLink(index: 10, name: 'Sign out'.tr(), icon: Images.logoutIcon),
+    SocialMediaLink(index: 11, name: 'Delete Account'.tr(), icon: Images.deleteIcon),
   ];
 
   @override
@@ -124,6 +126,10 @@ class _AdminHomeDrawer extends ConsumerState<AdminHomeDrawer> {
                                     context, LoginScreen.route, (route) => false);
                               },
                             ));
+                        break;
+                      case 11:
+                        Utilities()
+                            .showDeleteConfirmationDialog(context);
                         break;
                     }
                   },

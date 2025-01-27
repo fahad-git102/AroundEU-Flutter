@@ -183,6 +183,14 @@ class _HomeDrawerState extends State<HomeDrawer> {
               Navigator.pushNamed(context, PrivacyPolicyScreen.route);
             },
           ),
+          TileItem(
+            icon: Images.deleteIcon,
+            title: 'Delete Account'.tr(),
+            onTap: () {
+              Utilities()
+                  .showDeleteConfirmationDialog(context);
+            },
+          ),
           Consumer(builder: (ctx, ref, child) {
             var appUserPro = ref.watch(appUserProvider);
             var categoriesPro = ref.watch(categoriesProvider);
