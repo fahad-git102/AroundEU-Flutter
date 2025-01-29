@@ -23,6 +23,7 @@ import 'package:groupchat/views/admin_screens/admin_home_screen.dart';
 import 'package:groupchat/views/home_screens/home_screen.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../component_library/buttons/button.dart';
 import '../../component_library/text_fields/custom_text_field.dart';
@@ -45,6 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
+  bool _isTermsAccepted = false;
 
   @override
   void dispose() {
@@ -176,39 +178,6 @@ class _LoginScreenState extends State<LoginScreen> {
     SizeConfig().init(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: 10.0.sp),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SmallLightText(
-              title: "Don't have an account?".tr(),
-              textColor: AppColors.fadedTextColor,
-            ),
-            SizedBox(
-              width: 4.0.sp,
-            ),
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RegisterScreen()),
-                );
-              },
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 5.0.sp),
-                child: SmallLightText(
-                  fontWeight: FontWeight.w800,
-                  title: "Sign Up".tr(),
-                  textColor: AppColors.lightBlack,
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
       body: SafeArea(
         child: Stack(
           children: [
@@ -225,147 +194,223 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 13.0.sp),
                 child: Form(
                   key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        height: 50.0.sp,
-                      ),
-                      Image.asset(
-                        Images.logoAroundEU,
-                        height: 120.0.sp,
-                        width: 120.0.sp,
-                        fit: BoxFit.fill,
-                      ),
-                      SizedBox(
-                        height: 20.0.sp,
-                      ),
-                      CustomTextField(
-                        controller: emailController,
-                        labelText: "Email".tr(),
-                        validator: (value) {
-                          return Validation().validateEmail(value);
-                        },
-                      ),
-                      SizedBox(
-                        height: 10.0.sp,
-                      ),
-                      CustomTextField(
-                        controller: passwordController,
-                        labelText: "Password".tr(),
-                        obscureText: true,
-                        validator: (value) {
-                          return Validation().validateEmptyField(value,
-                              message: 'Password required'.tr());
-                        },
-                      ),
-                      SizedBox(
-                        height: 30.0.sp,
-                      ),
-                      Consumer(builder: (ctx, ref, child) {
-                        var usersPro = ref.watch(appUserProvider);
-                        return Button(
-                            text: "Log In".tr(),
-                            tapAction: () {
-                              if (_formKey.currentState!.validate()) {
-                                isLoading = true;
-                                updateState();
-                                signInUserWithEmailAndPassword(usersPro);
-                              }
-                            });
-                      }),
-                      InkWell(
-                        child: Align(
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10.0.sp),
-                            child: SmallLightText(
-                              title: "Forgot Password ?".tr(),
-                              textColor: AppColors.fadedTextColor2,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          height: 10.0.sp,
+                        ),
+                        Image.asset(
+                          Images.logoAroundEU,
+                          height: 110.0.sp,
+                          width: 110.0.sp,
+                          fit: BoxFit.fill,
+                        ),
+                        SizedBox(
+                          height: 10.0.sp,
+                        ),
+                        CustomTextField(
+                          controller: emailController,
+                          labelText: "Email".tr(),
+                          validator: (value) {
+                            return Validation().validateEmail(value);
+                          },
+                        ),
+                        SizedBox(
+                          height: 10.0.sp,
+                        ),
+                        CustomTextField(
+                          controller: passwordController,
+                          labelText: "Password".tr(),
+                          obscureText: true,
+                          validator: (value) {
+                            return Validation().validateEmptyField(value,
+                                message: 'Password required'.tr());
+                          },
+                        ),
+                        SizedBox(height: 15.sp,),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _isTermsAccepted,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isTermsAccepted = value!;
+                                });
+                              },
+                            ),
+                            Flexible(
+                              child: GestureDetector(
+                                onTap: _launchURL,
+                                child: Text.rich(
+                                  TextSpan(
+                                    text: 'I agree to the ',
+                                    style: TextStyle(fontSize: 10.sp),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Terms and Conditions',
+                                        style: TextStyle(
+                                          fontSize: 11.sp,
+                                          color: AppColors.blue,
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: AppColors.blue, // Changes the underline color
+                                          decorationStyle: TextDecorationStyle.solid,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 30.0.sp,
+                        ),
+                        Consumer(builder: (ctx, ref, child) {
+                          var usersPro = ref.watch(appUserProvider);
+                          return Button(
+                              text: "Log In".tr(),
+                              tapAction: () {
+                                if (_formKey.currentState!.validate()) {
+                                  if(_isTermsAccepted==true){
+                                    isLoading = true;
+                                    updateState();
+                                    signInUserWithEmailAndPassword(usersPro);
+                                  }else{
+                                    Utilities().showCustomToast(message: 'Please accept the terms and conditions first'.tr(), isError: true);
+                                  }
+                                }
+                              });
+                        }),
+                        InkWell(
+                          child: Align(
+                            alignment: Alignment.bottomRight,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10.0.sp),
+                              child: SmallLightText(
+                                title: "Forgot Password ?".tr(),
+                                textColor: AppColors.fadedTextColor2,
+                              ),
                             ),
                           ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ForgotPasswordScreen()),
+                            );
+                          },
                         ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ForgotPasswordScreen()),
-                          );
-                        },
-                      ),
-                      SizedBox(
-                        height: 15.0.sp,
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  isLoading = true;
-                                  updateState();
-                                  facebookLogin();
-                                },
-                                child: SvgPicture.asset(
-                                  Images.facebookIcon,
-                                  colorFilter: ColorFilter.mode(
-                                      AppColors.mainColorDark, BlendMode.srcIn),
-                                  height: 40.0.sp,
-                                  width: 40.0.sp,
+                        SizedBox(
+                          height: 15.0.sp,
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    isLoading = true;
+                                    updateState();
+                                    facebookLogin();
+                                  },
+                                  child: SvgPicture.asset(
+                                    Images.facebookIcon,
+                                    colorFilter: ColorFilter.mode(
+                                        AppColors.mainColorDark, BlendMode.srcIn),
+                                    height: 40.0.sp,
+                                    width: 40.0.sp,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(
-                                width: 11.0.sp,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  isLoading = true;
-                                  updateState();
-                                  googleSignIn();
-                                },
-                                child: SvgPicture.asset(
-                                  Images.googleIcon,
-                                  colorFilter: ColorFilter.mode(
-                                      AppColors.mainColorDark, BlendMode.srcIn),
-                                  height: 40.0.sp,
-                                  width: 40.0.sp,
+                                SizedBox(
+                                  width: 11.0.sp,
                                 ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 13.sp,
-                          ),
-                          Platform.isIOS
-                              ? ExtraMediumText(
-                                  title: 'OR'.tr(),
-                                  textColor: AppColors.lightBlack,
+                                InkWell(
+                                  onTap: () {
+                                    isLoading = true;
+                                    updateState();
+                                    googleSignIn();
+                                  },
+                                  child: SvgPicture.asset(
+                                    Images.googleIcon,
+                                    colorFilter: ColorFilter.mode(
+                                        AppColors.mainColorDark, BlendMode.srcIn),
+                                    height: 40.0.sp,
+                                    width: 40.0.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 13.sp,
+                            ),
+                            Platform.isIOS
+                                ? ExtraMediumText(
+                                    title: 'OR'.tr(),
+                                    textColor: AppColors.lightBlack,
+                                  )
+                                : Container(),
+                            SizedBox(
+                              height: 13.sp,
+                            ),
+                            Platform.isIOS
+                                ? Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 10.sp),
+                                  child: Consumer(
+                                    builder: (ctx, ref, child) {
+                                      var usersPro = ref.watch(appUserProvider);
+                                      return SignInWithAppleButton(
+                                          onPressed: (){
+                                            signInWithApple(usersPro);
+                                          }
+                                      );
+                                    }
+                                  ),
                                 )
-                              : Container(),
-                          SizedBox(
-                            height: 13.sp,
-                          ),
-                          Platform.isIOS
-                              ? Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10.sp),
-                                child: Consumer(
-                                  builder: (ctx, ref, child) {
-                                    var usersPro = ref.watch(appUserProvider);
-                                    return SignInWithAppleButton(
-                                        onPressed: (){
-                                          signInWithApple(usersPro);
-                                        }
-                                    );
-                                  }
-                                ),
-                              )
-                              : Container()
-                        ],
-                      ),
-                    ],
+                                : Container(),
+                            SizedBox(height: 20.sp,),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 10.0.sp),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SmallLightText(
+                                    title: "Don't have an account?".tr(),
+                                    textColor: AppColors.fadedTextColor,
+                                  ),
+                                  SizedBox(
+                                    width: 4.0.sp,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => RegisterScreen()),
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 5.0.sp),
+                                      child: SmallLightText(
+                                        fontWeight: FontWeight.w800,
+                                        title: "Sign Up".tr(),
+                                        textColor: AppColors.lightBlack,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 30.sp,)
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -377,6 +422,16 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  void _launchURL() async {
+    // const url = 'https://www.termsfeed.com/live/60a5b8b9-d440-4eff-a25a-21a8e9617b5b'; // Replace with your URL
+    const url = 'https://app.enzuzo.com/policies/tos/9a7d476a-dd8f-11ef-9188-7f55d2c57fd2';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not open the URL.';
+    }
   }
 
   Future<void> signInUserWithEmailAndPassword(AppUserProvider usersPro) async {

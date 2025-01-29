@@ -78,9 +78,11 @@ class _PlacesDetailScreenState extends State<PlacesDetailScreen> {
                             children: [
                               Icon(Icons.edit, color: AppColors.lightBlack, size: 15.sp,),
                               SizedBox(width: 8.sp),
-                              SmallLightText(
-                                title: 'Report Content'.tr(),
-                                textColor: AppColors.lightBlack,
+                              Expanded(
+                                child: SmallLightText(
+                                  title: 'Report Content'.tr(),
+                                  textColor: AppColors.lightBlack,
+                                ),
                               ),
                             ],
                           ),

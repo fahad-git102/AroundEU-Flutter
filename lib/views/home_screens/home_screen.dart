@@ -116,151 +116,9 @@ class _HomeScreenState extends State<HomeScreen>{
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 13.sp),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(height: 10.0.sp,),
-                      Image.asset(
-                        Images.logoAroundEU,
-                        height: 220.0.sp,
-                        width: 220.0.sp,
-                        fit: BoxFit.fill,
-                      ),
-                      appUserPro.currentUser?.userType==coordinator?InkWell(
-                        onTap: (){
-                          showDialog(
-                            context: context,
-                            barrierDismissible: true,
-                            builder: (ctx) => SelectCountryDialog(
-                              title: 'Select Country'.tr(),
-                              showCancel: false,
-                              onItemSelect: (countryModel) async {
-                                Navigator.pop(context);
-                                await Utilities().saveMap(coordinatorsCountry, countryModel?.toMap() ?? {});
-                                appUserPro.coordinatorsCountryModel = null;
-                                updateState();
-                              },
-                            ),
-                          );
-                        },
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SmallLightText(
-                                title: 'Coordinator\'s Country: '.tr(),
-                                textColor: AppColors.lightBlack,
-                                fontSize: 10.sp,
-                              ),
-                              SizedBox(width: 4.sp,),
-                              SmallLightText(
-                                title: appUserPro.coordinatorsCountryModel?.countryName??'',
-                                textColor: AppColors.lightBlack,
-                                fontSize: 13.sp,
-                              )
-                            ],
-                          ),
-                        ),
-                      ):Container(),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: HomeGridWidget(
-                              icon: Images.profileIcon,
-                              title: 'Profile Details'.tr(),
-                              onTap: (){
-                                Navigator.pushNamed(context, ProfileHomeScreen.route);
-                              },
-                            ),
-                          ),
-                          Expanded(
-                            child: HomeGridWidget(
-                              icon: Images.chatIcon,
-                              title: 'Chat'.tr(),
-                              onTap: (){
-                                if(appUserPro.currentUser?.userType == student || appUserPro.currentUser?.userType == teacher){
-                                  if(appUserPro.currentUser?.joinedGroupId!=null && appUserPro.currentUser?.joinedGroupId?.isNotEmpty==true){
-                                    Navigator.pushNamed(
-                                        context, ChatScreen.route, arguments: {
-                                      'groupId': appUserPro.currentUser?.joinedGroupId
-                                    });
-                                  }else{
-                                    showPinInputStudentsBottomSheet(context, ref);
-                                  }
-                                }else if(appUserPro.currentUser?.userType == coordinator){
-                                  ref.watch(businessListProvider).filteredBusinessList = null;
-                                  Navigator.pushNamed(context, SelectBusinessScreen.route);
-                                }
-                              },
-                            ),
-                          ),
-                          Expanded(
-                            child: HomeGridWidget(
-                              icon: Images.newsIcon,
-                              title: 'News'.tr(),
-                              onTap: (){
-                                Navigator.pushNamed(context, NewsScreen.route);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: HomeGridWidget(
-                              icon: Images.placesIcon,
-                              title: 'Places'.tr(),
-                              onTap: (){
-                                Navigator.pushNamed(context, PlacesScreen.route);
-                              },
-                            ),
-                          ),
-                          Expanded(
-                            child: Consumer(builder: (ctx, ref, child){
-                              var companiesPro = ref.watch(companiesProvider);
-                              if(companiesPro.myCompanyTimeScheduled==null||companiesPro.myCompany==null){
-                                companiesPro.listenToMyCompanyTimeScheduled();
-                              }
-                              return HomeGridWidget(
-                                icon: Images.myCompanyIcon,
-                                title: 'My Company'.tr(),
-                                onTap: (){
-                                  if(companiesPro.myCompanyTimeScheduled!=null && companiesPro.myCompany!=null){
-                                    Navigator.pushNamed(context, CompanyDetailScreen.route, arguments: {
-                                      'company': companiesPro.myCompany?.toMap(),
-                                      'fromHome': true
-                                    });
-                                  }else{
-                                    Navigator.pushNamed(context, CompaniesScreen.route);
-                                  }
-                                },
-                              );
-                            },),
-                          ),
-                          Expanded(
-                            child: HomeGridWidget(
-                              icon: Images.categoriesIcon,
-                              title: 'Categories'.tr(),
-                              onTap: (){
-                                Navigator.pushNamed(context, CategoriesScreen.route);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 2.0.sp,),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 10.0.sp),
-                        child: Center(
-                          child: SmallLightText(
-                            title: 'Powered by Eprojectconsult',
-                            textColor: AppColors.fadedTextColor,
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: Utilities().getDeviceType()=='phone'?homeGrids(ref):SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: homeGrids(ref),
                   ),
                 ),
                 Padding(
@@ -301,23 +159,155 @@ class _HomeScreenState extends State<HomeScreen>{
     });
   }
 
-  // void showPinInputTeachersBottomsheet(BuildContext context, WidgetRef ref) async{
-  //   var appUserPro = ref.watch(appUserProvider);
-  //   CountryModel? usersCountry = appUserPro.countriesList?.firstWhere((element) => element.countryName == appUserPro.currentUser?.selectedCountry);
-  //   if(usersCountry!=null){
-  //     final pin = await showModalBottomSheet(context: context,
-  //         isScrollControlled: true,
-  //         backgroundColor: Colors.transparent,
-  //         builder: (context) => PinInputBottomSheet(title: 'Enter the pincode of your Country'.tr(),));
-  //     if(pin!=null){
-  //       if(pin == usersCountry.pincode){
-  //         Navigator.pushNamed(context, SelectBusinessScreen.route);
-  //       }else{
-  //         Utilities().showCustomToast(message: 'Pincode not matched with your country.'.tr(), isError: true);
-  //       }
-  //     }
-  //   }
-  // }
+  Widget homeGrids(WidgetRef ref){
+    var appUserPro = ref.watch(appUserProvider);
+    return  Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        SizedBox(height: 10.0.sp,),
+        Image.asset(
+          Images.logoAroundEU,
+          height: 220.0.sp,
+          width: 220.0.sp,
+          fit: BoxFit.fill,
+        ),
+        appUserPro.currentUser?.userType==coordinator?InkWell(
+          onTap: (){
+            showDialog(
+              context: context,
+              barrierDismissible: true,
+              builder: (ctx) => SelectCountryDialog(
+                title: 'Select Country'.tr(),
+                showCancel: false,
+                onItemSelect: (countryModel) async {
+                  Navigator.pop(context);
+                  await Utilities().saveMap(coordinatorsCountry, countryModel?.toMap() ?? {});
+                  appUserPro.coordinatorsCountryModel = null;
+                  updateState();
+                },
+              ),
+            );
+          },
+          child: Align(
+            alignment: Alignment.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SmallLightText(
+                  title: 'Coordinator\'s Country: '.tr(),
+                  textColor: AppColors.lightBlack,
+                  fontSize: 10.sp,
+                ),
+                SizedBox(width: 4.sp,),
+                SmallLightText(
+                  title: appUserPro.coordinatorsCountryModel?.countryName??'',
+                  textColor: AppColors.lightBlack,
+                  fontSize: 13.sp,
+                )
+              ],
+            ),
+          ),
+        ):Container(),
+        Row(
+          children: [
+            Expanded(
+              child: HomeGridWidget(
+                icon: Images.profileIcon,
+                title: 'Profile Details'.tr(),
+                onTap: (){
+                  Navigator.pushNamed(context, ProfileHomeScreen.route);
+                },
+              ),
+            ),
+            Expanded(
+              child: HomeGridWidget(
+                icon: Images.chatIcon,
+                title: 'Chat'.tr(),
+                onTap: (){
+                  if(appUserPro.currentUser?.userType == student || appUserPro.currentUser?.userType == teacher){
+                    if(appUserPro.currentUser?.joinedGroupId!=null && appUserPro.currentUser?.joinedGroupId?.isNotEmpty==true){
+                      Navigator.pushNamed(
+                          context, ChatScreen.route, arguments: {
+                        'groupId': appUserPro.currentUser?.joinedGroupId
+                      });
+                    }else{
+                      showPinInputStudentsBottomSheet(context, ref);
+                    }
+                  }else if(appUserPro.currentUser?.userType == coordinator){
+                    ref.watch(businessListProvider).filteredBusinessList = null;
+                    Navigator.pushNamed(context, SelectBusinessScreen.route);
+                  }
+                },
+              ),
+            ),
+            Expanded(
+              child: HomeGridWidget(
+                icon: Images.newsIcon,
+                title: 'News'.tr(),
+                onTap: (){
+                  Navigator.pushNamed(context, NewsScreen.route);
+                },
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: HomeGridWidget(
+                icon: Images.placesIcon,
+                title: 'Places'.tr(),
+                onTap: (){
+                  Navigator.pushNamed(context, PlacesScreen.route);
+                },
+              ),
+            ),
+            Expanded(
+              child: Consumer(builder: (ctx, ref, child){
+                var companiesPro = ref.watch(companiesProvider);
+                if(companiesPro.myCompanyTimeScheduled==null||companiesPro.myCompany==null){
+                  companiesPro.listenToMyCompanyTimeScheduled();
+                }
+                return HomeGridWidget(
+                  icon: Images.myCompanyIcon,
+                  title: 'My Company'.tr(),
+                  onTap: (){
+                    if(companiesPro.myCompanyTimeScheduled!=null && companiesPro.myCompany!=null){
+                      Navigator.pushNamed(context, CompanyDetailScreen.route, arguments: {
+                        'company': companiesPro.myCompany?.toMap(),
+                        'fromHome': true
+                      });
+                    }else{
+                      Navigator.pushNamed(context, CompaniesScreen.route);
+                    }
+                  },
+                );
+              },),
+            ),
+            Expanded(
+              child: HomeGridWidget(
+                icon: Images.categoriesIcon,
+                title: 'Categories'.tr(),
+                onTap: (){
+                  Navigator.pushNamed(context, CategoriesScreen.route);
+                },
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 2.0.sp,),
+        Padding(
+          padding: EdgeInsets.only(bottom: 10.0.sp),
+          child: Center(
+            child: SmallLightText(
+              title: 'Powered by Eprojectconsult',
+              textColor: AppColors.fadedTextColor,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   void showPinInputStudentsBottomSheet(BuildContext context, WidgetRef ref) async {
     var appUserPro = ref.watch(appUserProvider);

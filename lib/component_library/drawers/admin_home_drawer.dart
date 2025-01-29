@@ -59,6 +59,7 @@ class _AdminHomeDrawer extends ConsumerState<AdminHomeDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      width: 250.sp,
       child: Column(
         children: [
           DrawerHeader(

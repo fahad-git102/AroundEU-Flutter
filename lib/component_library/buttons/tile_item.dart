@@ -35,10 +35,12 @@ class TileItem extends StatelessWidget {
               color: AppColors.lightBlack,
             ),
             SizedBox(width: 10.0.sp,),
-            ExtraMediumText(
-              title: title??'Website'.tr(),
-              decrease: 2,
-              textColor: AppColors.lightBlack,
+            Expanded(
+              child: ExtraMediumText(
+                title: title??'Website'.tr(),
+                decrease: 2,
+                textColor: AppColors.lightBlack,
+              ),
             )
           ],
         ),

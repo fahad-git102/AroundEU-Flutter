@@ -344,7 +344,8 @@ class _RegisterScreenState extends State<RegisterScreen>{
   }
 
   void _launchURL() async {
-    const url = 'https://www.termsfeed.com/live/60a5b8b9-d440-4eff-a25a-21a8e9617b5b'; // Replace with your URL
+    // const url = 'https://www.termsfeed.com/live/60a5b8b9-d440-4eff-a25a-21a8e9617b5b'; // Replace with your URL
+    const url = 'https://app.enzuzo.com/policies/tos/9a7d476a-dd8f-11ef-9188-7f55d2c57fd2';
     if (await canLaunch(url)) {
       await launch(url);
     } else {

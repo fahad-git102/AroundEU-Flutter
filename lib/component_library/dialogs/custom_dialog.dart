@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:groupchat/core/utilities_class.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_colors.dart';
@@ -54,7 +55,14 @@ class CustomDialog extends StatelessWidget {
             SizedBox(
               height: 5.0.sp,
             ),
-            ExtraMediumText(
+            Utilities().getDeviceType()=='tablet'?Expanded(
+              child: ExtraMediumText(
+                title: title2 ?? "This is the second title",
+                textColor: AppColors.extraLightBlack,
+                textAlign: TextAlign.center,
+                fontWeight: FontWeight.w300,
+              ),
+            ):ExtraMediumText(
               title: title2 ?? "This is the second title",
               textColor: AppColors.extraLightBlack,
               textAlign: TextAlign.center,

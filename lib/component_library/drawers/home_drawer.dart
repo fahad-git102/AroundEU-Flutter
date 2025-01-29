@@ -62,6 +62,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      width: 250.sp,
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
