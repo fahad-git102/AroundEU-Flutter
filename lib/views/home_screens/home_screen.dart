@@ -167,8 +167,8 @@ class _HomeScreenState extends State<HomeScreen>{
         SizedBox(height: 10.0.sp,),
         Image.asset(
           Images.logoAroundEU,
-          height: 220.0.sp,
-          width: 220.0.sp,
+          height: Utilities().getDeviceType()=='phone'?220.sp:420.0,
+          width: Utilities().getDeviceType()=='phone'?220.sp:420.0,
           fit: BoxFit.fill,
         ),
         appUserPro.currentUser?.userType==coordinator?InkWell(
@@ -295,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen>{
             ),
           ],
         ),
-        SizedBox(height: 2.0.sp,),
+        Utilities().getDeviceType()=='phone'?SizedBox(height: 2.sp,):SizedBox(height: 15.0.sp,),
         Padding(
           padding: EdgeInsets.only(bottom: 10.0.sp),
           child: Center(
