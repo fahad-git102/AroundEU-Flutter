@@ -6,6 +6,7 @@ import 'package:groupchat/core/assets_names.dart';
 import 'package:groupchat/data/social_media_links.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/categories_provider.dart';
+import 'package:groupchat/providers/companies_provider.dart';
 import 'package:groupchat/views/admin_screens/add_new_company_screen.dart';
 import 'package:sizer/sizer.dart';
 
@@ -114,6 +115,7 @@ class _AdminHomeDrawer extends ConsumerState<AdminHomeDrawer> {
                         break;
                       case 10:
                         var appUserPro = ref.watch(appUserProvider);
+                        var companyPro = ref.watch(companiesProvider);
                         var categoriesPro = ref.watch(categoriesProvider);
                         showDialog(
                             context: context,
@@ -121,6 +123,7 @@ class _AdminHomeDrawer extends ConsumerState<AdminHomeDrawer> {
                             builder: (ctx) => SignOutDialog(
                               onLogout: () {
                                 appUserPro.clearPro();
+                                companyPro.clearPro();
                                 categoriesPro.clearPro();
                                 Auth().signOut();
                                 Navigator.pushNamedAndRemoveUntil(

@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Groupchat</string>
+	<string>AroundEU</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -19,11 +19,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.2.5</string>
+	<string>3.2.6</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>7</string>
+	<string>8</string>
 	<key>GMSApiKey</key>
 	<string>AIzaSyALZpIBW7NvdLPVAYaDRwBYfZUo9vregH0</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -46,16 +46,16 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-    <string>We use the camera to allow users to capture photos for their profile and upload images to share with others.</string>
+	<string>We use the camera to allow users to capture photos for their profile and upload images to share with others.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open and in the background.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-    <string>We use your location to track movement for real-time navigation and background activity.</string>
+	<string>We use your location to track movement for real-time navigation and background activity.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-    <string>We use your location to show nearby places and personalize content recommendations.</string>
+	<string>We use your location to show nearby places and personalize content recommendations.</string>
 	<key>NSMicrophoneUsageDescription</key>
-    <string>We require microphone access for audio recording in voice messages and video calls.</string>
-    <key>NSPhotoLibraryUsageDescription</key>
+	<string>We require microphone access for audio recording in voice messages and video calls.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your photo library to allow users to upload images to their profile.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>

@@ -472,10 +472,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           uid: Auth().currentUser?.uid,
           replyId: replyMessage?.key,
           timeStamp: DateTime.now().millisecondsSinceEpoch);
+      String name = key.currentState?.controller?.text??'';
+      key.currentState?.controller?.clear();
       replyMessage = null;
       GroupsRepository().sendMessage(messageModel, groupId, context, () {
         manageNotification();
-        key.currentState?.controller?.clear();
+        // key.currentState?.controller?.clear();
         groupsPro.incrementUnreadCountsForGroup(context, groupsPro.currentBLGroupsList
         !.firstWhere((element) => element.key == groupId), appUserPro.allAdminsList??[]);
         manageBusinessListFlags(groupsPro, appUserPro);

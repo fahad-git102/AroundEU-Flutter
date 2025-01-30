@@ -35,7 +35,7 @@ class AddNewGroupDialog extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _AddNewGroupDialog();
 
-  AddNewGroupDialog({
+  AddNewGroupDialog({super.key,
     required this.businessKey,
   });
 }
@@ -312,6 +312,7 @@ class _AddNewGroupDialog extends State<AddNewGroupDialog> {
                       : Button(
                       text: 'Save'.tr(),
                       tapAction: () {
+                        FocusScope.of(context).unfocus();
                         if(_formKey.currentState!.validate()){
                           if(selectedCategories==null){
                             Utilities().showCustomToast(

@@ -17,6 +17,11 @@ class CompaniesProvider extends ChangeNotifier {
   CompanyModel? myCompany;
   CountryModel? selectedCountry;
 
+  clearPro(){
+    myCompany = null;
+    myCompanyTimeScheduled = null;
+  }
+
   listenToCompanies({String? selectedCountry}) {
     allCompaniesList?.clear();
     filteredCompaniesList?.clear();

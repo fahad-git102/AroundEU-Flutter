@@ -6,6 +6,7 @@ import 'package:groupchat/component_library/drawers/admin_home_drawer.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/categories_provider.dart';
+import 'package:groupchat/providers/companies_provider.dart';
 import 'package:groupchat/views/admin_screens/add_coordinator_screen.dart';
 import 'package:groupchat/views/admin_screens/add_emergency_number_screen.dart';
 import 'package:groupchat/views/admin_screens/add_new_country_screen.dart';
@@ -44,6 +45,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       body: SafeArea(child: Consumer(builder: (ctx, ref, child) {
         var appUserPro = ref.watch(appUserProvider);
         var categoriesPro = ref.watch(categoriesProvider);
+        var companyPro = ref.watch(companiesProvider);
         appUserPro.listenToCountries();
         appUserPro.listenToAdmins();
         if(appUserPro.allCoordinatorsList==null){
@@ -81,6 +83,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             onLogout: () {
                               appUserPro.clearPro();
                               categoriesPro.clearPro();
+                              companyPro.clearPro();
                               Auth().signOut();
                               Navigator.pushNamedAndRemoveUntil(
                                   context, LoginScreen.route, (route) => false);

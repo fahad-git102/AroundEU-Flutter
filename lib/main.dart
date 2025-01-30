@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
       return ToastificationWrapper(
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Flutter Demo',
+          title: 'AroundEU',
           navigatorKey: navigatorKey,
           theme: ThemeData(
             primarySwatch: createMaterialColor(AppColors.mainColor),

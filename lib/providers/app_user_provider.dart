@@ -36,10 +36,12 @@ class AppUserProvider extends ChangeNotifier{
     var map = await Utilities().getMap(coordinatorsCountry);
     if(map!=null && map.isNotEmpty){
       coordinatorsCountryModel = CountryModel.fromMap(map);
+      currentUser?.selectedCountry = coordinatorsCountryModel?.countryName;
       notifyListeners();
     }else{
       listenToCountries();
       coordinatorsCountryModel = countriesList?[0];
+      currentUser?.selectedCountry = coordinatorsCountryModel?.countryName;
       notifyListeners();
     }
   }
@@ -160,7 +162,7 @@ class AppUserProvider extends ChangeNotifier{
   }
 
   Future<List<AppUser?>> getUsersListByIds(List<String?>? usersIds) async {
-    if (usersIds == null || usersIds.isEmpty) [];
+    if (usersIds == null || usersIds.isEmpty) return [];
     List<AppUser> fetchedUsers = [];
     await Future.wait(usersIds!.map((id) async {
       AppUser? user = await getUserById(id??'');

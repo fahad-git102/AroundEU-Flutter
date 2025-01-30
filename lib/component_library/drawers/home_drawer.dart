@@ -12,6 +12,7 @@ import 'package:groupchat/core/utilities_class.dart';
 import 'package:groupchat/firebase/fcm_service.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/categories_provider.dart';
+import 'package:groupchat/providers/companies_provider.dart';
 import 'package:groupchat/repositories/users_repository.dart';
 import 'package:groupchat/views/auth/login_screen.dart';
 import 'package:groupchat/views/home_screens/contacts_info_screen.dart';
@@ -194,6 +195,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           Consumer(builder: (ctx, ref, child) {
             var appUserPro = ref.watch(appUserProvider);
+            var companyPro = ref.watch(companiesProvider);
             var categoriesPro = ref.watch(categoriesProvider);
             return TileItem(
               icon: Images.signOutIcon,
@@ -206,6 +208,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                           onLogout: () async {
                             appUserPro.clearPro();
                             categoriesPro.clearPro();
+                            companyPro.clearPro();
                             await removeFcmToken();
                           },
                         ));

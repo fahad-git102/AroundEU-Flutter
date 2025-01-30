@@ -16,6 +16,7 @@ import 'package:groupchat/data/company_time_scheduled.dart';
 import 'package:groupchat/firebase/auth.dart';
 import 'package:groupchat/providers/companies_provider.dart';
 import 'package:groupchat/repositories/companies_repository.dart';
+import 'package:groupchat/views/home_screens/home_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/text_fields/simple_text_field.dart';
@@ -83,7 +84,9 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
       noonFrom = myCompanyTimeScheduled?.noonFrom;
       noonTo = myCompanyTimeScheduled?.noonTo;
       descriptionController.text = myCompanyTimeScheduled?.description??'';
-      for(var item in myCompanyTimeScheduled?.selectedDays??[]){
+      final List<String> tempList = List.from(myCompanyTimeScheduled?.selectedDays ?? []);
+
+      for (var item in tempList) {
         selectedDays.add(replaceHalfWord(item));
       }
       pageStarted = false;
@@ -394,7 +397,8 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
       morningTo: morningTo,
       selectedDays: selectedDays,
       uid: Auth().currentUser?.uid,
-      companyId: company?.id
+      companyId: company?.id,
+        description: descriptionController.text
     );
     isLoading = true;
     updateState();
@@ -403,8 +407,7 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
       isLoading = false;
       updateState();
       Utilities().showSuccessDialog(context, message: 'Working details uploaded successfully'.tr(), onBtnTap: (){
-        Navigator.of(context);
-        Navigator.of(context);
+        Navigator.pushNamedAndRemoveUntil(context, HomeScreen.route, (route) => false);
       });
     }, (p0) {
       isLoading = false;

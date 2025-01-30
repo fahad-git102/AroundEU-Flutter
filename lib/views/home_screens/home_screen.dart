@@ -13,8 +13,10 @@ import 'package:groupchat/core/permissions_manager.dart';
 import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/business_list_provider.dart';
+import 'package:groupchat/providers/categories_provider.dart';
 import 'package:groupchat/providers/companies_provider.dart';
 import 'package:groupchat/providers/groups_provider.dart';
+import 'package:groupchat/providers/news_provider.dart';
 import 'package:groupchat/repositories/groups_repository.dart';
 import 'package:groupchat/repositories/users_repository.dart';
 import 'package:groupchat/views/categories_screens/categories_screen.dart';
@@ -181,6 +183,9 @@ class _HomeScreenState extends State<HomeScreen>{
                 showCancel: false,
                 onItemSelect: (countryModel) async {
                   Navigator.pop(context);
+                  ref.watch(newsProvider).newsList = null;
+                  ref.watch(categoriesProvider).categoriesList = null;
+                  ref.watch(categoriesProvider).filteredCategoriesList = null;
                   await Utilities().saveMap(coordinatorsCountry, countryModel?.toMap() ?? {});
                   appUserPro.coordinatorsCountryModel = null;
                   updateState();
