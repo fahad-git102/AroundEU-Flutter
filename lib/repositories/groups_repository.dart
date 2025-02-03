@@ -97,6 +97,30 @@ class GroupsRepository {
           MapEntry(key, GroupModel.fromMap(Map<String, dynamic>.from(value))));
     });
   }
+
+  Future<void> deleteGroup(BuildContext ctx, String groupId, {Function()? onComplete, Function(dynamic p0)? onError}) async {
+    DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+    try {
+      DatabaseEvent event = await dbRef.child(users).orderByChild("joinedGroupId").equalTo(groupId).once();
+      if (event.snapshot.value != null) {
+        Map<String, dynamic> usersMap = Map<String, dynamic>.from(event.snapshot.value as Map);
+
+        for (String userId in usersMap.keys) {
+          await dbRef.child(users).child(userId).child("joinedGroupId").remove();
+        }
+      }
+      await dbRef.child("groups").child(groupId).remove();
+      if (onComplete != null) {
+        onComplete();
+      }
+    } catch (error) {
+      if (onError != null) {
+        onError(error);
+      }
+    }
+  }
+
+
   Stream<GroupModel?> getGroupStreamById({required String groupId}) {
     final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
     return dbRef

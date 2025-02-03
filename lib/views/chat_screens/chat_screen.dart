@@ -36,6 +36,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/buttons/back_button.dart';
+import '../../component_library/dialogs/custom_dialog.dart';
 import '../../component_library/text_widgets/extra_medium_text.dart';
 import '../../core/assets_names.dart';
 import '../../core/size_config.dart';
@@ -211,6 +212,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                       userIds: groupsPro.currentBLGroupsList
                                           ?.firstWhere((element) => element.key == groupId).approvedMembers??[],
                                     ));
+                                  },
+                                  onDeleteTap: (){
+                                    deleteGroup(groupId??'');
                                   },
                                 ));
                               },
@@ -762,6 +766,29 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       showBottomSheetWithFiles();
       updateState();
     }
+  }
+
+  void deleteGroup(String groupId){
+    showDialog(context: context, builder: (context) => CustomDialog(
+      title2: "Are you sure you want to delete this group ?".tr(),
+      btn1Text:'Yes'.tr(),
+      btn2Text: 'No'.tr(),
+      btn1Outlined: true,
+      icon: Images.newGroupIcon,
+      iconColor: AppColors.red,
+      btn1Color: AppColors.mainColorDark,
+      onBtn2Tap: (){
+        Navigator.pop(context);
+      },
+      onBtn1Tap: (){
+        Navigator.pop(context);
+        GroupsRepository().deleteGroup(context, groupId, onComplete: (){
+          Utilities().showCustomToast(message: 'Group is deleted successfully'.tr(), isError: false);
+        }, onError: (p0){
+          Utilities().showCustomToast(message: p0.toString(), isError: true);
+        });
+      },
+    ));
   }
 }
 

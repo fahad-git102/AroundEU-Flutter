@@ -32,6 +32,7 @@ import '../text_widgets/small_light_text.dart';
 class GroupInfoDialog extends ConsumerStatefulWidget {
   GroupModel? groupModel;
   Function()? onMembersTap;
+  Function()? onDeleteTap;
 
   @override
   ConsumerState<GroupInfoDialog> createState() => _GroupInfoDialogState();
@@ -39,6 +40,7 @@ class GroupInfoDialog extends ConsumerStatefulWidget {
   GroupInfoDialog({
     super.key,
     this.groupModel,
+    this.onDeleteTap,
     this.onMembersTap,
   });
 }
@@ -473,7 +475,19 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
                           if(_formKey.currentState!.validate()){
                             updateGroupData();
                           }
-                        }):Container()
+                        }):Container(),
+                    appUserPro.currentUser?.admin == true && isEdit == false ?
+                        Align(
+                          alignment: Alignment.center,
+                          child: InkWell(
+                            onTap: widget.onDeleteTap,
+                            child: Padding(padding: EdgeInsets.all(6.sp), child: MediumBoldText(
+                              title: 'Delete Group'.tr(),
+                              textColor: AppColors.red,
+                            ),),
+                          ),
+                        ):Container(),
+                    SizedBox(height: 5.sp,)
                   ],
                 )),
           ),
