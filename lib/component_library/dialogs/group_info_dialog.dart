@@ -476,18 +476,6 @@ class _GroupInfoDialogState extends ConsumerState<GroupInfoDialog> {
                             updateGroupData();
                           }
                         }):Container(),
-                    appUserPro.currentUser?.admin == true && isEdit == false ?
-                        Align(
-                          alignment: Alignment.center,
-                          child: InkWell(
-                            onTap: widget.onDeleteTap,
-                            child: Padding(padding: EdgeInsets.all(6.sp), child: MediumBoldText(
-                              title: 'Delete Group'.tr(),
-                              textColor: AppColors.red,
-                            ),),
-                          ),
-                        ):Container(),
-                    SizedBox(height: 5.sp,)
                   ],
                 )),
           ),

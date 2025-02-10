@@ -15,7 +15,7 @@ class GroupItem extends StatelessWidget {
   String? imageUrl, title, subTile;
   int messagesCount;
   bool? showJoinButton;
-  Function()? onJoinTap;
+  Function()? onJoinTap, onDeleteTap;
   int? lastMsgTime;
 
   @override
@@ -77,42 +77,73 @@ class GroupItem extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              showJoinButton == true?InkWell(
-                onTap: onJoinTap,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.sp),
-                  height: 21.sp,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(3.sp)),
-                    border: Border.all(color: AppColors.mainColorDark, width: 0.4.sp),
-                  ),
-                  child: Center(
-                    child: SmallLightText(
-                      fontSize: 9.sp,
-                      textColor: AppColors.mainColorDark,
-                      title: "Join".tr(),
-                    ),
-                  ),
-                ),
-              ):Container(),
-              messagesCount > 0
-                  ? Container(
-                      height: 17.sp,
-                      width: 17.sp,
-                      decoration: BoxDecoration(
-                          color: AppColors.mainColor, shape: BoxShape.circle),
-                      child: Center(
-                        child: SmallLightText(
-                          title: messagesCount > 99
-                              ? '99+'
-                              : messagesCount.toString(),
-                          textColor: AppColors.lightBlack,
-                          fontSize: 8.sp,
-                          fontWeight: FontWeight.w400,
+              showJoinButton == true
+                  ? InkWell(
+                      onTap: onJoinTap,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.sp),
+                        height: 21.sp,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(3.sp)),
+                          border: Border.all(
+                              color: AppColors.mainColorDark, width: 0.4.sp),
+                        ),
+                        child: Center(
+                          child: SmallLightText(
+                            fontSize: 9.sp,
+                            textColor: AppColors.mainColorDark,
+                            title: "Join".tr(),
+                          ),
                         ),
                       ),
                     )
                   : Container(),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  messagesCount > 0
+                      ? Container(
+                          height: 17.sp,
+                          width: 17.sp,
+                          decoration: BoxDecoration(
+                              color: AppColors.mainColor,
+                              shape: BoxShape.circle),
+                          child: Center(
+                            child: SmallLightText(
+                              title: messagesCount > 99
+                                  ? '99+'
+                                  : messagesCount.toString(),
+                              textColor: AppColors.lightBlack,
+                              fontSize: 8.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        )
+                      : Container(),
+                  PopupMenuButton<String>(
+                    onSelected: (value) {
+                      if (value == 'delete') {
+                        onDeleteTap!();
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: AppColors.lightBlack),
+                            SizedBox(width: 6.sp),
+                            Text('Delete Group'.tr()),
+                          ],
+                        ),
+                      ),
+                    ],
+                    icon: Icon(Icons.more_vert, color: AppColors.lightBlack,), // Three dots icon
+                  )
+                ],
+              ),
               lastMsgTime != null && lastMsgTime! > 0
                   ? SizedBox(
                       height: 5.sp,
@@ -136,6 +167,7 @@ class GroupItem extends StatelessWidget {
     this.imageUrl,
     this.messagesCount = 0,
     this.title,
+    this.onDeleteTap,
     this.onJoinTap,
     this.showJoinButton = false,
     this.lastMsgTime,

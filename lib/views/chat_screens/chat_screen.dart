@@ -64,7 +64,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool? showSendButton = false;
   GlobalKey<FlutterMentionsState> key = GlobalKey<FlutterMentionsState>();
   bool? isRecording = false;
-  bool? showEmojis = false;
+  // bool? showEmojis = false;
   FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
   String? filePath;
   double dragExtent = 0.0;
@@ -77,9 +77,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   MessageModel? replyMessage;
   FocusNode? focusNode = FocusNode();
 
-  updateState() {
-    setState(() {});
-  }
+  // updateState() {
+  //   print('updating state');
+  //   setState(() {});
+  // }
 
   Future<void> _initRecorder() async {
     print('requesting for microphone');
@@ -152,263 +153,242 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            GestureDetector(
-              onTap: () {
-                showEmojis = false;
-                updateState();
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(Images.chatBackground),
-                    fit: BoxFit.cover,
-                  ),
+            Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(Images.chatBackground),
+                  fit: BoxFit.cover,
                 ),
-                child: Column(
-                  children: [
-                    Container(
-                      width: SizeConfig.screenWidth,
-                      color: Colors.transparent,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 13.sp, right: 13.sp, top: 18.sp, bottom: 15.sp),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            BackIconButton(
-                              size: 24.0.sp,
-                              onTap: (){
-                                Navigator.of(context).pop();
-                              },
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    width: SizeConfig.screenWidth,
+                    color: Colors.transparent,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 13.sp, right: 13.sp, top: 18.sp, bottom: 15.sp),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          BackIconButton(
+                            size: 24.0.sp,
+                            onTap: (){
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          SizedBox(width: 6.0.sp,),
+                          CircleImageAvatar(
+                            imagePath: groupsPro.currentBLGroupsList
+                              ?.firstWhere((element) => element.key == groupId)
+                        .groupImage??'',
+                            size: 30.sp,
+                          ),
+                          SizedBox(width: 10.0.sp,),
+                          Expanded(
+                            child: ExtraMediumText(
+                              title: groupsPro.currentBLGroupsList?.firstWhere(
+                                      (element) => element.key == groupId) !=
+                                  null
+                                  ? groupsPro.currentBLGroupsList
+                                  ?.firstWhere((element) => element.key == groupId)
+                                  .name
+                                  : ''.tr(),
+                              textColor: AppColors.lightBlack,
                             ),
-                            SizedBox(width: 6.0.sp,),
-                            CircleImageAvatar(
-                              imagePath: groupsPro.currentBLGroupsList
-                                ?.firstWhere((element) => element.key == groupId)
-                          .groupImage??'',
-                              size: 30.sp,
-                            ),
-                            SizedBox(width: 10.0.sp,),
-                            Expanded(
-                              child: ExtraMediumText(
-                                title: groupsPro.currentBLGroupsList?.firstWhere(
-                                        (element) => element.key == groupId) !=
-                                    null
-                                    ? groupsPro.currentBLGroupsList
-                                    ?.firstWhere((element) => element.key == groupId)
-                                    .name
-                                    : ''.tr(),
-                                textColor: AppColors.lightBlack,
-                              ),
-                            ),
-                            InkWell(
-                              onTap: (){
-                                print(groupsPro.currentBLGroupsList
-                                    ?.firstWhere((element) => element.key == groupId).key);
-                                showDialog(context: context, builder: (ctx) => GroupInfoDialog(
-                                  groupModel: groupsPro.currentBLGroupsList
-                                      ?.firstWhere((element) => element.key == groupId),
-                                  onMembersTap: (){
-                                    showDialog(context: context, builder: (ctx) => GroupMembersDialog(
-                                      userIds: groupsPro.currentBLGroupsList
-                                          ?.firstWhere((element) => element.key == groupId).approvedMembers??[],
-                                    ));
-                                  },
-                                  onDeleteTap: (){
-                                    deleteGroup(groupId??'');
-                                  },
-                                ));
-                              },
-                              child: Padding(
-                                  padding: EdgeInsets.all(4.sp),
-                                  child: Icon(
-                                    Icons.info_outline,
-                                    color: AppColors.lightBlack,
-                                  )),
-                            ),
-                          ],
-                        ),
+                          ),
+                          InkWell(
+                            onTap: (){
+                              showDialog(context: context, builder: (ctx) => GroupInfoDialog(
+                                groupModel: groupsPro.currentBLGroupsList
+                                    ?.firstWhere((element) => element.key == groupId),
+                                onMembersTap: (){
+                                  showDialog(context: context, builder: (ctx) => GroupMembersDialog(
+                                    userIds: groupsPro.currentBLGroupsList
+                                        ?.firstWhere((element) => element.key == groupId).approvedMembers??[],
+                                  ));
+                                },
+                              ));
+                            },
+                            child: Padding(
+                                padding: EdgeInsets.all(4.sp),
+                                child: Icon(
+                                  Icons.info_outline,
+                                  color: AppColors.lightBlack,
+                                )),
+                          ),
+                        ],
                       ),
                     ),
-                    Expanded(
-                      child: ScrollablePositionedList.builder(
-                        reverse: true,
-                        // controller: _scrollController,
-                        itemScrollController: itemScrollController,
-                        itemPositionsListener: itemPositionsListener,
-                        itemCount: groupsPro.currentBLGroupsList
+                  ),
+                  Expanded(
+                    child: ScrollablePositionedList.builder(
+                      reverse: true,
+                      // controller: _scrollController,
+                      itemScrollController: itemScrollController,
+                      itemPositionsListener: itemPositionsListener,
+                      itemCount: groupsPro.currentBLGroupsList
+                          ?.firstWhere((element) => element.key == groupId)
+                          .messages
+                          ?.length ??
+                          0,
+                      padding: EdgeInsets.symmetric(horizontal: 13.sp),
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        List<MessageModel>? reversedMessages = groupsPro
+                            .currentBLGroupsList
                             ?.firstWhere((element) => element.key == groupId)
                             .messages
-                            ?.length ??
-                            0,
-                        padding: EdgeInsets.symmetric(horizontal: 13.sp),
-                        physics: const BouncingScrollPhysics(),
-                        itemBuilder: (BuildContext context, int index) {
-                          List<MessageModel>? reversedMessages = groupsPro
-                              .currentBLGroupsList
-                              ?.firstWhere((element) => element.key == groupId)
-                              .messages
-                              ?.reversed
-                              .toList();
-                          MessageModel? messageModel = reversedMessages?[index];
+                            ?.reversed
+                            .toList();
+                        MessageModel? messageModel = reversedMessages?[index];
 
-                          return GestureDetector(
-                            onLongPress: () {
-                              if(messageModel?.uid == Auth().currentUser?.uid){
-                                showDeleteMessageBottomSheet(context, messageModel!);
+                        return GestureDetector(
+                          onLongPress: () {
+                            if(messageModel?.uid == Auth().currentUser?.uid){
+                              showDeleteMessageBottomSheet(context, messageModel!);
+                            }
+                          },
+                          child: messageModel?.uid == Auth().currentUser?.uid
+                              ? SenderMessageWidget(
+                            messageModel: messageModel,
+                            replyMessage: messageModel?.replyId!=null ? reversedMessages
+                                ?.where((message) => message.key == messageModel?.replyId)
+                                .isNotEmpty == true
+                                ? reversedMessages?.firstWhere((message) => message.key == messageModel?.replyId)
+                                : null:null,
+                            onSwipeMessage: (message){
+                              replyToMessage(message);
+                            },
+                            replyWidgetTap: (){
+                              if(messageModel?.replyId!=null){
+                                scrollToReplyMessage(messageModel?.replyId??'', reversedMessages??[]);
                               }
                             },
-                            child: messageModel?.uid == Auth().currentUser?.uid
-                                ? SenderMessageWidget(
-                              messageModel: messageModel,
-                              replyMessage: messageModel?.replyId!=null ? reversedMessages
-                                  ?.where((message) => message.key == messageModel?.replyId)
-                                  .isNotEmpty == true
-                                  ? reversedMessages?.firstWhere((message) => message.key == messageModel?.replyId)
-                                  : null:null,
-                              onSwipeMessage: (message){
-                                replyToMessage(message);
-                              },
-                              replyWidgetTap: (){
-                                if(messageModel?.replyId!=null){
-                                  scrollToReplyMessage(messageModel?.replyId??'', reversedMessages??[]);
-                                }
-                              },
-                            )
-                                : FutureBuilder<AppUser?>(
-                              future: fetchUser(messageModel?.uid ?? ''),
-                              builder: (context, snapshot) {
-                                var senderName = '';
-                                if (snapshot.hasData) {
-                                  senderName =
-                                  '${snapshot.data!.firstName ?? ''} ${snapshot.data!.surName ?? ''}';
-                                }
-                                return ReceiverMessageWidget(
-                                  senderName: senderName,
-                                  messageModel: messageModel,
-                                  replyMessage: messageModel?.replyId!=null ? reversedMessages
-                                      ?.where((message) => message.key == messageModel?.replyId)
-                                      .isNotEmpty == true
-                                      ? reversedMessages?.firstWhere((message) => message.key == messageModel?.replyId)
-                                      : null:null,
-                                  onSwipeMessage: (message){
-                                    replyToMessage(message);
+                          )
+                              : FutureBuilder<AppUser?>(
+                            future: fetchUser(messageModel?.uid ?? ''),
+                            builder: (context, snapshot) {
+                              var senderName = '';
+                              if (snapshot.hasData) {
+                                senderName =
+                                '${snapshot.data!.firstName ?? ''} ${snapshot.data!.surName ?? ''}';
+                              }
+                              return ReceiverMessageWidget(
+                                senderName: senderName,
+                                messageModel: messageModel,
+                                replyMessage: messageModel?.replyId!=null ? reversedMessages
+                                    ?.where((message) => message.key == messageModel?.replyId)
+                                    .isNotEmpty == true
+                                    ? reversedMessages?.firstWhere((message) => message.key == messageModel?.replyId)
+                                    : null:null,
+                                onSwipeMessage: (message){
+                                  replyToMessage(message);
+                                },
+                                replyWidgetTap: (){
+                                  if(messageModel?.replyId!=null){
+                                    scrollToReplyMessage(messageModel?.replyId??'', reversedMessages??[]);
+                                  }
+                                },
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        // showEmojis = false;
+                        setState(() {
+                          showSendButton = false;
+                        });
+                        },
+                      child: mentionsData!=null?BottomWriteWidget(
+                        mentionsKey: key,
+                        onReplyCancel: (){
+                          setState(() {
+                            replyMessage = null;
+                          });
+                        },
+                        focusNode: focusNode,
+                        replyMessage: replyMessage,
+                        isRecording: isRecording,
+                        showSendButton: showSendButton,
+                        mentionsData: mentionsData,
+                        pointerDownEvent: (details) {
+                          setState(() {
+                            isRecording = true;
+                          });
+                          key.currentState?.controller?.text =
+                              'Recording...'.tr();
+                          _startRecording();
+                        },
+                        pointerUpEvent: (details) {
+                          setState(() {
+                            isRecording = false;
+                          });
+                          key.currentState?.controller?.clear();
+                          _stopRecording();
+                        },
+                        onTextFieldChanged: (val) {
+                          if (val.isNotEmpty && isRecording == false) {
+                            setState(() {
+                              showSendButton = true;
+                            });
+                          } else {
+                            setState(() {
+                              showSendButton = false;
+                            });
+                          }
+                        },
+                        onCameraTap: () async {
+                          XFile? pickedImage = await Utilities.pickImage(
+                              imageSource: 'camera');
+                          if (pickedImage != null) {
+                            FileWithType fileWithType = FileWithType(
+                                file: File(pickedImage.path ?? ''),
+                                fileType: MessageType.image);
+                            pickedFiles ??= [];
+                            pickedFiles?.add(fileWithType);
+                            showBottomSheetWithFiles();
+                            setState(() {
+
+                            });
+                          }
+                        },
+                        onAttachmentTap: () {
+                          showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (BuildContext context) {
+                                return PickMediaBottomsheet(
+                                  onMediaTap: () {
+                                    Navigator.pop(context);
+                                    pickMultipleImagesFromGallery();
                                   },
-                                  replyWidgetTap: (){
-                                    if(messageModel?.replyId!=null){
-                                      scrollToReplyMessage(messageModel?.replyId??'', reversedMessages??[]);
-                                    }
+                                  onDocumentTap: () {
+                                    Navigator.pop(context);
+                                    pickFiles();
+                                  },
+                                  onLocationTap: () {
+                                    Navigator.pop(context);
+                                    sendLocationMessage();
                                   },
                                 );
-                              },
-                            ),
-                          );
+                              });
                         },
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom,
-                      ),
-                      child: GestureDetector(
-                        onTap: () {
-                          // showEmojis = false;
-                          showSendButton = false;
-                          updateState();
+                        onSendTap: () {
+                          sendTextMessage(groupId ?? '');
                         },
-                        child: mentionsData!=null?BottomWriteWidget(
-                          mentionsKey: key,
-                          onReplyCancel: (){
-                            setState(() {
-                              replyMessage = null;
-                            });
-                          },
-                          focusNode: focusNode,
-                          replyMessage: replyMessage,
-                          // emojiPressed: () {
-                          //   showEmojis = !showEmojis!;
-                          //   if(showEmojis == true){
-                          //     showSendButton = true;
-                          //   }else{
-                          //     showSendButton = false;
-                          //   }
-                          //   updateState();
-                          // },
-                          isRecording: isRecording,
-                          // showEmojis: showEmojis,
-                          showSendButton: showSendButton,
-                          mentionsData: mentionsData,
-                          pointerDownEvent: (details) {
-                            showEmojis = false;
-                            isRecording = true;
-                            updateState();
-                            key.currentState?.controller?.text =
-                                'Recording...'.tr();
-                            _startRecording();
-                          },
-                          pointerUpEvent: (details) {
-                            isRecording = false;
-                            updateState();
-                            key.currentState?.controller?.clear();
-                            _stopRecording();
-                          },
-                          onTextFieldChanged: (val) {
-                            if(showEmojis == false){
-                              if (val.isNotEmpty && isRecording == false) {
-                                setState(() {
-                                  showSendButton = true;
-                                });
-                              } else {
-                                setState(() {
-                                  showSendButton = false;
-                                });
-                              }
-                            }
-                          },
-                          onCameraTap: () async {
-                            showEmojis = false;
-                            XFile? pickedImage = await Utilities.pickImage(
-                                imageSource: 'camera');
-                            if (pickedImage != null) {
-                              FileWithType fileWithType = FileWithType(
-                                  file: File(pickedImage.path ?? ''),
-                                  fileType: MessageType.image);
-                              pickedFiles ??= [];
-                              pickedFiles?.add(fileWithType);
-                              showBottomSheetWithFiles();
-                              updateState();
-                            }
-                          },
-                          onAttachmentTap: () {
-                            showEmojis = false;
-                            showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                backgroundColor: Colors.transparent,
-                                builder: (BuildContext context) {
-                                  return PickMediaBottomsheet(
-                                    onMediaTap: () {
-                                      Navigator.pop(context);
-                                      pickMultipleImagesFromGallery();
-                                    },
-                                    onDocumentTap: () {
-                                      Navigator.pop(context);
-                                      pickFiles();
-                                    },
-                                    onLocationTap: () {
-                                      Navigator.pop(context);
-                                      sendLocationMessage();
-                                    },
-                                  );
-                                });
-                          },
-                          onSendTap: () {
-                            sendTextMessage(groupId ?? '');
-                          },
-                        ):Container()
-                      ),
+                      ):Container()
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             FullScreenLoader(
@@ -508,8 +488,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       {String? documentName}) async {
     var groupsPro = ref.watch(groupsProvider);
     var appUserPro = ref.watch(appUserProvider);
-    isLoading = true;
-    updateState();
+    setState(() {
+      isLoading = true;
+    });
     String? extension = path.extension(fileWithType.file?.path??'').toLowerCase().replaceAll('.', '');
     String? fileUrl = fileWithType.file != null
         ? await FirebaseCrud()
@@ -532,15 +513,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     replyMessage = null;
     GroupsRepository().sendMessage(messageModel, groupId, context, () {
       manageNotification();
-      isLoading = false;
-      updateState();
+      setState(() {
+        isLoading = false;
+      });
       key.currentState?.controller?.clear();
       groupsPro.incrementUnreadCountsForGroup(context, groupsPro.currentBLGroupsList
           !.firstWhere((element) => element.key == groupId), appUserPro.allAdminsList??[]);
       manageBusinessListFlags(groupsPro, appUserPro);
     }, (p0) {
-      isLoading = false;
-      updateState();
+      setState(() {
+        isLoading = false;
+      });
       Utilities().showErrorMessage(context, message: p0.toString());
     });
   }
@@ -587,22 +570,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       );
     }
   }
-  //
-  // void scrollToReplyMessage(String replyId, List<MessageModel> messages) {
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     int replyIndex = messages.indexWhere((msg) => msg.key == replyId);
-  //     if (replyIndex != -1) {
-  //       final targetKey = messages[replyIndex].globalKey;
-  //       if (targetKey.currentContext != null) {
-  //         Scrollable.ensureVisible(
-  //           targetKey.currentContext!,
-  //           duration: const Duration(milliseconds: 300),
-  //           curve: Curves.easeInOut,
-  //         );
-  //       }
-  //     }
-  //   });
-  // }
 
   replyToMessage(MessageModel message){
     setState(() {
@@ -694,8 +661,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Future<void> sendLocationMessage() async {
     var groupsPro = ref.watch(groupsProvider);
     var appUserPro = ref.watch(appUserProvider);
-    isLoading = true;
-    updateState();
+    setState(() {
+      isLoading = true;
+    });
     bool serviceEnabled;
     LocationPermission permission;
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -729,21 +697,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       replyMessage = null;
       GroupsRepository().sendMessage(messageModel, groupId ?? '', context, () {
         manageNotification();
-        isLoading = false;
-        updateState();
+        setState(() {
+          isLoading = false;
+        });
         key.currentState?.controller?.clear();
         groupsPro.incrementUnreadCountsForGroup(context, groupsPro.currentBLGroupsList
         !.firstWhere((element) => element.key == groupId), appUserPro.allAdminsList??[]);
         manageBusinessListFlags(groupsPro, appUserPro);
         // _animateToBottom();
       }, (p0) {
-        isLoading = false;
-        updateState();
+        setState(() {
+          isLoading = false;
+        });
         Utilities().showErrorMessage(context, message: p0.toString());
       });
     } else {
-      isLoading = false;
-      updateState();
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -764,31 +735,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       pickedFiles = [];
       pickedFiles?.add(fileWithType);
       showBottomSheetWithFiles();
-      updateState();
-    }
-  }
+      setState(() {
 
-  void deleteGroup(String groupId){
-    showDialog(context: context, builder: (context) => CustomDialog(
-      title2: "Are you sure you want to delete this group ?".tr(),
-      btn1Text:'Yes'.tr(),
-      btn2Text: 'No'.tr(),
-      btn1Outlined: true,
-      icon: Images.newGroupIcon,
-      iconColor: AppColors.red,
-      btn1Color: AppColors.mainColorDark,
-      onBtn2Tap: (){
-        Navigator.pop(context);
-      },
-      onBtn1Tap: (){
-        Navigator.pop(context);
-        GroupsRepository().deleteGroup(context, groupId, onComplete: (){
-          Utilities().showCustomToast(message: 'Group is deleted successfully'.tr(), isError: false);
-        }, onError: (p0){
-          Utilities().showCustomToast(message: p0.toString(), isError: true);
-        });
-      },
-    ));
+      });
+    }
   }
 }
 

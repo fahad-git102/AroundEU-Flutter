@@ -86,6 +86,7 @@ class GroupsProvider extends ChangeNotifier {
         }
 
         if(currentBLGroupsList!=null && currentBLGroupsList?.isNotEmpty==true){
+          currentBLGroupsList?.removeWhere((group) => !groupsData.containsKey(group.key));
           for(GroupModel group in currentBLGroupsList??[]){
             if(group.messages!=null && group.messages?.isNotEmpty==true){
               group.messages?.sort((a, b) {

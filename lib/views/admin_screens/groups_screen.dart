@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:groupchat/component_library/chat_widgets/group_item_widget.dart';
 import 'package:groupchat/component_library/image_widgets/no_data_widget.dart';
+import 'package:groupchat/component_library/loaders/full_screen_loader.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/core/utilities_class.dart';
@@ -19,6 +20,7 @@ import 'package:groupchat/views/chat_screens/chat_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../component_library/app_bars/custom_app_bar.dart';
+import '../../component_library/dialogs/custom_dialog.dart';
 import '../../core/assets_names.dart';
 import '../../core/size_config.dart';
 
@@ -32,6 +34,7 @@ class GroupsScreen extends ConsumerStatefulWidget {
 class _GroupsScreenState extends ConsumerState<GroupsScreen> {
   BusinessList? currentBusinessList;
   bool pageStarted = true;
+  bool isLoading = false;
 
   updateState() {
     setState(() {});
@@ -64,130 +67,162 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(
+        child: Stack(
           children: [
-            CustomAppBar(
-              title: currentBusinessList != null
-                  ? currentBusinessList?.name
-                  : 'Groups'.tr(),
-            ),
-            SizedBox(
-              height: 10.sp,
-            ),
-            Expanded(
-                child: groupsPro.currentBLGroupsList == null
-                    ? Center(
-                        child: SpinKitPulse(
-                          color: AppColors.mainColorDark,
-                        ),
-                      )
-                    : groupsPro.currentBLGroupsList?.isEmpty == true
+            Column(
+              children: [
+                CustomAppBar(
+                  title: currentBusinessList != null
+                      ? currentBusinessList?.name
+                      : 'Groups'.tr(),
+                ),
+                SizedBox(
+                  height: 10.sp,
+                ),
+                Expanded(
+                    child: groupsPro.currentBLGroupsList == null
                         ? Center(
-                            child: Padding(
-                                padding: EdgeInsets.only(top: 50.sp),
-                                child: NoDataWidget(
-                                  text: 'No groups found'.tr(),
-                                )))
-                        : ListView.builder(
-                            itemCount: groupsPro.currentBLGroupsList?.length,
-                            shrinkWrap: true,
-                            physics: const BouncingScrollPhysics(),
-                            padding: EdgeInsets.symmetric(horizontal: 13.sp),
-                            itemBuilder: (BuildContext context, int index) {
-                              return InkWell(
-                                onTap: () {
-                                  if (ref
-                                          .read(appUserProvider)
-                                          .currentUser
-                                          ?.admin ==
-                                      true) {
-                                    Navigator.pushNamed(
-                                        context, ChatScreen.route, arguments: {
-                                      'groupId': groupsPro
-                                          .currentBLGroupsList?[index].key
-                                    });
-                                  } else if (ref
+                            child: SpinKitPulse(
+                              color: AppColors.mainColorDark,
+                            ),
+                          )
+                        : groupsPro.currentBLGroupsList?.isEmpty == true
+                            ? Center(
+                                child: Padding(
+                                    padding: EdgeInsets.only(top: 50.sp),
+                                    child: NoDataWidget(
+                                      text: 'No groups found'.tr(),
+                                    )))
+                            : ListView.builder(
+                                itemCount:
+                                    groupsPro.currentBLGroupsList?.length,
+                                shrinkWrap: true,
+                                physics: const BouncingScrollPhysics(),
+                                padding:
+                                    EdgeInsets.symmetric(horizontal: 13.sp),
+                                itemBuilder: (BuildContext context, int index) {
+                                  return InkWell(
+                                    onTap: () {
+                                      if (ref
                                               .read(appUserProvider)
                                               .currentUser
-                                              ?.userType ==
-                                          coordinator &&
-                                      groupsPro.currentBLGroupsList?[index]
-                                              .approvedMembers
-                                              ?.contains(
-                                                  Auth().currentUser?.uid) ==
+                                              ?.admin ==
                                           true) {
-                                    Navigator.pushNamed(
-                                        context, ChatScreen.route, arguments: {
-                                      'groupId': groupsPro
-                                          .currentBLGroupsList?[index].key
-                                    });
-                                  }
-                                },
-                                child: GroupItem(
-                                  onJoinTap: () {
-                                    List<String?>? list = groupsPro
-                                            .currentBLGroupsList?[index]
-                                            .approvedMembers ??
-                                        [];
-                                    list.add(Auth().currentUser?.uid);
-                                    var map = {'approvedMembers': list};
-                                    GroupsRepository().updateGroup(
-                                        map,
-                                        groupsPro.currentBLGroupsList?[index]
-                                                .key ??
-                                            '',
-                                        context, () {
-                                      Navigator.pushNamed(
-                                          context, ChatScreen.route,
-                                          arguments: {
-                                            'groupId': groupsPro
-                                                .currentBLGroupsList?[index].key
-                                          });
-                                    }, (p0) {
-                                      Utilities().showCustomToast(
-                                          message: p0.toString(),
-                                          isError: true);
-                                    });
-                                  },
-                                  showJoinButton: ref
-                                              .read(appUserProvider)
-                                              .currentUser
-                                              ?.userType ==
-                                          coordinator &&
-                                      (groupsPro.currentBLGroupsList?[index]
-                                                  .approvedMembers ==
-                                              null ||
+                                        Navigator.pushNamed(
+                                            context, ChatScreen.route,
+                                            arguments: {
+                                              'groupId': groupsPro
+                                                  .currentBLGroupsList?[index]
+                                                  .key
+                                            });
+                                      } else if (ref
+                                                  .read(appUserProvider)
+                                                  .currentUser
+                                                  ?.userType ==
+                                              coordinator &&
                                           groupsPro.currentBLGroupsList?[index]
                                                   .approvedMembers
                                                   ?.contains(Auth()
                                                       .currentUser
                                                       ?.uid) ==
-                                              false),
-                                  title: groupsPro
-                                      .currentBLGroupsList?[index].name,
-                                  subTile: Utilities().parseHtmlToPlainText(
-                                      fetchLastMessage(groupsPro
-                                          .currentBLGroupsList?[index])),
-                                  imageUrl: groupsPro
-                                      .currentBLGroupsList?[index].groupImage,
-                                  messagesCount: fetchUnreadCount(groupsPro
-                                          .currentBLGroupsList?[index]
-                                          .unReadCounts ??
-                                      {}),
-                                  lastMsgTime: groupsPro
+                                              true) {
+                                        Navigator.pushNamed(
+                                            context, ChatScreen.route,
+                                            arguments: {
+                                              'groupId': groupsPro
                                                   .currentBLGroupsList?[index]
-                                                  .messages !=
-                                              null &&
-                                          groupsPro.currentBLGroupsList?[index]
-                                                  .messages?.isNotEmpty ==
-                                              true
-                                      ? groupsPro.currentBLGroupsList![index]
-                                              .messages?.last.timeStamp ??
-                                          0
-                                      : 0,
-                                ),
-                              );
-                            }))
+                                                  .key
+                                            });
+                                      }
+                                    },
+                                    child: GroupItem(
+                                      onDeleteTap: () {
+                                        deleteGroup(groupsPro
+                                                .currentBLGroupsList?[index]
+                                                .key ??
+                                            '');
+                                      },
+                                      onJoinTap: () {
+                                        List<String?>? list = groupsPro
+                                                .currentBLGroupsList?[index]
+                                                .approvedMembers ??
+                                            [];
+                                        list.add(Auth().currentUser?.uid);
+                                        var map = {'approvedMembers': list};
+                                        GroupsRepository().updateGroup(
+                                            map,
+                                            groupsPro
+                                                    .currentBLGroupsList?[index]
+                                                    .key ??
+                                                '',
+                                            context, () {
+                                          Navigator.pushNamed(
+                                              context, ChatScreen.route,
+                                              arguments: {
+                                                'groupId': groupsPro
+                                                    .currentBLGroupsList?[index]
+                                                    .key
+                                              });
+                                        }, (p0) {
+                                          Utilities().showCustomToast(
+                                              message: p0.toString(),
+                                              isError: true);
+                                        });
+                                      },
+                                      showJoinButton: ref
+                                                  .read(appUserProvider)
+                                                  .currentUser
+                                                  ?.userType ==
+                                              coordinator &&
+                                          (groupsPro.currentBLGroupsList?[index]
+                                                      .approvedMembers ==
+                                                  null ||
+                                              groupsPro
+                                                      .currentBLGroupsList?[
+                                                          index]
+                                                      .approvedMembers
+                                                      ?.contains(Auth()
+                                                          .currentUser
+                                                          ?.uid) ==
+                                                  false),
+                                      title: groupsPro
+                                          .currentBLGroupsList?[index].name,
+                                      subTile: Utilities().parseHtmlToPlainText(
+                                          fetchLastMessage(groupsPro
+                                              .currentBLGroupsList?[index])),
+                                      imageUrl: groupsPro
+                                          .currentBLGroupsList?[index]
+                                          .groupImage,
+                                      messagesCount: fetchUnreadCount(groupsPro
+                                              .currentBLGroupsList?[index]
+                                              .unReadCounts ??
+                                          {}),
+                                      lastMsgTime: groupsPro
+                                                      .currentBLGroupsList?[
+                                                          index]
+                                                      .messages !=
+                                                  null &&
+                                              groupsPro
+                                                      .currentBLGroupsList?[
+                                                          index]
+                                                      .messages
+                                                      ?.isNotEmpty ==
+                                                  true
+                                          ? groupsPro
+                                                  .currentBLGroupsList![index]
+                                                  .messages
+                                                  ?.last
+                                                  .timeStamp ??
+                                              0
+                                          : 0,
+                                    ),
+                                  );
+                                }))
+              ],
+            ),
+            FullScreenLoader(
+              loading: isLoading,
+            )
           ],
         ),
       )),
@@ -218,5 +253,43 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
     } else {
       return '';
     }
+  }
+
+  void deleteGroup(String groupId) {
+    showDialog(
+        context: context,
+        builder: (context) => CustomDialog(
+              title2: "Are you sure you want to delete this group ?".tr(),
+              btn1Text: 'Yes'.tr(),
+              btn2Text: 'No'.tr(),
+              btn1Outlined: true,
+              icon: Images.newGroupIcon,
+              iconColor: AppColors.red,
+              btn1Color: AppColors.mainColorDark,
+              onBtn2Tap: () {
+                Navigator.pop(context);
+              },
+              onBtn1Tap: () {
+                setState(() {
+                  isLoading = true;
+                });
+                Navigator.pop(context);
+                GroupsRepository().deleteGroup(context, groupId,
+                    onComplete: () {
+                  Utilities().showCustomToast(
+                      message: 'Group is deleted successfully'.tr(),
+                      isError: false);
+                  setState(() {
+                    isLoading = false;
+                  });
+                }, onError: (p0) {
+                  setState(() {
+                    isLoading = false;
+                  });
+                  Utilities()
+                      .showCustomToast(message: p0.toString(), isError: true);
+                });
+              },
+            ));
   }
 }

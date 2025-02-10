@@ -30,6 +30,7 @@
         android:name="${applicationName}"
         android:requestLegacyExternalStorage="true"
         android:icon="@drawable/icon_playstore"
+        android:enableOnBackInvokedCallback="true"
         tools:replace="android:icon, android:label">
         <activity
             android:name=".MainActivity"
