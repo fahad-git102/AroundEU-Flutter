@@ -29,7 +29,7 @@ class CompanyTimeScheduled{
     };
   }
 
-  factory CompanyTimeScheduled.fromMap(Map<String, dynamic> map) {
+  factory CompanyTimeScheduled.fromMap(Map<dynamic, dynamic> map) {
     return CompanyTimeScheduled(
       id: map.containsKey('id')&&map['id']!=null ? map['id'] as String : null,
       companyId: map.containsKey('companyId')&&map['companyId']!=null ? map['companyId'] as String : null,

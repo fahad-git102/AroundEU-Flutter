@@ -33,6 +33,7 @@ import 'package:groupchat/views/notifications_test_screen.dart';
 import 'package:groupchat/views/profile_screens/my_documents_screen.dart';
 import 'package:groupchat/views/profile_screens/personal_info_screen.dart';
 import 'package:groupchat/views/profile_screens/settings_list_screen.dart';
+import 'package:groupchat/views/profile_screens/user_profile_screen.dart';
 
 import '../views/auth/login_screen.dart';
 import '../views/categories_screens/pdf_list_screen.dart';
@@ -78,6 +79,7 @@ getRoutes(){
     AddNewGroupScreen.route: (context) => AddNewGroupScreen(),
     GroupsScreen.route: (context) => GroupsScreen(),
     ChatScreen.route: (context) => const ChatScreen(),
+    UserProfileScreen.route: (context) => UserProfileScreen(),
     SelectBusinessScreen.route: (context) => const SelectBusinessScreen(),
     NotificationsTestScreen.route: (context) => NotificationsTestScreen(),
     ConvertedCoordinatorsScreen.route: (context) => ConvertedCoordinatorsScreen()

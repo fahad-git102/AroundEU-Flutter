@@ -19,6 +19,7 @@ import '../../core/app_colors.dart';
 import '../../core/download_manager.dart';
 import '../../core/utilities_class.dart';
 import '../../views/profile_screens/full_image_screen.dart';
+import '../../views/profile_screens/user_profile_screen.dart';
 
 class ReceiverMessageWidget extends StatefulWidget {
   MessageModel? messageModel;
@@ -43,9 +44,18 @@ class _ReceiverMessageState extends State<ReceiverMessageWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SmallLightText(
-              title: widget.senderName ?? 'Sender name',
-              textColor: AppColors.lightBlack,
+            InkWell(
+              onTap: (){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (ctx) => UserProfileScreen(
+                            userId: widget.messageModel?.uid ?? '')));
+              },
+              child: SmallLightText(
+                title: widget.senderName ?? 'Sender name',
+                textColor: AppColors.lightBlack,
+              ),
             ),
             Container(
               margin: EdgeInsets.only(bottom: 10.sp),

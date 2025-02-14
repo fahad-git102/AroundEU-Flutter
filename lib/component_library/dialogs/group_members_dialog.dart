@@ -9,6 +9,7 @@ import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/size_config.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
+import 'package:groupchat/views/profile_screens/user_profile_screen.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../data/users_model.dart';
@@ -106,7 +107,11 @@ class _GroupMembersDialog extends ConsumerState<GroupMembersDialog> {
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
                     onTap: (){
-                      print(groupMembers?[index]?.uid);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => UserProfileScreen(
+                                  userId: groupMembers?[index]?.uid ?? '')));
                     },
                     child: Container(
                       width: SizeConfig.screenWidth,

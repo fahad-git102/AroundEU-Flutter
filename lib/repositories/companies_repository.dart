@@ -38,16 +38,18 @@ class CompanyRepository {
         .ref(companies)
         .child(companyId)
         .remove()
-        .then((value) =>
-            Utilities().showCustomToast(isError: false, message: 'Company deleted successfully'.tr()))
-        .onError((error, stackTrace) =>
-            Utilities().showCustomToast(isError: true, message: error.toString()));
+        .then((value) => Utilities().showCustomToast(
+            isError: false, message: 'Company deleted successfully'.tr()))
+        .onError((error, stackTrace) => Utilities()
+            .showCustomToast(isError: true, message: error.toString()));
   }
 
   Future<void> updateMyCompanySchedule(
-      Map<String, dynamic> map, String id, BuildContext context,
+      Map<String, dynamic> map,
+      String id,
+      BuildContext context,
       Function() onComplete,
-      Function(dynamic p0) onError) async{
+      Function(dynamic p0) onError) async {
     FirebaseCrud().updateData(
         key: "$companyTimeScheduled/$id",
         context: context,
@@ -100,12 +102,25 @@ class CompanyRepository {
     });
   }
 
+  Future<Map<dynamic, dynamic>?> getCompanyTimeSchduled(String uid) async {
+    final ref = FirebaseDatabase.instance.ref().child(companyTimeScheduled).orderByChild('uid')
+        .equalTo(Auth().currentUser?.uid);
+    final snapshot = await ref.get();
+    if (snapshot.exists) {
+      print('my company data is :');
+      print(snapshot.value as Map<dynamic, dynamic>);
+      return snapshot.value as Map<dynamic, dynamic>;
+    } else {
+      return null;
+    }
+  }
+
   Future<Map<dynamic, dynamic>?> getMyCompany(String id) async {
     var result = await FirebaseCrud().getDateOnce(key: '$companies/$id');
 
     if (result == null) {
       print("Error: No data found for id $id");
-      return null; // or return an empty map {} if that's more appropriate
+      return null;
     }
 
     return result as Map<dynamic, dynamic>;
