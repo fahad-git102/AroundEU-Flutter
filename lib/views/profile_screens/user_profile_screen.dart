@@ -58,11 +58,15 @@ class _UserProfileScreen extends ConsumerState<UserProfileScreen>{
           setState(() {
             companyTimeScheduled = CompanyTimeScheduled.fromMap(scheduleData);
           });
+          print('scheduled');
+          print(companyTimeScheduled?.toMap());
         });
         var companyMap = await CompanyRepository().getMyCompany(companyTimeScheduled?.companyId??'');
         setState(() {
           company = CompanyModel.fromMap(companyMap??{});
         });
+        print('company');
+        print(company?.toMap());
       }
     } catch (e) {
       print('Error fetching company time schedule: $e');

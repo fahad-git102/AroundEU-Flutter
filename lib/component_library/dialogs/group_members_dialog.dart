@@ -107,6 +107,7 @@ class _GroupMembersDialog extends ConsumerState<GroupMembersDialog> {
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
                     onTap: (){
+                      print(groupMembers?[index]?.uid);
                       Navigator.push(
                           context,
                           MaterialPageRoute(

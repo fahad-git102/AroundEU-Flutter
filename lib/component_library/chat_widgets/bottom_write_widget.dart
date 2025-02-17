@@ -13,7 +13,7 @@ class BottomWriteWidget extends StatefulWidget {
   bool? isRecording;
   // bool? showEmojis;
   MessageModel? replyMessage;
-  bool? showSendButton;
+  // bool? showSendButton;
   FocusNode? focusNode;
   List<Map<String, dynamic>>? mentionsData;
   Function()? onAttachmentTap;
@@ -37,7 +37,7 @@ class BottomWriteWidget extends StatefulWidget {
     this.pointerDownEvent,
     this.replyMessage,
     this.onReplyCancel,
-    this.showSendButton,
+    // this.showSendButton,
     this.mentionsData,
     this.onAttachmentTap,
     this.onCameraTap,
@@ -47,13 +47,16 @@ class BottomWriteWidget extends StatefulWidget {
   });
 }
 
-class _BottomWriteWidgetState extends State<BottomWriteWidget> {
-  updateState() {
-    setState(() {});
-  }
+class _BottomWriteWidgetState extends State<BottomWriteWidget> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    widget.focusNode?.addListener(() {
+      print("FocusNode isFocused: ${widget.focusNode?.hasFocus}");
+    });
     return Column(
       children: [
         Row(
@@ -104,6 +107,9 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                                   suggestionPosition: SuggestionPosition.Top,
                                   maxLines: 5,
                                   focusNode: widget.focusNode,
+                                  onTap: (){
+                                    widget.focusNode?.requestFocus();
+                                  },
                                   minLines: 1,
                                   textInputAction: TextInputAction.done,
                                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -166,7 +172,21 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                                     icon: const Icon(Icons.camera_alt_outlined),
                                     onPressed: widget.onCameraTap,
                                   ),
-                                  SizedBox(width: 4.sp,)
+                                  Listener(
+                                    onPointerUp: widget.pointerUpEvent,
+                                    onPointerDown: widget.pointerDownEvent,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(3.0.sp),
+                                      child: Icon(
+                                        Icons.mic,
+                                        size: 20.sp,
+                                        color: widget.isRecording == true
+                                            ? Colors.red
+                                            : Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 5.sp,)
                                 ],
                               ),
                             ],
@@ -178,8 +198,8 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                 ],
               ),
             ),
-            widget.showSendButton == true
-                ? InkWell(
+            /*widget.showSendButton == true
+                ? */InkWell(
               onTap: widget.onSendTap,
               child: Container(
                 decoration: BoxDecoration(
@@ -195,83 +215,12 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> {
                   ),
                 ),
               ),
-            )
-                : Listener(
-              onPointerUp: widget.pointerUpEvent,
-              onPointerDown: widget.pointerDownEvent,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: widget.isRecording == true
-                      ? Colors.red
-                      : Theme.of(context).primaryColor,
-                ),
-                padding: const EdgeInsets.all(10),
-                child: Center(
-                  child: Icon(
-                    Icons.mic,
-                    size: 20.sp,
-                    color: AppColors.white,
-                  ),
-                ),
-              ),
             ),
             const SizedBox(
               width: 5,
             ),
           ],
         ),
-        // Offstage(
-        //   offstage: widget.showEmojis == false,
-        //   child: SizedBox(
-        //       height: 250,
-        //       child: EmojiPicker(
-        //           textEditingController:
-        //           widget.mentionsKey?.currentState?.controller,
-        //           onBackspacePressed: () {
-        //             widget.mentionsKey?.currentState?.controller
-        //               ?..text = widget.mentionsKey!.currentState!.controller!
-        //                   .text.characters
-        //                   .toString()
-        //               ..selection = TextSelection.fromPosition(TextPosition(
-        //                   offset: widget.mentionsKey!.currentState!
-        //                       .controller!.text.length));
-        //           },
-        //           onEmojiSelected: (category, emoji) {
-        //             // widget.showSendButton = true;
-        //             // updateState();
-        //           },
-        //           config: Config(
-        //             columns: 7,
-        //             emojiSizeMax: SizeConfig.screenWidth! / 20,
-        //             verticalSpacing: 0,
-        //             horizontalSpacing: 0,
-        //             gridPadding: EdgeInsets.zero,
-        //             initCategory: Category.RECENT,
-        //             bgColor: AppColors.white,
-        //             indicatorColor: Colors.blue,
-        //             iconColor: Colors.grey,
-        //             iconColorSelected: Colors.blue,
-        //             backspaceColor: Colors.blue,
-        //             skinToneDialogBgColor: Colors.white,
-        //             skinToneIndicatorColor: Colors.grey,
-        //             enableSkinTones: true,
-        //             recentTabBehavior: RecentTabBehavior.RECENT,
-        //             recentsLimit: 28,
-        //             replaceEmojiOnLimitExceed: false,
-        //             noRecents: SmallLightText(
-        //               title: 'No Recents'.tr(),
-        //               textAlign: TextAlign.center,
-        //             ),
-        //             loadingIndicator: SpinKitPulse(
-        //               color: AppColors.mainColorDark,
-        //             ),
-        //             tabIndicatorAnimDuration: kTabScrollDuration,
-        //             categoryIcons: const CategoryIcons(),
-        //             buttonMode: ButtonMode.MATERIAL,
-        //             checkPlatformCompatibility: true,
-        //           ))),
-        // ),
       ],
     );
   }

@@ -31,7 +31,13 @@ class ReceiverMessageWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _ReceiverMessageState();
 
-  ReceiverMessageWidget({super.key, this.replyWidgetTap, this.messageModel, this.replyMessage, this.senderName, this.onSwipeMessage});
+  ReceiverMessageWidget(
+      {super.key,
+      this.replyWidgetTap,
+      this.messageModel,
+      this.replyMessage,
+      this.senderName,
+      this.onSwipeMessage});
 }
 
 class _ReceiverMessageState extends State<ReceiverMessageWidget> {
@@ -45,7 +51,7 @@ class _ReceiverMessageState extends State<ReceiverMessageWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             InkWell(
-              onTap: (){
+              onTap: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -73,7 +79,7 @@ class _ReceiverMessageState extends State<ReceiverMessageWidget> {
               child: IntrinsicWidth(
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: manageMessageView(widget.messageModel!)??Container(),
+                  child: manageMessageView(widget.messageModel!) ?? Container(),
                 ),
               ),
             ),
@@ -93,14 +99,18 @@ class _ReceiverMessageState extends State<ReceiverMessageWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        message.replyId !=null ? InkWell(
-          onTap: widget.replyWidgetTap,
-          child: ReplyMessageWidget(
-            uid: widget.replyMessage?.uid,
-            small: true,
-            message: widget.replyMessage?.message?? widget.replyMessage?.documentName ??'Document'.tr(),
-          ),
-        ):Container(),
+        message.replyId != null
+            ? InkWell(
+                onTap: widget.replyWidgetTap,
+                child: ReplyMessageWidget(
+                  uid: widget.replyMessage?.uid,
+                  small: true,
+                  message: widget.replyMessage?.message ??
+                      widget.replyMessage?.documentName ??
+                      'Document'.tr(),
+                ),
+              )
+            : Container(),
         isImage == true
             ? InkWell(
                 onTap: () {
@@ -143,17 +153,18 @@ class _ReceiverMessageState extends State<ReceiverMessageWidget> {
                             VideoMessageWidget(videoUrl: message.video ?? ''))
                     : isDocument
                         ? InkWell(
-          onTap: () {
-
-            DownloadManager().downloadFile(message.document??'', message.documentName??'document.pdf');
-          },
-                          child: DocumentMessageWidget(
+                            onTap: () {
+                              DownloadManager().downloadFile(
+                                  message.document ?? '',
+                                  message.documentName ?? 'document.pdf');
+                            },
+                            child: DocumentMessageWidget(
                               messageId: message.key,
                               documentUrl: message.document ?? '',
                               documentName:
                                   message.documentName ?? 'Document'.tr(),
                             ),
-                        )
+                          )
                         : isMessage
                             ? Padding(
                                 padding: EdgeInsets.only(

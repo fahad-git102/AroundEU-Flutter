@@ -104,7 +104,7 @@ class CompanyRepository {
 
   Future<Map<dynamic, dynamic>?> getCompanyTimeSchduled(String uid) async {
     final ref = FirebaseDatabase.instance.ref().child(companyTimeScheduled).orderByChild('uid')
-        .equalTo(Auth().currentUser?.uid);
+        .equalTo(uid);
     final snapshot = await ref.get();
     if (snapshot.exists) {
       print('my company data is :');

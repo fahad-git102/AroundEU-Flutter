@@ -5,9 +5,9 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:groupchat/component_library/app_bars/custom_app_bar.dart';
 import 'package:groupchat/core/utilities_class.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart'; // Import the syncfusion package
 
 import '../../core/app_colors.dart';
 import '../../core/size_config.dart';
@@ -27,12 +27,20 @@ class PdfViewScreen extends StatefulWidget {
 class _PdfViewScreenState extends State<PdfViewScreen> {
   String urlPDFPath = "";
   bool exists = true;
-  int _totalPages = 0;
-  int _currentPage = 0;
-  bool pdfReady = false;
-  PDFViewController? _pdfViewController;
   bool loaded = false;
   double downloadProgress = 0.0;
+  late PdfViewerController _pdfViewerController; // Controller for syncfusion PDF viewer
+
+  @override
+  void initState() {
+    super.initState();
+    _pdfViewerController = PdfViewerController(); // Initialize the controller
+    getFileFromUrl(widget.url ?? '', name: widget.title ?? '').catchError((error) {
+      setState(() {
+        exists = false;
+      });
+    });
+  }
 
   Future<File> getFileFromUrl(String url, {String? name}) async {
     var fileName = name ?? 'testonline';
@@ -76,16 +84,6 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    getFileFromUrl(widget.url ?? '', name: widget.title??'').catchError((error) {
-      setState(() {
-        exists = false;
-      });
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
@@ -115,35 +113,16 @@ class _PdfViewScreenState extends State<PdfViewScreen> {
               ),
               loaded && exists
                   ? Expanded(
-                child: PDFView(
-                  filePath: urlPDFPath,
-                  autoSpacing: true,
-                  enableSwipe: true,
-                  pageSnap: true,
-                  preventLinkNavigation: false,
-                  swipeHorizontal: false,
-                  nightMode: false,
-                  onError: (e) {
-                    print("PDF View Error: $e");
+                child: SfPdfViewer.file(
+                  File(urlPDFPath),
+                  controller: _pdfViewerController, // Use the controller
+                  onDocumentLoaded: (PdfDocumentLoadedDetails details) {
+                    // Optional: Handle document loaded event
+                    print("PDF loaded: ${details.document.pages.count} pages");
                   },
-                  onRender: (pages) {
-                    setState(() {
-                      _totalPages = pages!;
-                      pdfReady = true;
-                    });
-                  },
-                  onViewCreated: (PDFViewController vc) {
-                    setState(() {
-                      _pdfViewController = vc;
-                    });
-                  },
-                  onPageChanged: (page, total) {
-                    setState(() {
-                      _currentPage = page!;
-                    });
-                  },
-                  onPageError: (page, e) {
-                    print("Page Error: $e");
+                  onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
+                    // Optional: Handle document load failure
+                    print("Failed to load PDF: ${details.error}");
                   },
                 ),
               )

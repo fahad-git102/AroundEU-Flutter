@@ -61,7 +61,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool? pageStarted = true;
   List<FileWithType>? pickedFiles;
   bool? isLoading = false;
-  bool? showSendButton = false;
+  // bool? showSendButton = false;
   GlobalKey<FlutterMentionsState> key = GlobalKey<FlutterMentionsState>();
   bool? isRecording = false;
   // bool? showEmojis = false;
@@ -300,93 +300,85 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).viewInsets.bottom,
                     ),
-                    child: GestureDetector(
-                      onTap: () {
-                        // showEmojis = false;
+                    child: mentionsData!=null?BottomWriteWidget(
+                      mentionsKey: key,
+                      onReplyCancel: (){
                         setState(() {
-                          showSendButton = false;
+                          replyMessage = null;
                         });
-                        },
-                      child: mentionsData!=null?BottomWriteWidget(
-                        mentionsKey: key,
-                        onReplyCancel: (){
+                      },
+                      focusNode: focusNode,
+                      replyMessage: replyMessage,
+                      isRecording: isRecording,
+                      // showSendButton: showSendButton,
+                      mentionsData: mentionsData,
+                      pointerDownEvent: (details) {
+                        setState(() {
+                          isRecording = true;
+                        });
+                        key.currentState?.controller?.text =
+                            'Recording...'.tr();
+                        _startRecording();
+                      },
+                      pointerUpEvent: (details) {
+                        setState(() {
+                          isRecording = false;
+                        });
+                        key.currentState?.controller?.clear();
+                        _stopRecording();
+                      },
+                      // onTextFieldChanged: (val) {
+                      //   if (val.isNotEmpty && isRecording == false) {
+                      //     setState(() {
+                      //       showSendButton = true;
+                      //     });
+                      //   } else {
+                      //     setState(() {
+                      //       showSendButton = false;
+                      //     });
+                      //   }
+                      // },
+                      onCameraTap: () async {
+                        XFile? pickedImage = await Utilities.pickImage(
+                            imageSource: 'camera');
+                        if (pickedImage != null) {
+                          FileWithType fileWithType = FileWithType(
+                              file: File(pickedImage.path ?? ''),
+                              fileType: MessageType.image);
+                          pickedFiles ??= [];
+                          pickedFiles?.add(fileWithType);
+                          showBottomSheetWithFiles();
                           setState(() {
-                            replyMessage = null;
-                          });
-                        },
-                        focusNode: focusNode,
-                        replyMessage: replyMessage,
-                        isRecording: isRecording,
-                        showSendButton: showSendButton,
-                        mentionsData: mentionsData,
-                        pointerDownEvent: (details) {
-                          setState(() {
-                            isRecording = true;
-                          });
-                          key.currentState?.controller?.text =
-                              'Recording...'.tr();
-                          _startRecording();
-                        },
-                        pointerUpEvent: (details) {
-                          setState(() {
-                            isRecording = false;
-                          });
-                          key.currentState?.controller?.clear();
-                          _stopRecording();
-                        },
-                        onTextFieldChanged: (val) {
-                          if (val.isNotEmpty && isRecording == false) {
-                            setState(() {
-                              showSendButton = true;
-                            });
-                          } else {
-                            setState(() {
-                              showSendButton = false;
-                            });
-                          }
-                        },
-                        onCameraTap: () async {
-                          XFile? pickedImage = await Utilities.pickImage(
-                              imageSource: 'camera');
-                          if (pickedImage != null) {
-                            FileWithType fileWithType = FileWithType(
-                                file: File(pickedImage.path ?? ''),
-                                fileType: MessageType.image);
-                            pickedFiles ??= [];
-                            pickedFiles?.add(fileWithType);
-                            showBottomSheetWithFiles();
-                            setState(() {
 
+                          });
+                        }
+                      },
+                      onAttachmentTap: () {
+                        showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (BuildContext context) {
+                              return PickMediaBottomsheet(
+                                onMediaTap: () {
+                                  Navigator.pop(context);
+                                  pickMultipleImagesFromGallery();
+                                },
+                                onDocumentTap: () {
+                                  Navigator.pop(context);
+                                  pickFiles();
+                                },
+                                onLocationTap: () {
+                                  Navigator.pop(context);
+                                  sendLocationMessage();
+                                },
+                              );
                             });
-                          }
-                        },
-                        onAttachmentTap: () {
-                          showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (BuildContext context) {
-                                return PickMediaBottomsheet(
-                                  onMediaTap: () {
-                                    Navigator.pop(context);
-                                    pickMultipleImagesFromGallery();
-                                  },
-                                  onDocumentTap: () {
-                                    Navigator.pop(context);
-                                    pickFiles();
-                                  },
-                                  onLocationTap: () {
-                                    Navigator.pop(context);
-                                    sendLocationMessage();
-                                  },
-                                );
-                              });
-                        },
-                        onSendTap: () {
-                          sendTextMessage(groupId ?? '');
-                        },
-                      ):Container()
-                    ),
+                      },
+                      onSendTap: () {
+                        sendTextMessage(groupId ?? '');
+                      },
+                    ):Container(),
                   ),
                 ],
               ),
