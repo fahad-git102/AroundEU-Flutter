@@ -327,17 +327,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         key.currentState?.controller?.clear();
                         _stopRecording();
                       },
-                      // onTextFieldChanged: (val) {
-                      //   if (val.isNotEmpty && isRecording == false) {
-                      //     setState(() {
-                      //       showSendButton = true;
-                      //     });
-                      //   } else {
-                      //     setState(() {
-                      //       showSendButton = false;
-                      //     });
-                      //   }
-                      // },
                       onCameraTap: () async {
                         XFile? pickedImage = await Utilities.pickImage(
                             imageSource: 'camera');

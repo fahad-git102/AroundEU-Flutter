@@ -111,7 +111,8 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> with AutomaticKee
                                     widget.focusNode?.requestFocus();
                                   },
                                   minLines: 1,
-                                  textInputAction: TextInputAction.done,
+                                  textInputAction: TextInputAction.newline,
+                                  keyboardType: TextInputType.multiline,
                                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                       color: widget.isRecording == true
                                           ? AppColors.green

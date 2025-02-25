@@ -1,15 +1,11 @@
 
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
-import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:media_scanner/media_scanner.dart';
+// import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 import '../../core/app_colors.dart';
 import '../../core/size_config.dart';
@@ -80,7 +76,61 @@ class _FullImageState extends State<FullImageScreen>{
       ),
     );
   }
+  Future<void> _downloadImage(BuildContext context) async {
+    try {
+      Utilities().showCustomToast(
+        isError: false,
+        message: "Downloading started...",
+        title: "Downloading started",
+      );
 
+      // // ✅ Request Storage Permission for Android < 10
+      // if (Platform.isAndroid) {
+      //   var status = await Permission.storage.request();
+      //   if (!status.isGranted) {
+      //     Utilities().showCustomToast(
+      //       isError: true,
+      //       message: "Storage permission denied",
+      //       title: "Error",
+      //     );
+      //     return;
+      //   }
+      // }
+
+      // ✅ Fetch image bytes
+      Response response = await Dio().get(
+        widget.imageUrl,
+        options: Options(responseType: ResponseType.bytes),
+      );
+
+      Uint8List bytes = Uint8List.fromList(response.data);
+
+      // ✅ Get Downloads directory
+      Directory? directory;
+      if (Platform.isAndroid) {
+        directory = Directory('/storage/emulated/0/Download'); // Android Downloads folder
+      } else {
+        directory = await getApplicationDocumentsDirectory(); // iOS default directory
+      }
+
+      // ✅ Save file in Downloads
+      String filePath = '${directory.path}/downloaded_image.jpg';
+      File file = File(filePath);
+      await file.writeAsBytes(bytes);
+      Utilities().showCustomToast(
+        isError: false,
+        message: "Download completed! Check your Downloads folder.",
+        title: "Success",
+      );
+
+    } catch (e) {
+      Utilities().showCustomToast(
+        isError: true,
+        message: "Failed to download image",
+        title: "Error",
+      );
+    }
+  }
   // Future<void> _downloadImage(BuildContext context) async {
   //   try {
   //     // Show toast before download
@@ -124,44 +174,44 @@ class _FullImageState extends State<FullImageScreen>{
   //     );
   //   }
   // }
-  Future<void> _downloadImage(BuildContext context) async {
-    try {
-      // Show toast before download
-      Utilities().showCustomToast(
-        isError: false,
-        message: "Downloading started...",
-        title: "Downloading started",
-      );
-
-      // Download image as bytes
-      Response response = await Dio().get(
-        widget.imageUrl,
-        options: Options(responseType: ResponseType.bytes),
-      );
-
-      Uint8List bytes = Uint8List.fromList(response.data);
-
-      // Save the image to the gallery
-      final result = await ImageGallerySaver.saveImage(bytes, quality: 100, name: "downloaded_image");
-
-      if (result['isSuccess']) {
-        // Show success message
-        Utilities().showCustomToast(
-          isError: false,
-          message: "Download completed! Check your gallery.",
-          title: "Success",
-        );
-      } else {
-        throw Exception('Failed to save image to gallery');
-      }
-
-    } catch (e) {
-      // Handle error
-      Utilities().showCustomToast(
-        isError: true,
-        message: "Failed to download image",
-        title: "Error",
-      );
-    }
-  }
+  // Future<void> _downloadImage(BuildContext context) async {
+  //   try {
+  //     // Show toast before download
+  //     Utilities().showCustomToast(
+  //       isError: false,
+  //       message: "Downloading started...",
+  //       title: "Downloading started",
+  //     );
+  //
+  //     // Download image as bytes
+  //     Response response = await Dio().get(
+  //       widget.imageUrl,
+  //       options: Options(responseType: ResponseType.bytes),
+  //     );
+  //
+  //     Uint8List bytes = Uint8List.fromList(response.data);
+  //
+  //     // Save the image to the gallery
+  //     final result = await ImageGallerySaver.saveImage(bytes, quality: 100, name: "downloaded_image");
+  //
+  //     if (result['isSuccess']) {
+  //       // Show success message
+  //       Utilities().showCustomToast(
+  //         isError: false,
+  //         message: "Download completed! Check your gallery.",
+  //         title: "Success",
+  //       );
+  //     } else {
+  //       throw Exception('Failed to save image to gallery');
+  //     }
+  //
+  //   } catch (e) {
+  //     // Handle error
+  //     Utilities().showCustomToast(
+  //       isError: true,
+  //       message: "Failed to download image",
+  //       title: "Error",
+  //     );
+  //   }
+  // }
 }
