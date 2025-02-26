@@ -54,10 +54,8 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> with AutomaticKee
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    widget.focusNode?.addListener(() {
-      print("FocusNode isFocused: ${widget.focusNode?.hasFocus}");
-    });
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -68,7 +66,7 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> with AutomaticKee
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(left: 8.sp, right: 6.sp, bottom: 10.sp, top: 10.sp),
+                    padding: EdgeInsets.only(left: 8.sp, right: 6.sp, top: 10.sp, bottom: 10.sp),
                     child: Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
@@ -106,10 +104,10 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> with AutomaticKee
                                   key: widget.mentionsKey,
                                   suggestionPosition: SuggestionPosition.Top,
                                   maxLines: 5,
-                                  focusNode: widget.focusNode,
-                                  onTap: (){
-                                    widget.focusNode?.requestFocus();
-                                  },
+                                  // focusNode: widget.focusNode,
+                                  // onTap: (){
+                                  //   widget.focusNode?.requestFocus();
+                                  // },
                                   minLines: 1,
                                   textInputAction: TextInputAction.newline,
                                   keyboardType: TextInputType.multiline,
@@ -133,8 +131,8 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> with AutomaticKee
                                             fontSize: 12.0.sp),
                                     hintText: "Message".tr(),
                                   ),
-                                  onSubmitted: (String value) async {},
-                                  onChanged: widget.onTextFieldChanged,
+                                  // onSubmitted: (String value) async {},
+                                  // onChanged: widget.onTextFieldChanged,
                                   mentions: [
                                     Mention(
                                       trigger: "@",
@@ -159,37 +157,30 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> with AutomaticKee
                                   ],
                                 ),
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.attach_file),
-                                    onPressed: widget.onAttachmentTap,
-                                  ),
-
-                                  IconButton(
-                                    icon: const Icon(Icons.camera_alt_outlined),
-                                    onPressed: widget.onCameraTap,
-                                  ),
-                                  Listener(
-                                    onPointerUp: widget.pointerUpEvent,
-                                    onPointerDown: widget.pointerDownEvent,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(3.0.sp),
-                                      child: Icon(
-                                        Icons.mic,
-                                        size: 20.sp,
-                                        color: widget.isRecording == true
-                                            ? Colors.red
-                                            : Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 5.sp,)
-                                ],
+                              IconButton(
+                                icon: const Icon(Icons.attach_file),
+                                onPressed: widget.onAttachmentTap,
                               ),
+
+                              IconButton(
+                                icon: const Icon(Icons.camera_alt_outlined),
+                                onPressed: widget.onCameraTap,
+                              ),
+                              Listener(
+                                onPointerUp: widget.pointerUpEvent,
+                                onPointerDown: widget.pointerDownEvent,
+                                child: Padding(
+                                  padding: EdgeInsets.all(3.0.sp),
+                                  child: Icon(
+                                    Icons.mic,
+                                    size: 20.sp,
+                                    color: widget.isRecording == true
+                                        ? Colors.red
+                                        : Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 5.sp,),
                             ],
                           ),
                         ],
@@ -207,7 +198,7 @@ class _BottomWriteWidgetState extends State<BottomWriteWidget> with AutomaticKee
                   shape: BoxShape.circle,
                   color: Theme.of(context).primaryColor,
                 ),
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(10.sp),
                 child: Center(
                   child: Icon(
                     Icons.send,
