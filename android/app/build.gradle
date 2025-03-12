@@ -46,8 +46,8 @@ android {
         applicationId "com.fahadandroid.groupchat"
         minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
-        versionCode 22
-        versionName "1.20"
+        versionCode 23
+        versionName "1.21"
     }
     signingConfigs {
         release {

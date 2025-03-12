@@ -141,6 +141,8 @@ class _UserProfileScreen extends ConsumerState<UserProfileScreen>{
                       SizedBox(height: 10.sp,),
                       titleValueItem('DATE OF BIRTH'.tr(), user?.dob??''),
                       SizedBox(height: 10.sp,),
+                      titleValueItem('Phone Number'.tr(), user?.phone??''),
+                      SizedBox(height: 10.sp,),
                       titleValueItem('WORKS AT'.tr(), company?.fullLegalName??company?.legalRepresentative??'Not Found'.tr()),
                       companyTimeScheduled != null
                           ? SizedBox(

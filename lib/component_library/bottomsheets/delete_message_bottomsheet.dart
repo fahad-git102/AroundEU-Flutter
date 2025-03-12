@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:groupchat/component_library/text_widgets/extra_large_medium_bold_text.dart';
+import 'package:groupchat/core/utilities_class.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_colors.dart';
@@ -12,12 +14,16 @@ import '../text_widgets/small_light_text.dart';
 
 class DeleteMessageBottomsheet extends StatefulWidget {
   final Function()? onDeleteForEveryoneTap;
-  final Function()? onCancelTap;
+  final Function()? onCancelTap, onCopyPaste;
   final bool? showEveryoneButton;
-  const DeleteMessageBottomsheet({super.key, this.showEveryoneButton= false, this.onCancelTap, this.onDeleteForEveryoneTap});
+  final String? textToCopy;
+
+  const DeleteMessageBottomsheet(
+      {super.key, this.showEveryoneButton = false, this.onCancelTap, this.onDeleteForEveryoneTap, this.textToCopy, this.onCopyPaste});
 
   @override
-  State<DeleteMessageBottomsheet> createState() => _DeleteMessageBottomsheetState();
+  State<DeleteMessageBottomsheet> createState() =>
+      _DeleteMessageBottomsheetState();
 }
 
 class _DeleteMessageBottomsheetState extends State<DeleteMessageBottomsheet> {
@@ -62,7 +68,8 @@ class _DeleteMessageBottomsheetState extends State<DeleteMessageBottomsheet> {
                     ),
                     SmallLightText(
                       textAlign: TextAlign.center,
-                      title: 'Are you sure you want to delete this message? Please confirm that this action cannot be undone.'.tr(),
+                      title: 'Are you sure you want to delete this message? Please confirm that this action cannot be undone.'
+                          .tr(),
                       textColor: AppColors.fadedTextColor,
                     ),
                     SizedBox(
@@ -95,7 +102,7 @@ class _DeleteMessageBottomsheetState extends State<DeleteMessageBottomsheet> {
                 child: Align(
                     alignment: Alignment.topRight,
                     child: InkWell(
-                      onTap: widget.onCancelTap ??  (){
+                      onTap: widget.onCancelTap ?? () {
                         Navigator.pop(context);
                       },
                       child: Padding(
@@ -109,6 +116,26 @@ class _DeleteMessageBottomsheetState extends State<DeleteMessageBottomsheet> {
                       ),
                     )),
               ),
+              Padding(padding: EdgeInsets.only(top: 15.sp, left: 15.sp), child:
+              Align(
+                alignment: Alignment.topLeft,
+                child: InkWell(
+                  onTap: widget.onCopyPaste,
+                  child: widget.textToCopy != null &&
+                      widget.textToCopy!.isNotEmpty ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(Icons.copy, color: AppColors.lightBlack,),
+                      SizedBox(width: 5.sp,),
+                      SmallLightText(
+                        title: 'Copy text'.tr(),
+                        textColor: AppColors.lightBlack,
+                      )
+                    ],
+                  ) : Container(),
+                ),
+              ),)
             ],
           ),
         );
