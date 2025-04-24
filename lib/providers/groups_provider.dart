@@ -12,12 +12,12 @@ import '../repositories/groups_repository.dart';
 final groupsProvider = ChangeNotifierProvider((ref) => GroupsProvider());
 
 class GroupsProvider extends ChangeNotifier {
-  List<GroupModel>? currentBLGroupsList;
+  List<GroupModel?>? currentBLGroupsList;
   List<AppUser>? usersCache;
 
   void listenToGroupById(String groupId){
     if(currentBLGroupsList!=null){
-      int? existingIndex = currentBLGroupsList?.indexWhere((group) => group.key == groupId);
+      int? existingIndex = currentBLGroupsList?.indexWhere((group) => group?.key == groupId);
       if(existingIndex!=null && existingIndex>=0){
         return;
       }
@@ -25,7 +25,7 @@ class GroupsProvider extends ChangeNotifier {
     GroupsRepository().getGroupStreamById(groupId: groupId).listen((groupModel){
       if(groupModel!=null){
         groupModel.approvedMembers = groupModel.approvedMembers?.toSet().toList();
-        int? existingIndex = currentBLGroupsList?.indexWhere((group) => group.key == groupModel.key);
+        int? existingIndex = currentBLGroupsList?.indexWhere((group) => group?.key == groupModel.key);
         groupModel.messages?.sort((a, b) => a.timeStamp??0.compareTo(b.timeStamp??0));
         if (existingIndex!=null&&existingIndex >= 0) {
           currentBLGroupsList?[existingIndex] = groupModel;
@@ -34,9 +34,9 @@ class GroupsProvider extends ChangeNotifier {
           currentBLGroupsList?.add(groupModel);
         }
         if(currentBLGroupsList!=null && currentBLGroupsList?.isNotEmpty==true){
-          for(GroupModel group in currentBLGroupsList??[]){
-            if(group.messages!=null && group.messages?.isNotEmpty==true){
-              group.messages?.sort((a, b) {
+          for(GroupModel? group in currentBLGroupsList??[]){
+            if(group?.messages!=null && group?.messages?.isNotEmpty==true){
+              group?.messages?.sort((a, b) {
                 var aTimeStamp = a.timeStamp??0;
                 var bTimeStamp = b.timeStamp??0;
                 return aTimeStamp.compareTo(bTimeStamp);
@@ -53,7 +53,7 @@ class GroupsProvider extends ChangeNotifier {
     GroupsRepository().getGroupsStream(businessKey: businessKey).listen((groupsData) {
       if(groupsData.entries.isNotEmpty == true){
         for (var entry in groupsData.entries) {
-          int? existingIndex = currentBLGroupsList?.indexWhere((group) => group.key == entry.key);
+          int? existingIndex = currentBLGroupsList?.indexWhere((group) => group?.key == entry.key);
 
           List<MessageModel> sortedMessages = List<MessageModel>.from(entry.value.messages??[]);
           sortedMessages.sort((a, b) => a.timeStamp??0.compareTo(b.timeStamp??0));
@@ -86,10 +86,10 @@ class GroupsProvider extends ChangeNotifier {
         }
 
         if(currentBLGroupsList!=null && currentBLGroupsList?.isNotEmpty==true){
-          currentBLGroupsList?.removeWhere((group) => !groupsData.containsKey(group.key));
-          for(GroupModel group in currentBLGroupsList??[]){
-            if(group.messages!=null && group.messages?.isNotEmpty==true){
-              group.messages?.sort((a, b) {
+          currentBLGroupsList?.removeWhere((group) => !groupsData.containsKey(group?.key));
+          for(GroupModel? group in currentBLGroupsList??[]){
+            if(group?.messages!=null && group?.messages?.isNotEmpty==true){
+              group?.messages?.sort((a, b) {
                 var aTimeStamp = a.timeStamp??0;
                 var bTimeStamp = b.timeStamp??0;
                 return aTimeStamp.compareTo(bTimeStamp);
@@ -104,29 +104,29 @@ class GroupsProvider extends ChangeNotifier {
     });
   }
 
-  incrementUnreadCountsForGroup(BuildContext context, GroupModel groupModel, List<AppUser> admins){
-    for (String? item in groupModel.approvedMembers??[]){
+  incrementUnreadCountsForGroup(BuildContext context, GroupModel? groupModel, List<AppUser> admins){
+    for (String? item in groupModel?.approvedMembers??[]){
       if(item != Auth().currentUser?.uid){
-        if (groupModel.unReadCounts?.containsKey(item)==true) {
-          groupModel.unReadCounts?[item] = (groupModel.unReadCounts?[item] as int) + 1;
+        if (groupModel?.unReadCounts?.containsKey(item)==true) {
+          groupModel?.unReadCounts?[item] = (groupModel.unReadCounts?[item] as int) + 1;
         } else {
-          groupModel.unReadCounts?[item] = 1;
+          groupModel?.unReadCounts?[item] = 1;
         }
       }
     }
 
     for(AppUser admin in admins){
       if(admin.uid != Auth().currentUser?.uid){
-        if (groupModel.unReadCounts?.containsKey(admin.uid)==true) {
-          groupModel.unReadCounts?[admin.uid] = (groupModel.unReadCounts?[admin.uid] as int) + 1;
+        if (groupModel?.unReadCounts?.containsKey(admin.uid)==true) {
+          groupModel?.unReadCounts?[admin.uid] = (groupModel?.unReadCounts?[admin.uid] as int) + 1;
         } else {
-          groupModel.unReadCounts?[admin.uid] = 1;
+          groupModel?.unReadCounts?[admin.uid] = 1;
         }
       }
     }
-    if (groupModel.unReadCounts != null) {
-      Map<String, dynamic> map = groupModel.unReadCounts!.cast<String, dynamic>();
-      FirebaseCrud().updateData(key: '$groups/${groupModel.key}/unReadCounts', context: context, data: map, onComplete: (){
+    if (groupModel?.unReadCounts != null) {
+      Map<String, dynamic> map = groupModel?.unReadCounts!.cast<String, dynamic>()??{};
+      FirebaseCrud().updateData(key: '$groups/${groupModel?.key}/unReadCounts', context: context, data: map, onComplete: (){
         print('counts increased...');
       });
     }

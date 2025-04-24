@@ -113,7 +113,7 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                                             arguments: {
                                               'groupId': groupsPro
                                                   .currentBLGroupsList?[index]
-                                                  .key
+                                                  ?.key
                                             });
                                       } else if (ref
                                                   .read(appUserProvider)
@@ -121,7 +121,7 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                                                   ?.userType ==
                                               coordinator &&
                                           groupsPro.currentBLGroupsList?[index]
-                                                  .approvedMembers
+                                                  ?.approvedMembers
                                                   ?.contains(Auth()
                                                       .currentUser
                                                       ?.uid) ==
@@ -131,7 +131,7 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                                             arguments: {
                                               'groupId': groupsPro
                                                   .currentBLGroupsList?[index]
-                                                  .key
+                                                  ?.key
                                             });
                                       }
                                     },
@@ -139,13 +139,13 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                                       onDeleteTap: () {
                                         deleteGroup(groupsPro
                                                 .currentBLGroupsList?[index]
-                                                .key ??
+                                                ?.key ??
                                             '');
                                       },
                                       onJoinTap: () {
                                         List<String?>? list = groupsPro
                                                 .currentBLGroupsList?[index]
-                                                .approvedMembers ??
+                                                ?.approvedMembers ??
                                             [];
                                         list.add(Auth().currentUser?.uid);
                                         var map = {'approvedMembers': list};
@@ -153,7 +153,7 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                                             map,
                                             groupsPro
                                                     .currentBLGroupsList?[index]
-                                                    .key ??
+                                                    ?.key ??
                                                 '',
                                             context, () {
                                           Navigator.pushNamed(
@@ -161,7 +161,7 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                                               arguments: {
                                                 'groupId': groupsPro
                                                     .currentBLGroupsList?[index]
-                                                    .key
+                                                    ?.key
                                               });
                                         }, (p0) {
                                           Utilities().showCustomToast(
@@ -175,42 +175,42 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
                                                   ?.userType ==
                                               coordinator &&
                                           (groupsPro.currentBLGroupsList?[index]
-                                                      .approvedMembers ==
+                                                      ?.approvedMembers ==
                                                   null ||
                                               groupsPro
                                                       .currentBLGroupsList?[
                                                           index]
-                                                      .approvedMembers
+                                                      ?.approvedMembers
                                                       ?.contains(Auth()
                                                           .currentUser
                                                           ?.uid) ==
                                                   false),
                                       title: groupsPro
-                                          .currentBLGroupsList?[index].name,
+                                          .currentBLGroupsList?[index]?.name,
                                       subTile: Utilities().parseHtmlToPlainText(
                                           fetchLastMessage(groupsPro
                                               .currentBLGroupsList?[index])),
                                       imageUrl: groupsPro
                                           .currentBLGroupsList?[index]
-                                          .groupImage,
+                                          ?.groupImage,
                                       messagesCount: fetchUnreadCount(groupsPro
                                               .currentBLGroupsList?[index]
-                                              .unReadCounts ??
+                                              ?.unReadCounts ??
                                           {}),
                                       lastMsgTime: groupsPro
                                                       .currentBLGroupsList?[
                                                           index]
-                                                      .messages !=
+                                                      ?.messages !=
                                                   null &&
                                               groupsPro
                                                       .currentBLGroupsList?[
                                                           index]
-                                                      .messages
+                                                      ?.messages
                                                       ?.isNotEmpty ==
                                                   true
                                           ? groupsPro
                                                   .currentBLGroupsList![index]
-                                                  .messages
+                                                  ?.messages
                                                   ?.last
                                                   .timeStamp ??
                                               0

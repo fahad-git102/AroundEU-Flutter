@@ -45,16 +45,16 @@ import '../../data/users_model.dart';
 import '../../firebase/firebase_crud.dart';
 import '../../providers/groups_provider.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatScreen extends ConsumerStatefulWidget {
   static const route = 'ChatScreen';
 
   const ChatScreen({super.key});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  ConsumerState createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends ConsumerState<ChatScreen> {
   List<Map<String, dynamic>>? mentionsData;
   String? groupId;
   bool? pageStarted = true;
@@ -91,15 +91,26 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  // @override
+  // void initState() {
+  //   _initRecorder();
+  //   super.initState();
+  // }
+
   @override
   void initState() {
-    _initRecorder();
     super.initState();
+    _initRecorder();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ?? {};
+      initChat(ref, args);
+    });
   }
 
   initChat(WidgetRef ref, Map<String, dynamic> args) {
     var groupsPro = ref.watch(groupsProvider);
-    if (args != null && pageStarted == true) {
+    if (pageStarted == true) {
       pageStarted = false;
       groupId = args['groupId'] ?? '';
       GroupsRepository().readAllMessages(groupId ?? '');
@@ -111,7 +122,7 @@ class _ChatScreenState extends State<ChatScreen> {
       groupsPro.listenToGroupById(groupId ?? '');
     } else {
       if (groupsPro.currentBLGroupsList
-              ?.firstWhere((element) => element.key == groupId) ==
+              ?.firstWhere((element) => element?.key == groupId) ==
           null) {
         Utilities().showErrorMessage(context,
             barrierDismissible: false,
@@ -126,10 +137,10 @@ class _ChatScreenState extends State<ChatScreen> {
     }
     if (currentBusinessList == null) {
       if (groupsPro.currentBLGroupsList
-              ?.firstWhere((element) => element.key == groupId) !=
+              ?.firstWhere((element) => element?.key == groupId) !=
           null) {
         GroupModel? groupModel = groupsPro.currentBLGroupsList
-            ?.firstWhere((element) => element.key == groupId);
+            ?.firstWhere((element) => element?.key == groupId);
         var businessPro = ref.watch(businessListProvider);
         businessPro.listenToBusinessList();
         for (BusinessList item in businessPro.businessLists ?? []) {
@@ -148,302 +159,302 @@ class _ChatScreenState extends State<ChatScreen> {
     final args = ModalRoute.of(context)!.settings.arguments != null
         ? ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>
         : null;
-    return Consumer(builder: (ctx, ref, child) {
-      var groupsPro = ref.watch(groupsProvider);
-      initChat(ref, args ?? {});
-      return Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: SafeArea(
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(Images.chatBackground),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      width: SizeConfig.screenWidth,
-                      color: Colors.transparent,
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            left: 13.sp,
-                            right: 13.sp,
-                            top: 18.sp,
-                            bottom: 15.sp),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            BackIconButton(
-                              size: 24.0.sp,
-                              onTap: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            SizedBox(
-                              width: 6.0.sp,
-                            ),
-                            CircleImageAvatar(
-                              imagePath: groupsPro.currentBLGroupsList
-                                      ?.firstWhere(
-                                          (element) => element.key == groupId)
-                                      .groupImage ??
-                                  '',
-                              size: 30.sp,
-                            ),
-                            SizedBox(
-                              width: 10.0.sp,
-                            ),
-                            Expanded(
-                              child: ExtraMediumText(
-                                title: groupsPro.currentBLGroupsList
-                                            ?.firstWhere((element) =>
-                                                element.key == groupId) !=
-                                        null
-                                    ? groupsPro.currentBLGroupsList
-                                        ?.firstWhere(
-                                            (element) => element.key == groupId)
-                                        .name
-                                    : ''.tr(),
-                                textColor: AppColors.lightBlack,
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (ctx) => GroupInfoDialog(
-                                          groupModel: groupsPro
-                                              .currentBLGroupsList
-                                              ?.firstWhere((element) =>
-                                                  element.key == groupId),
-                                          onMembersTap: () {
-                                            showDialog(
-                                                context: context,
-                                                builder: (ctx) =>
-                                                    GroupMembersDialog(
-                                                      userIds: groupsPro
-                                                              .currentBLGroupsList
-                                                              ?.firstWhere(
-                                                                  (element) =>
-                                                                      element
-                                                                          .key ==
-                                                                      groupId)
-                                                              .approvedMembers ??
-                                                          [],
-                                                    ));
-                                          },
-                                        ));
-                              },
-                              child: Padding(
-                                  padding: EdgeInsets.all(4.sp),
-                                  child: Icon(
-                                    Icons.info_outline,
-                                    color: AppColors.lightBlack,
-                                  )),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: ScrollablePositionedList.builder(
-                        reverse: true,
-                        // controller: _scrollController,
-                        itemScrollController: itemScrollController,
-                        itemPositionsListener: itemPositionsListener,
-                        itemCount: groupsPro.currentBLGroupsList
-                                ?.firstWhere(
-                                    (element) => element.key == groupId)
-                                .messages
-                                ?.length ??
-                            0,
-                        padding: EdgeInsets.symmetric(horizontal: 13.sp),
-                        physics: const BouncingScrollPhysics(),
-                        itemBuilder: (BuildContext context, int index) {
-                          List<MessageModel>? reversedMessages = groupsPro
-                              .currentBLGroupsList
-                              ?.firstWhere((element) => element.key == groupId)
-                              .messages
-                              ?.reversed
-                              .toList();
-                          MessageModel? messageModel = reversedMessages?[index];
+    var groupsPro = ref.watch(groupsProvider);
+   return Scaffold(
+     resizeToAvoidBottomInset: false,
+     body: SafeArea(
+       child: Stack(
+         children: [
+           Container(
+             decoration: BoxDecoration(
+               image: DecorationImage(
+                 image: AssetImage(Images.chatBackground),
+                 fit: BoxFit.cover,
+               ),
+             ),
+             child: Column(
+               children: [
+                 Container(
+                   width: SizeConfig.screenWidth,
+                   color: Colors.transparent,
+                   child: Padding(
+                     padding: EdgeInsets.only(
+                         left: 13.sp,
+                         right: 13.sp,
+                         top: 18.sp,
+                         bottom: 15.sp),
+                     child: Row(
+                       crossAxisAlignment: CrossAxisAlignment.center,
+                       children: [
+                         BackIconButton(
+                           size: 24.0.sp,
+                           onTap: () {
+                             Navigator.of(context).pop();
+                           },
+                         ),
+                         SizedBox(
+                           width: 6.0.sp,
+                         ),
+                         // CircleImageAvatar(
+                         //   imagePath: groupsPro.currentBLGroupsList
+                         //       ?.firstWhere(
+                         //           (element) => element.key == groupId)
+                         //       .groupImage ??
+                         //       '',
+                         //   size: 30.sp,
+                         // ),
+                         CircleImageAvatar(
+                           imagePath: groupsPro.currentBLGroupsList
+                               ?.firstWhere(
+                                 (element) => element?.key == groupId,
+                             orElse: () => null,
+                           )
+                               ?.groupImage ?? '',
+                           size: 30.sp,
+                         ),
 
-                          return GestureDetector(
-                            onLongPress: () {
-                              if (messageModel?.uid ==
-                                  Auth().currentUser?.uid) {
-                                showDeleteMessageBottomSheet(
-                                    context, messageModel!);
-                              } else {
-                                Clipboard.setData(ClipboardData(
-                                    text: messageModel?.message ?? ''));
-                                Utilities().showCustomToast(
-                                    message: 'Message copied!'.tr(),
-                                    isError: false);
-                              }
-                            },
-                            child: messageModel?.uid == Auth().currentUser?.uid
-                                ? SenderMessageWidget(
-                                    messageModel: messageModel,
-                                    replyMessage: messageModel?.replyId != null
-                                        ? reversedMessages
-                                                    ?.where((message) =>
-                                                        message.key ==
-                                                        messageModel?.replyId)
-                                                    .isNotEmpty ==
-                                                true
-                                            ? reversedMessages?.firstWhere(
-                                                (message) =>
-                                                    message.key ==
-                                                    messageModel?.replyId)
-                                            : null
-                                        : null,
-                                    onSwipeMessage: (message) {
-                                      replyToMessage(message);
-                                    },
-                                    replyWidgetTap: () {
-                                      if (messageModel?.replyId != null) {
-                                        scrollToReplyMessage(
-                                            messageModel?.replyId ?? '',
-                                            reversedMessages ?? []);
-                                      }
-                                    },
-                                  )
-                                : FutureBuilder<AppUser?>(
-                                    future:
-                                        fetchUser(messageModel?.uid ?? '', ref),
-                                    builder: (context, snapshot) {
-                                      var senderName = '';
-                                      if (snapshot.hasData) {
-                                        senderName =
-                                            '${snapshot.data!.firstName ?? ''} ${snapshot.data!.surName ?? ''}';
-                                      }
-                                      return ReceiverMessageWidget(
-                                        senderName: senderName,
-                                        messageModel: messageModel,
-                                        replyMessage: messageModel?.replyId !=
-                                                null
-                                            ? reversedMessages
-                                                        ?.where((message) =>
-                                                            message.key ==
-                                                            messageModel
-                                                                ?.replyId)
-                                                        .isNotEmpty ==
-                                                    true
-                                                ? reversedMessages?.firstWhere(
-                                                    (message) =>
-                                                        message.key ==
-                                                        messageModel?.replyId)
-                                                : null
-                                            : null,
-                                        onSwipeMessage: (message) {
-                                          replyToMessage(message);
-                                        },
-                                        replyWidgetTap: () {
-                                          if (messageModel?.replyId != null) {
-                                            scrollToReplyMessage(
-                                                messageModel?.replyId ?? '',
-                                                reversedMessages ?? []);
-                                          }
-                                        },
-                                      );
-                                    },
-                                  ),
-                          );
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom,
-                      ),
-                      child: mentionsData != null
-                          ? BottomWriteWidget(
-                              mentionsKey: key,
-                              onReplyCancel: () {
-                                setState(() {
-                                  print('update 9');
-                                  replyMessage = null;
-                                });
-                              },
-                              focusNode: focusNode,
-                              replyMessage: replyMessage,
-                              isRecording: isRecording,
-                              // showSendButton: showSendButton,
-                              mentionsData: mentionsData,
-                              pointerDownEvent: (details) {
-                                setState(() {
-                                  isRecording = true;
-                                });
-                                key.currentState?.controller?.text =
-                                    'Recording...'.tr();
-                                _startRecording();
-                              },
-                              pointerUpEvent: (details) {
-                                setState(() {
-                                  isRecording = false;
-                                });
-                                key.currentState?.controller?.clear();
-                                _stopRecording(ref);
-                              },
-                              onCameraTap: () async {
-                                XFile? pickedImage = await Utilities.pickImage(
-                                    imageSource: 'camera');
-                                if (pickedImage != null) {
-                                  FileWithType fileWithType = FileWithType(
-                                      file: File(pickedImage.path),
-                                      fileType: MessageType.image);
-                                  pickedFiles ??= [];
-                                  pickedFiles?.add(fileWithType);
-                                  showBottomSheetWithFiles(ref);
-                                  setState(() {
-                                    print('update 12');
-                                  });
-                                }
-                              },
-                              onAttachmentTap: () {
-                                showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    backgroundColor: Colors.transparent,
-                                    builder: (BuildContext context) {
-                                      return PickMediaBottomsheet(
-                                        onMediaTap: () {
-                                          Navigator.pop(context);
-                                          pickMultipleImagesFromGallery(ref);
-                                        },
-                                        onDocumentTap: () {
-                                          Navigator.pop(context);
-                                          pickFiles(ref);
-                                        },
-                                        onLocationTap: () {
-                                          Navigator.pop(context);
-                                          sendLocationMessage(ref);
-                                        },
-                                      );
-                                    });
-                              },
-                              onSendTap: () {
-                                sendTextMessage(groupId ?? '', ref);
-                              },
-                            )
-                          : Container(),
-                    ),
-                  ],
-                ),
-              ),
-              FullScreenLoader(
-                loading: isLoading,
-              )
-            ],
-          ),
-        ),
-      );
-    });
+                         SizedBox(
+                           width: 10.0.sp,
+                         ),
+                         Expanded(
+                           child: ExtraMediumText(
+                             title: groupsPro.currentBLGroupsList
+                                 ?.firstWhere((element) => element?.key == groupId, orElse: () => null) !=
+                                 null
+                                 ? groupsPro.currentBLGroupsList
+                                 ?.firstWhere((element) => element?.key == groupId, orElse: () => null)?.name
+                                 : ''.tr(),
+                             textColor: AppColors.lightBlack,
+                           ),
+                         ),
+                         InkWell(
+                           onTap: () {
+                             showDialog(
+                                 context: context,
+                                 builder: (ctx) => GroupInfoDialog(
+                                   groupModel: groupsPro
+                                       .currentBLGroupsList
+                                       ?.firstWhere((element) =>
+                                   element?.key == groupId),
+                                   onMembersTap: () {
+                                     showDialog(
+                                         context: context,
+                                         builder: (ctx) =>
+                                             GroupMembersDialog(
+                                               userIds: groupsPro
+                                                   .currentBLGroupsList
+                                                   ?.firstWhere(
+                                                       (element) =>
+                                                   element?.key ==
+                                                       groupId)?.approvedMembers ??
+                                                   [],
+                                             ));
+                                   },
+                                 ));
+                           },
+                           child: Padding(
+                               padding: EdgeInsets.all(4.sp),
+                               child: Icon(
+                                 Icons.info_outline,
+                                 color: AppColors.lightBlack,
+                               )),
+                         ),
+                       ],
+                     ),
+                   ),
+                 ),
+                 Expanded(
+                   child: ScrollablePositionedList.builder(
+                     reverse: true,
+                     // controller: _scrollController,
+                     itemScrollController: itemScrollController,
+                     itemPositionsListener: itemPositionsListener,
+                     itemCount: groupsPro.currentBLGroupsList
+                         ?.firstWhere((element) => element?.key == groupId, orElse: () => null)
+                         ?.messages
+                         ?.length ??
+                         0,
+                     padding: EdgeInsets.symmetric(horizontal: 13.sp),
+                     physics: const BouncingScrollPhysics(),
+                     itemBuilder: (BuildContext context, int index) {
+                       List<MessageModel>? reversedMessages = groupsPro.currentBLGroupsList
+                           ?.firstWhere((element) => element?.key == groupId, orElse: () => null)
+                           ?.messages
+                           ?.reversed
+                           .toList();
+                       MessageModel? messageModel = reversedMessages?[index];
+
+                       return GestureDetector(
+                         onLongPress: () {
+                           if (messageModel?.uid ==
+                               Auth().currentUser?.uid) {
+                             showDeleteMessageBottomSheet(
+                                 context, messageModel!);
+                           } else {
+                             Clipboard.setData(ClipboardData(
+                                 text: messageModel?.message ?? ''));
+                             Utilities().showCustomToast(
+                                 message: 'Message copied!'.tr(),
+                                 isError: false);
+                           }
+                         },
+                         child: messageModel?.uid == Auth().currentUser?.uid
+                             ? SenderMessageWidget(
+                           messageModel: messageModel,
+                           replyMessage: messageModel?.replyId != null
+                               ? reversedMessages
+                               ?.where((message) =>
+                           message.key ==
+                               messageModel?.replyId)
+                               .isNotEmpty ==
+                               true
+                               ? reversedMessages?.firstWhere(
+                                   (message) =>
+                               message.key ==
+                                   messageModel?.replyId)
+                               : null
+                               : null,
+                           onSwipeMessage: (message) {
+                             replyToMessage(message);
+                           },
+                           replyWidgetTap: () {
+                             if (messageModel?.replyId != null) {
+                               scrollToReplyMessage(
+                                   messageModel?.replyId ?? '',
+                                   reversedMessages ?? []);
+                             }
+                           },
+                         )
+                             : FutureBuilder<AppUser?>(
+                           future:
+                           fetchUser(messageModel?.uid ?? '', ref),
+                           builder: (context, snapshot) {
+                             var senderName = '';
+                             if (snapshot.hasData) {
+                               senderName =
+                               '${snapshot.data!.firstName ?? ''} ${snapshot.data!.surName ?? ''}';
+                             }
+                             return ReceiverMessageWidget(
+                               senderName: senderName,
+                               messageModel: messageModel,
+                               replyMessage: messageModel?.replyId !=
+                                   null
+                                   ? reversedMessages
+                                   ?.where((message) =>
+                               message.key ==
+                                   messageModel
+                                       ?.replyId)
+                                   .isNotEmpty ==
+                                   true
+                                   ? reversedMessages?.firstWhere(
+                                       (message) =>
+                                   message.key ==
+                                       messageModel?.replyId)
+                                   : null
+                                   : null,
+                               onSwipeMessage: (message) {
+                                 replyToMessage(message);
+                               },
+                               replyWidgetTap: () {
+                                 if (messageModel?.replyId != null) {
+                                   scrollToReplyMessage(
+                                       messageModel?.replyId ?? '',
+                                       reversedMessages ?? []);
+                                 }
+                               },
+                             );
+                           },
+                         ),
+                       );
+                     },
+                   ),
+                 ),
+                 Padding(
+                   padding: EdgeInsets.only(
+                     bottom: MediaQuery.of(context).viewInsets.bottom,
+                   ),
+                   child: mentionsData != null
+                       ? BottomWriteWidget(
+                     mentionsKey: key,
+                     onReplyCancel: () {
+                       setState(() {
+                         print('update 9');
+                         replyMessage = null;
+                       });
+                     },
+                     focusNode: focusNode,
+                     replyMessage: replyMessage,
+                     isRecording: isRecording,
+                     // showSendButton: showSendButton,
+                     mentionsData: mentionsData,
+                     pointerDownEvent: (details) {
+                       setState(() {
+                         isRecording = true;
+                       });
+                       key.currentState?.controller?.text =
+                           'Recording...'.tr();
+                       _startRecording();
+                     },
+                     pointerUpEvent: (details) {
+                       setState(() {
+                         isRecording = false;
+                       });
+                       key.currentState?.controller?.clear();
+                       _stopRecording(ref);
+                     },
+                     onCameraTap: () async {
+                       XFile? pickedImage = await Utilities.pickImage(
+                           imageSource: 'camera');
+                       if (pickedImage != null) {
+                         FileWithType fileWithType = FileWithType(
+                             file: File(pickedImage.path),
+                             fileType: MessageType.image);
+                         pickedFiles ??= [];
+                         pickedFiles?.add(fileWithType);
+                         showBottomSheetWithFiles(ref);
+                         setState(() {
+                           print('update 12');
+                         });
+                       }
+                     },
+                     onAttachmentTap: () {
+                       showModalBottomSheet(
+                           context: context,
+                           isScrollControlled: true,
+                           backgroundColor: Colors.transparent,
+                           builder: (BuildContext context) {
+                             return PickMediaBottomsheet(
+                               onMediaTap: () {
+                                 Navigator.pop(context);
+                                 pickMultipleImagesFromGallery(ref);
+                               },
+                               onDocumentTap: () {
+                                 Navigator.pop(context);
+                                 pickFiles(ref);
+                               },
+                               onLocationTap: () {
+                                 Navigator.pop(context);
+                                 sendLocationMessage(ref);
+                               },
+                             );
+                           });
+                     },
+                     onSendTap: () {
+                       sendTextMessage(groupId ?? '', ref);
+                     },
+                   )
+                       : Container(),
+                 ),
+               ],
+             ),
+           ),
+           FullScreenLoader(
+             loading: isLoading,
+           )
+         ],
+       ),
+     ),
+   );
   }
 
   Future<AppUser?> fetchUser(String id, WidgetRef ref) async {
@@ -456,11 +467,11 @@ class _ChatScreenState extends State<ChatScreen> {
     var groupsPro = ref.watch(groupsProvider);
     var appUserPro = ref.watch(appUserProvider);
     GroupModel? group = groupsPro.currentBLGroupsList
-        ?.firstWhere((element) => element.key == groupId);
+        ?.firstWhere((element) => element?.key == groupId);
     groupMembers ??= await appUserPro.getUsersListByIds(groupsPro
         .currentBLGroupsList
-        ?.firstWhere((element) => element.key == groupId)
-        .approvedMembers
+        ?.firstWhere((element) => element?.key == groupId)
+        ?.approvedMembers
         ?.toSet()
         .toList());
     await appUserPro.listenToAdmins();
@@ -475,8 +486,8 @@ class _ChatScreenState extends State<ChatScreen> {
     var appUserPro = ref.watch(appUserProvider);
     groupMembers = await appUserPro.getUsersListByIds(groupsPro
         .currentBLGroupsList
-        ?.firstWhere((element) => element.key == groupId)
-        .approvedMembers
+        ?.firstWhere((element) => element?.key == groupId)
+        ?.approvedMembers
         ?.toSet()
         .toList());
     List<Map<String, dynamic>> mapList = [];
@@ -517,8 +528,7 @@ class _ChatScreenState extends State<ChatScreen> {
         // key.currentState?.controller?.clear();
         groupsPro.incrementUnreadCountsForGroup(
             context,
-            groupsPro.currentBLGroupsList!
-                .firstWhere((element) => element.key == groupId),
+            groupsPro.currentBLGroupsList?.firstWhere((element) => element?.key == groupId),
             appUserPro.allAdminsList ?? []);
         manageBusinessListFlags(groupsPro, appUserPro, ref);
       }, (p0) {
@@ -539,15 +549,15 @@ class _ChatScreenState extends State<ChatScreen> {
       BusinessListRepository().incrementUnreadFlagsForCountries(
           context,
           groupsPro.currentBLGroupsList!
-              .firstWhere((element) => element.key == groupId),
+              .firstWhere((element) => element?.key == groupId),
           context,
           admins ?? [],
           coordinators ?? [],
           businessPro.businessLists!.firstWhere((element) =>
               element.key ==
               groupsPro.currentBLGroupsList!
-                  .firstWhere((element) => element.key == groupId)
-                  .businessKey),
+                  .firstWhere((element) => element?.key == groupId)
+                  ?.businessKey),
           () {},
           (p0) {});
     }
@@ -596,7 +606,7 @@ class _ChatScreenState extends State<ChatScreen> {
       groupsPro.incrementUnreadCountsForGroup(
           context,
           groupsPro.currentBLGroupsList!
-              .firstWhere((element) => element.key == groupId),
+              .firstWhere((element) => element?.key == groupId),
           appUserPro.allAdminsList ?? []);
       manageBusinessListFlags(groupsPro, appUserPro, ref);
     }, (p0) {
@@ -748,7 +758,6 @@ class _ChatScreenState extends State<ChatScreen> {
     var groupsPro = ref.watch(groupsProvider);
     var appUserPro = ref.watch(appUserProvider);
     setState(() {
-      print('update 4');
       isLoading = true;
     });
     bool serviceEnabled;
@@ -785,27 +794,23 @@ class _ChatScreenState extends State<ChatScreen> {
       GroupsRepository().sendMessage(messageModel, groupId ?? '', context, () {
         manageNotification(ref);
         setState(() {
-          print('update 5');
           isLoading = false;
         });
         key.currentState?.controller?.clear();
         groupsPro.incrementUnreadCountsForGroup(
             context,
             groupsPro.currentBLGroupsList!
-                .firstWhere((element) => element.key == groupId),
+                .firstWhere((element) => element?.key == groupId),
             appUserPro.allAdminsList ?? []);
         manageBusinessListFlags(groupsPro, appUserPro, ref);
-        // _animateToBottom();
       }, (p0) {
         setState(() {
-          print('update 6');
           isLoading = false;
         });
         Utilities().showErrorMessage(context, message: p0.toString());
       });
     } else {
       setState(() {
-        print('update 7');
         isLoading = false;
       });
     }

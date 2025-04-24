@@ -56,9 +56,15 @@ class _HomeScreenState extends State<HomeScreen>{
   }
 
   @override
+  void initState() {
+    PermissionsManager().checkPermissions();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    PermissionsManager().checkPermissions();
+    // PermissionsManager().checkPermissions();
     return Consumer(builder: (ctx, ref, child){
       var appUserPro = ref.watch(appUserProvider);
       var groupsPro = ref.watch(groupsProvider);

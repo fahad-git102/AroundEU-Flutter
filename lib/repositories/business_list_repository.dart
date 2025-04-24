@@ -76,7 +76,7 @@ class BusinessListRepository{
   }
 
   incrementUnreadFlagsForCountries(
-      BuildContext context, GroupModel groupModel, BuildContext ctx,
+      BuildContext context, GroupModel? groupModel, BuildContext ctx,
       List<String> adminIds, List<String> coordinatorsIds, BusinessList businessList,
       Function() onComplete, Function(dynamic) onError) {
     bool shouldLoad = false;
@@ -91,7 +91,7 @@ class BusinessListRepository{
     }
 
     final usersList = [
-      ...groupModel.approvedMembers
+      ...groupModel?.approvedMembers
           ?.where((item) => item != Auth().currentUser?.uid && coordinatorsIds.contains(item))
           ?? <String>[],
       ...adminIds
