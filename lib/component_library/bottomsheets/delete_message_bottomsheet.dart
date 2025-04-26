@@ -83,12 +83,17 @@ class _DeleteMessageBottomsheetState extends State<DeleteMessageBottomsheet> {
                     SizedBox(
                       height: 10.sp,
                     ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 3.sp),
-                      child: SmallLightText(
-                        title: "No, Cancel".tr(),
-                        textDecoration: TextDecoration.underline,
-                        textColor: AppColors.lightBlack,
+                    InkWell(
+                      onTap: (){
+                        Navigator.pop(context);
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 3.sp),
+                        child: SmallLightText(
+                          title: "No, Cancel".tr(),
+                          textDecoration: TextDecoration.underline,
+                          textColor: AppColors.lightBlack,
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -116,13 +121,13 @@ class _DeleteMessageBottomsheetState extends State<DeleteMessageBottomsheet> {
                       ),
                     )),
               ),
-              Padding(padding: EdgeInsets.only(top: 15.sp, left: 15.sp), child:
+              widget.textToCopy != null &&
+                  widget.textToCopy!.isNotEmpty ? Padding(padding: EdgeInsets.only(top: 15.sp, left: 15.sp), child:
               Align(
                 alignment: Alignment.topLeft,
                 child: InkWell(
                   onTap: widget.onCopyPaste,
-                  child: widget.textToCopy != null &&
-                      widget.textToCopy!.isNotEmpty ? Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -133,9 +138,9 @@ class _DeleteMessageBottomsheetState extends State<DeleteMessageBottomsheet> {
                         textColor: AppColors.lightBlack,
                       )
                     ],
-                  ) : Container(),
+                  ),
                 ),
-              ),)
+              ),):Container()
             ],
           ),
         );
