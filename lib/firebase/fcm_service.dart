@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:groupchat/core/static_keys.dart';
+import 'package:groupchat/views/chat_screens/chat_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
@@ -28,7 +30,7 @@ class FcmService {
       badge: true,
       carPlay: true,
       criticalAlert: true,
-      provisional: true,
+      provisional: false,
       sound: true,
     );
 
@@ -49,7 +51,8 @@ class FcmService {
       },
     );
 
-    _fcmToken = Platform.isAndroid?await firebaseMessaging.getToken(): Platform.isIOS? await firebaseMessaging.getAPNSToken():'';
+    _fcmToken = await firebaseMessaging.getToken();
+    // _fcmToken = Platform.isAndroid?await firebaseMessaging.getToken(): Platform.isIOS? await firebaseMessaging.getAPNSToken():'';
     print('FCM token is 1 = $_fcmToken');
     _saveTokenIfLoggedIn();
     FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
@@ -61,8 +64,17 @@ class FcmService {
   }
 
   void handleNotificationResponse(String? payload) {
+    // print('payloadddd isss == $payload');
+    // if (payload != null) {
+    //   navigatorKey.currentState!.pushNamed(ChatScreen.route, arguments: payload);
+    // }
     if (payload != null) {
-      navigatorKey.currentState!.pushNamed(NotificationsTestScreen.route, arguments: payload);
+      final Map<String, dynamic> data = jsonDecode(payload);
+      final chatId = data['chatId'];
+      navigatorKey.currentState!.pushNamed(
+        ChatScreen.route,
+        arguments: {'groupId': chatId},
+      );
     }
   }
 
@@ -99,9 +111,21 @@ class FcmService {
   }
 
   handleMessage(RemoteMessage? message) {
+    print('messssaggggeggeee == ${message?.data['chatId']}');
     if (message == null) return;
     showForegroundNotification(message);
-    navigatorKey.currentState!.pushNamed(NotificationsTestScreen.route, arguments: message);
+    final chatId = message.data['chatId'];
+
+    if (chatId != null) {
+      showForegroundNotification(message);
+      navigatorKey.currentState!.pushNamed(
+        ChatScreen.route,
+        arguments: {
+          'groupId': chatId
+        },
+      );
+    }
+    // navigatorKey.currentState!.pushNamed(NotificationsTestScreen.route, arguments: message);
   }
 
   Future initPushNotifications() async {
