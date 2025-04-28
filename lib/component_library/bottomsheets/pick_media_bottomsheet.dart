@@ -7,12 +7,12 @@ import 'package:sizer/sizer.dart';
 
 class PickMediaBottomsheet extends StatelessWidget{
 
-  Function()? onMediaTap, onDocumentTap, onLocationTap;
+  Function()? onMediaTap, onDocumentTap, onLocationTap, onVideoTap;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 220.sp,
+      height: 270.sp,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -49,6 +49,12 @@ class PickMediaBottomsheet extends StatelessWidget{
           ),
           _bottomSheetItem(
             context,
+            icon: Icons.video_collection_outlined,
+            label: 'Video'.tr(),
+            onTap: onVideoTap,
+          ),
+          _bottomSheetItem(
+            context,
             icon: Icons.insert_drive_file,
             label: 'Document'.tr(),
             onTap: onDocumentTap,
@@ -80,6 +86,7 @@ class PickMediaBottomsheet extends StatelessWidget{
     this.onMediaTap,
     this.onDocumentTap,
     this.onLocationTap,
+    this.onVideoTap
   });
 
 }

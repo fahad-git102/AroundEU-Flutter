@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
 import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/views/chat_screens/chat_screen.dart';
 import 'package:sizer/sizer.dart';

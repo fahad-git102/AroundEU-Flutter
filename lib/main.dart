@@ -11,23 +11,15 @@ import 'package:groupchat/views/auth/splash_screen.dart';
 import 'package:sizer/sizer.dart';
 import 'package:toastification/toastification.dart';
 
+import 'firebase_options.dart';
+
 final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if(Platform.isAndroid){
-    await Firebase.initializeApp(
-        options: const FirebaseOptions(
-          apiKey: 'AIzaSyA2ukLzcnUv4WLoqhFmX9fC79QCjZoG0lo',
-          appId: '1:942050510362:android:8ca22ab38aadedd148f3a3',
-          messagingSenderId: '942050510362',
-          projectId: 'eprojectconsult-9d70e',
-          storageBucket: 'eprojectconsult-9d70e.appspot.com',
-        )
-    );
-  }else{
-    await Firebase.initializeApp();
-  }
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await FcmService().initNotifications();
   runApp(const ProviderScope(child: Portal(child: MyApp())));
 }

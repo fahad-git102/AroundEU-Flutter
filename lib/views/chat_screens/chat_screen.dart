@@ -91,12 +91,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     super.dispose();
   }
 
-  // @override
-  // void initState() {
-  //   _initRecorder();
-  //   super.initState();
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -291,11 +285,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                              showDeleteMessageBottomSheet(
                                  context, messageModel!);
                            } else {
-                             Clipboard.setData(ClipboardData(
-                                 text: messageModel?.message ?? ''));
-                             Utilities().showCustomToast(
-                                 message: 'Message copied!'.tr(),
-                                 isError: false);
+                             if(messageModel?.message!=null && messageModel?.message?.isNotEmpty==true){
+                               Clipboard.setData(ClipboardData(
+                                   text: messageModel?.message ?? ''));
+                               Utilities().showCustomToast(
+                                   message: 'Message copied!'.tr(),
+                                   isError: false);
+                             }
                            }
                          },
                          child: messageModel?.uid == Auth().currentUser?.uid
@@ -424,9 +420,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                            backgroundColor: Colors.transparent,
                            builder: (BuildContext context) {
                              return PickMediaBottomsheet(
-                               onMediaTap: () {
+                               onMediaTap: () async {
                                  Navigator.pop(context);
-                                 pickMultipleImagesFromGallery(ref);
+                                 pickedFiles = await Utilities().pickImages();
+                                 if(pickedFiles!=null && pickedFiles?.isNotEmpty==true){
+                                   showBottomSheetWithFiles(ref);
+                                 }
+                               },
+                               onVideoTap: () async {
+                                 Navigator.pop(context);
+                                 pickedFiles = await Utilities().pickVideo();
+                                 if(pickedFiles!=null && pickedFiles?.isNotEmpty==true){
+                                   showBottomSheetWithFiles(ref);
+                                 }
                                },
                                onDocumentTap: () {
                                  Navigator.pop(context);
@@ -767,8 +773,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (!serviceEnabled) {
       return Future.error('Location services are disabled.');
     }
-
-    print('requesting for location permission');
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();

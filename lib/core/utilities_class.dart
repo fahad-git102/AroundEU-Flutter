@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as text_direction;
 import 'package:groupchat/component_library/text_widgets/extra_medium_text.dart';
+import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/firebase/auth.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:image_picker/image_picker.dart';
@@ -22,9 +23,11 @@ import 'package:url_launcher/url_launcher.dart';
 import '../component_library/dialogs/custom_dialog.dart';
 import '../component_library/dialogs/pick_image_dialog.dart';
 import '../component_library/dialogs/simple_error_dialog.dart';
+import '../views/chat_screens/chat_screen.dart';
 import 'app_colors.dart';
 
 class Utilities {
+  final ImagePicker _picker = ImagePicker();
   Future<DateTime?> datePicker(BuildContext context, Color? color,
       {lastDate, firstDate, initialDate}) async {
     return showDatePicker(
@@ -475,7 +478,7 @@ class Utilities {
   String formatTimeOfDay(TimeOfDay time) {
     final now = DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-    final format = DateFormat('hh:mm a'); // Format as '02:30 PM'
+    final format = DateFormat('hh:mm a');
     return format.format(dt);
   }
 
@@ -484,4 +487,30 @@ class Utilities {
     String d12 = DateFormat(format ?? 'dd MMM, yyyy').format(dt);
     return d12;
   }
+
+  Future<List<FileWithType>> pickImages() async {
+    List<FileWithType> pickedFiles = [];
+    final List<XFile> imageFiles = await _picker.pickMultiImage();
+    for (var imageFile in imageFiles) {
+      pickedFiles.add(FileWithType(
+        file: File(imageFile.path),
+        fileType: MessageType.image,
+      ));
+    }
+
+    return pickedFiles;
+  }
+  Future<List<FileWithType>> pickVideo() async {
+    List<FileWithType> pickedFiles = [];
+    final XFile? videoFile = await _picker.pickVideo(source: ImageSource.gallery);
+    if (videoFile != null) {
+      pickedFiles.add(FileWithType(
+        file: File(videoFile.path),
+        fileType: MessageType.video,
+      ));
+    }
+
+    return pickedFiles;
+  }
 }
+
