@@ -19,11 +19,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.3.0</string>
+	<string>3.3.2</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>10</string>
+	<string>12</string>
 	<key>GMSApiKey</key>
 	<string>AIzaSyALZpIBW7NvdLPVAYaDRwBYfZUo9vregH0</string>
 	<key>LSApplicationQueriesSchemes</key>

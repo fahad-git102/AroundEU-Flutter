@@ -11,6 +11,8 @@ import 'package:groupchat/component_library/text_widgets/small_light_text.dart';
 import 'package:groupchat/core/app_colors.dart';
 import 'package:groupchat/core/permissions_manager.dart';
 import 'package:groupchat/core/static_keys.dart';
+import 'package:groupchat/firebase/firebase_crud.dart';
+import 'package:groupchat/firebase/firebase_notification_service.dart';
 import 'package:groupchat/providers/app_user_provider.dart';
 import 'package:groupchat/providers/business_list_provider.dart';
 import 'package:groupchat/providers/categories_provider.dart';
@@ -58,13 +60,13 @@ class _HomeScreenState extends State<HomeScreen>{
   @override
   void initState() {
     PermissionsManager().checkPermissions();
+    FirebaseCrud.initNotification(context);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    // PermissionsManager().checkPermissions();
     return Consumer(builder: (ctx, ref, child){
       var appUserPro = ref.watch(appUserProvider);
       var groupsPro = ref.watch(groupsProvider);
@@ -172,6 +174,9 @@ class _HomeScreenState extends State<HomeScreen>{
     return  Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        // SmallLightText(
+        //   title: 'chatID == $chatId',
+        // ),
         SizedBox(height: 10.0.sp,),
         Image.asset(
           Images.logoAroundEU,

@@ -53,7 +53,6 @@ class NotificationService {
 
   Map<String, dynamic> _prepareNotificationData(
       String token, String chatId, String title, String senderName) {
-    print('chatttIDDD == $chatId');
     final Map<String, dynamic> notificationMap = {
       "title": title.toString(),
       "message": "$senderName sent a message in your group",
@@ -151,6 +150,8 @@ class NotificationService {
           },
         ),
       );
+      print(friendDT);
+      print(response.statusCode);
     } catch (e) {
       print('Error sending FCM message: $e');
     }

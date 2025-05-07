@@ -474,12 +474,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     var appUserPro = ref.watch(appUserProvider);
     GroupModel? group = groupsPro.currentBLGroupsList
         ?.firstWhere((element) => element?.key == groupId);
-    groupMembers ??= await appUserPro.getUsersListByIds(groupsPro
-        .currentBLGroupsList
-        ?.firstWhere((element) => element?.key == groupId)
-        ?.approvedMembers
-        ?.toSet()
-        .toList());
+    groupMembers ??= await appUserPro.getUsersListByIds(group?.approvedMembers?.toSet().toList());
     await appUserPro.listenToAdmins();
     usersList.addAll(groupMembers ?? []);
     usersList.addAll(appUserPro.allAdminsList ?? []);

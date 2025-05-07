@@ -6,7 +6,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:groupchat/core/static_keys.dart';
 import 'package:groupchat/core/utilities_class.dart';
+import 'package:groupchat/repositories/users_repository.dart';
 import 'package:mime/mime.dart';
+
+import '../main.dart';
+import 'firebase_notification_service.dart';
 
 class FirebaseCrud {
   Future<void> setData({required String key,
@@ -82,6 +86,27 @@ class FirebaseCrud {
     } else {
       return null;
     }
+  }
+
+  static initNotification(context) async {
+    await  NotificationServices.requestNotificationPermission(context).then((value) {
+      if (value == true) {
+        NotificationServices.firebaseInIt(context);
+        NotificationServices.foregroundMessaging();
+        NotificationServices.setupInteractMessage(navigatorKey.currentContext??context);
+
+        NotificationServices.getDeviceToken().then((value) async {
+          print('this is the new token from new code');
+          print(value);
+          if(value!=null && value.isNotEmpty==true){
+            UsersRepository().updateUserToken(value, (){}, (p0){
+              print('token update failed : ${p0.toString()}');
+            });
+
+          }
+        });
+      }
+    });
   }
 
 }

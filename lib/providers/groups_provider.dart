@@ -15,6 +15,11 @@ class GroupsProvider extends ChangeNotifier {
   List<GroupModel?>? currentBLGroupsList;
   List<AppUser>? usersCache;
 
+  clearPro(){
+    currentBLGroupsList = null;
+    notifyListeners();
+  }
+
   void listenToGroupById(String groupId){
     if(currentBLGroupsList!=null){
       int? existingIndex = currentBLGroupsList?.indexWhere((group) => group?.key == groupId);
