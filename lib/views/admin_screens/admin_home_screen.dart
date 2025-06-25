@@ -21,8 +21,10 @@ import '../../component_library/buttons/custom_icon_button.dart';
 import '../../component_library/buttons/home_grid_widget.dart';
 import '../../component_library/dialogs/sign_out_dialog.dart';
 import '../../core/assets_names.dart';
+import '../../core/permissions_manager.dart';
 import '../../core/size_config.dart';
 import '../../firebase/auth.dart';
+import '../../firebase/firebase_crud.dart';
 import '../auth/login_screen.dart';
 import 'add_new_company_screen.dart';
 
@@ -35,7 +37,12 @@ class AdminHomeScreen extends StatefulWidget {
 
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final GlobalKey<ScaffoldState> _homeKey = GlobalKey<ScaffoldState>();
-
+  @override
+  void initState() {
+    PermissionsManager().checkPermissions();
+    FirebaseCrud.initNotification(context);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);

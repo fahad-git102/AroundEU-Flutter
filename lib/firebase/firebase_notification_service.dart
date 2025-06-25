@@ -9,7 +9,10 @@ import '../main.dart';
 import '../views/chat_screens/chat_screen.dart';
 
 String? chatId;
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {}
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print('hahahahhaha');
+  print(message.data);
+}
 
 class NotificationServices {
   static String? lastMessageId;
@@ -50,8 +53,8 @@ class NotificationServices {
               "Please enable notification permissions to receive updates."),
           actions: <Widget>[
             TextButton(
-              child: FittedBox(
-                  fit: BoxFit.scaleDown, child: const Text("Open Settings")),
+              child: const FittedBox(
+                  fit: BoxFit.scaleDown, child: Text("Open Settings")),
               onPressed: () async {
                 // Open app settings
                 await openAppSettings();
@@ -73,7 +76,7 @@ class NotificationServices {
   static void initLocalNotification(context, RemoteMessage message) async {
     const androidInitializationSettings =
     AndroidInitializationSettings("@mipmap/ic_launcher");
-    final iosInitializationSettings = DarwinInitializationSettings(
+    const iosInitializationSettings = DarwinInitializationSettings(
       requestSoundPermission: true,
       requestBadgePermission: true,
       requestAlertPermission: true,
@@ -84,7 +87,7 @@ class NotificationServices {
       // onDidReceiveLocalNotification: (id, title, body, payload) =>
       //     handleMessage(context, message),
     );
-    final initializationSettings = InitializationSettings(
+    const initializationSettings = InitializationSettings(
       android: androidInitializationSettings,
       iOS: iosInitializationSettings,
     );
