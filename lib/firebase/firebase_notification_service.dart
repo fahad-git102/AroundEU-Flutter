@@ -10,8 +10,6 @@ import '../views/chat_screens/chat_screen.dart';
 
 String? chatId;
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('hahahahhaha');
-  print(message.data);
 }
 
 class NotificationServices {
@@ -222,7 +220,6 @@ class NotificationServices {
   static handleMessage(context, RemoteMessage message) async {
     if (message.data['type'] == 'msg'){
       chatId = message.data['chatId'];
-      print('Message got in Notification = ${message.data}');
       Navigator.pushNamed(
           context, ChatScreen.route, arguments: {
         'groupId': chatId
